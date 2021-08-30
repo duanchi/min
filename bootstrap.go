@@ -7,7 +7,7 @@ import (
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/db"
-	"github.com/duanchi/min/feign"
+	// "github.com/duanchi/min/feign"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/server"
 	"github.com/duanchi/min/task"
