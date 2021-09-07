@@ -2,11 +2,11 @@ package min
 
 import (
 	"fmt"
-	_ "github.com/joho/godotenv/autoload"
 	"github.com/duanchi/min/bean"
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/db"
+	_ "github.com/joho/godotenv/autoload"
 	// "github.com/duanchi/min/feign"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/server"
@@ -23,7 +23,7 @@ func Bootstrap(configuration interface{}) {
 
 	errs := make(chan error, 3)
 
-	bean.Init(
+	bean.InitBeans(
 		config.Get("Beans"),
 		config.Get("BeanParsers"),
 	)

@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/config"
 	config2 "github.com/duanchi/min/types/config"
 	_ "github.com/go-sql-driver/mysql"

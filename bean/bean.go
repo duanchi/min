@@ -48,7 +48,7 @@ func (bean *Container) Get (name string) reflect.Value {
 	return value
 }
 
-func Init(beanContainerInstance interface{}, beanParsers interface{}) {
+func InitBeans(beanContainerInstance interface{}, beanParsers interface{}) {
 
 	if reflect.ValueOf(beanParsers).IsValid() {
 		customBeanParsers = beanParsers.([]_interface.BeanParserInterface)
@@ -62,10 +62,24 @@ func Init(beanContainerInstance interface{}, beanParsers interface{}) {
 		containerType = reflect.TypeOf(beanContainerInstance).Elem()
 	}
 
-	initBean(containerValue, containerType)
+	// initBean(containerValue, containerType)
+
+	// 保持先注册、再初始化、最后注入的步骤，所以执行三次完整循环
+
+	for i := 0; i < containerValue.NumField(); i++ {
+		Register(containerValue.Field(i), containerType.Field(i))
+	}
+
+	for _, bean := range beanMaps {
+		Init(bean, beanMaps)
+	}
+
+	for _, bean := range beanMaps {
+		Inject(bean, beanMaps)
+	}
 }
 
-func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Type) {
+/*func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Type) {
 	containerType := beanContainerType
 	containerValue := beanContainerInstance
 	for i := 0; i < containerValue.NumField(); i++ {
@@ -79,7 +93,7 @@ func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Typ
 	for _, bean := range beanMaps {
 		parseInit(bean)
 	}
-}
+}*/
 
 func Get (name string) interface{} {
 	return beanNameMaps[name].Interface()
@@ -114,12 +128,4 @@ func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.
 	for i := 0; i < len(customBeanParsers); i++ {
 		reflect.ValueOf(customBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
 	}
-}
-
-func parseInit(rawBean reflect.Value) {
-	defer func() {
-		if err := recover(); err != nil {
-		}
-	}()
-	rawBean.Addr().Interface().(_interface.BeanInterface).Init()
 }
