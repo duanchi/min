@@ -2,6 +2,7 @@ package bean
 
 import (
 	"fmt"
+	"github.com/duanchi/min/aop"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/rpc"
 	"github.com/duanchi/min/server/middleware"
@@ -17,6 +18,7 @@ var beanMaps = map[string]reflect.Value{}
 var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParsers = []_interface.BeanParserInterface{
+	&aop.AopBeanParser{},
 	&service.ServiceBeanParser{},
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
