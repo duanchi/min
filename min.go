@@ -1,10 +1,10 @@
 package min
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/xormplus/xorm"
 	"github.com/duanchi/min/bean"
 	"github.com/duanchi/min/log"
+	"github.com/gin-gonic/gin"
+	"github.com/xormplus/xorm"
 )
 
 var HttpServer *gin.Engine
