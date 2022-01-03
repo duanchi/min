@@ -3,15 +3,15 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/xormplus/xorm"
-	"github.com/xormplus/xorm/caches"
-	"github.com/xormplus/xorm/contexts"
-	"github.com/xormplus/xorm/core"
-	"github.com/xormplus/xorm/dialects"
-	"github.com/xormplus/xorm/log"
-	"github.com/xormplus/xorm/names"
-	"github.com/xormplus/xorm/schemas"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/db/xorm"
+	"github.com/duanchi/min/db/xorm/caches"
+	"github.com/duanchi/min/db/xorm/contexts"
+	"github.com/duanchi/min/db/xorm/core"
+	"github.com/duanchi/min/db/xorm/dialects"
+	"github.com/duanchi/min/db/xorm/log"
+	"github.com/duanchi/min/db/xorm/names"
+	"github.com/duanchi/min/db/xorm/schemas"
 	"io"
 	"reflect"
 	"strings"
@@ -38,14 +38,14 @@ func Model(model interface{}) *ModelMapper {
 }
 
 type ModelMapper struct {
-	Mapper interface{}
-	Struct _interface.ModelInterface
+	Mapper  interface{}
+	Struct  _interface.ModelInterface
 	options map[string]interface{}
-	engine *xorm.Engine
+	engine  *xorm.Engine
 }
 
 // func (this *ModelMapper) Options (options map[string]interface{}) {
-func (this *ModelMapper) Options () {
+func (this *ModelMapper) Options() {
 	source := this.Struct.Source()
 	table := this.Struct.Table()
 
@@ -69,7 +69,7 @@ func (this *ModelMapper) Options () {
 	}*/
 }
 
-func (this *ModelMapper) NewMapper () interface{} {
+func (this *ModelMapper) NewMapper() interface{} {
 	modelValue := reflect.ValueOf(this.Mapper).Elem()
 	modelType := modelValue.Type()
 	modelKind := modelType.Kind()
@@ -125,7 +125,7 @@ func (this *ModelMapper) BufferSize(size int) *xorm.Session {
 
 // ShowSQL show SQL statement or not on logger if log level is great than INFO
 func (this *ModelMapper) ShowSQL(show ...bool) {
-	this.engine.ShowSQL(show ...)
+	this.engine.ShowSQL(show...)
 }
 
 // Logger return the logger interface
@@ -496,9 +496,9 @@ func (this *ModelMapper) IsTableExist(beanOrTableName interface{}) (bool, error)
 }
 
 // IDOf get id from one struct
-func (this *ModelMapper) IDOf(bean interface{}) (schemas.PK, error) {
+/*func (this *ModelMapper) IDOf(bean interface{}) (schemas.PK, error) {
 	return this.engine.IDOf(bean)
-}
+}*/
 
 // TableName returns table name with schema prefix if has
 func (this *ModelMapper) TableName(bean interface{}, includeSchema ...bool) string {
@@ -506,9 +506,9 @@ func (this *ModelMapper) TableName(bean interface{}, includeSchema ...bool) stri
 }
 
 // IDOfV get id from one value of struct
-func (this *ModelMapper) IDOfV(rv reflect.Value) (schemas.PK, error) {
-	return this.engine.IDOfV(rv)
-}
+/*func (this *ModelMapper) IDOfV(rv reflect.Value) (schemas.PK, error) {
+	return this.engine.NewSession().
+}*/
 
 // CreateIndexes create indexes
 func (this *ModelMapper) CreateIndexes(bean interface{}) error {
@@ -564,7 +564,7 @@ func (this *ModelMapper) DropIndexes(bean interface{}) error {
 
 // Exec raw sql
 func (this *ModelMapper) Exec(sqlOrArgs ...interface{}) (sql.Result, error) {
-	return this.NewSession().Exec(sqlOrArgs ...)
+	return this.NewSession().Exec(sqlOrArgs...)
 }
 
 // Query a raw sql and return records as []map[string][]byte

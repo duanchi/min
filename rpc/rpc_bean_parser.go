@@ -10,7 +10,7 @@ type RpcBeanParser struct {
 	types.BeanParser
 }
 
-func (parser RpcBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+func (parser RpcBeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 
 	rpc := tag.Get("rpc")
 	packageName := tag.Get("package")
@@ -20,10 +20,10 @@ func (parser RpcBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, de
 	}
 
 	if rpc != "" {
-		RpcBeans[packageName + "." + bean.Elem().Type().Name()] = struct {
+		RpcBeans[packageName+"."+bean.Elem().Type().Name()] = struct {
 			Package  string
 			Instance reflect.Value
 		}{Package: packageName, Instance: bean}
-		fmt.Println("[Wand-Go] Init RPC: " + packageName + "." + bean.Elem().Type().Name())
+		fmt.Println("[min-framework] Init RPC: " + packageName + "." + bean.Elem().Type().Name())
 	}
 }

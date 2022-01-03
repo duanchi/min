@@ -13,7 +13,7 @@ import (
 var ConfigInstance interface{}
 
 func Init(config interface{}) {
-	fmt.Println("[Wand-Go] Init Config...")
+	fmt.Println("[min-framework] Init Config...")
 	err := yaml.GetConfig(config)
 
 	if err == nil {
@@ -44,7 +44,7 @@ func GetRaw(key string) reflect.Value {
 		//fmt.Printf("key: %s, kind %s",keyStack[i], reflect.TypeOf(value).Kind())
 
 		// 调用栈不是末尾, 并且value是可用值, 并且value是基础类型
-		if i < len(keyStack) - 1 && value.IsValid() && value.Kind() != reflect.Ptr && value.Kind() != reflect.Struct {
+		if i < len(keyStack)-1 && value.IsValid() && value.Kind() != reflect.Ptr && value.Kind() != reflect.Struct {
 			return reflect.New(value.Type())
 		} else {
 			if value.Kind() == reflect.Struct {
@@ -72,11 +72,11 @@ func GetRaw(key string) reflect.Value {
 	return value
 }
 
-func SetConfigFile (configFile string) {
+func SetConfigFile(configFile string) {
 	yaml.SetConfigFile(configFile)
 }
 
-func parseConfig (config interface{}, defaults string) {
+func parseConfig(config interface{}, defaults string) {
 
 	configType := reflect.TypeOf(config)
 	configValue := reflect.ValueOf(config)
@@ -131,7 +131,7 @@ func parseConfig (config interface{}, defaults string) {
 
 				pattern, _ := regexp.Compile(`\${.+?}`)
 				v = pattern.ReplaceAllStringFunc(defaults, func(s string) string {
-					value := strings.SplitN(s[2:len(s) - 1], ":", 2)
+					value := strings.SplitN(s[2:len(s)-1], ":", 2)
 					if len(value) > 1 {
 						return util.Getenv(value[0], value[1])
 					} else {

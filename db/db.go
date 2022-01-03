@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	// _ "github.com/mattn/go-sqlite3"
-	"github.com/xormplus/xorm"
+	"github.com/duanchi/min/db/xorm"
 	"log"
 	"net/url"
 	"strings"
@@ -18,7 +18,7 @@ import (
 var Connection *xorm.Engine
 var Connections map[string]*xorm.Engine
 
-func Init () {
+func Init() {
 	var err error
 
 	sources := config.Get("Db.Sources").(map[string]config2.DbConfig)
@@ -40,7 +40,7 @@ func Init () {
 	} else {
 		parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
 		Connection, err = connect(parsedDsn, config2.DbConfig{
-			Dsn:       	config.Get("Db.Dsn").(string),
+			Dsn:        config.Get("Db.Dsn").(string),
 			MigrateSQL: config.Get("Db.MigrateSQL").(string),
 		})
 		if err != nil {
@@ -49,7 +49,7 @@ func Init () {
 	}
 }
 
-func Engine (name string) *xorm.Engine {
+func Engine(name string) *xorm.Engine {
 	return Connections[name]
 }
 
@@ -60,7 +60,7 @@ func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 	return err
 }
 
-func connect (dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engine, err error) {
+func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engine, err error) {
 
 	defer func() {
 		e := recover()
@@ -160,7 +160,7 @@ func connect (dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engi
 			log.Fatal(err)
 			return
 		}
-	/*case "sqlite":
+		/*case "sqlite":
 
 		connection, err = xorm.NewEngine("sqlite3", dbConfig.Dsn[9:])
 		err = connection.Ping()

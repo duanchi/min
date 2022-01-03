@@ -6,12 +6,12 @@ import (
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/db"
-	_ "github.com/joho/godotenv/autoload"
-	// "github.com/duanchi/min/feign"
 	"github.com/duanchi/min/log"
+	"github.com/duanchi/min/microservice/discovery"
 	"github.com/duanchi/min/server"
 	"github.com/duanchi/min/task"
 	config2 "github.com/duanchi/min/types/config"
+	_ "github.com/joho/godotenv/autoload"
 	"os"
 	"os/signal"
 	"syscall"
@@ -48,6 +48,11 @@ func Bootstrap(configuration interface{}) {
 		cache.Init()
 	}
 
+	if checkConfigEnabled("Discovery.Enabled") {
+		discovery.Init()
+		Discovery = discovery.Discovery
+	}
+
 	/*if checkConfigEnabled("Feign.Enabled") {
 		feign.Init(config.Get("Feign").(config2.Feign))
 	}*/
@@ -63,7 +68,6 @@ func Bootstrap(configuration interface{}) {
 		go task.RunOnStart()
 	}
 
-
 	go func() {
 		c := make(chan os.Signal, 2)
 		signal.Notify(c, syscall.SIGINT)
@@ -75,7 +79,6 @@ func Bootstrap(configuration interface{}) {
 	if checkConfigEnabled("Task.Enabled") {
 		go task.RunOnExit()
 	}
-
 
 	log.Log.Error("%s", err)
 }

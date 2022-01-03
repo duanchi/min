@@ -2,7 +2,6 @@ package bean
 
 import (
 	"fmt"
-	"github.com/duanchi/min/aop"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/rpc"
 	"github.com/duanchi/min/server/middleware"
@@ -18,7 +17,6 @@ var beanMaps = map[string]reflect.Value{}
 var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParsers = []_interface.BeanParserInterface{
-	&aop.AopBeanParser{},
 	&service.ServiceBeanParser{},
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
@@ -30,9 +28,9 @@ var coreBeanParsers = []_interface.BeanParserInterface{
 
 var customBeanParsers = []_interface.BeanParserInterface{}
 
-type Container struct {}
+type Container struct{}
 
-func (bean *Container) Get (name string) reflect.Value {
+func (bean *Container) Get(name string) reflect.Value {
 
 	beanValue := reflect.ValueOf(bean).Elem()
 	beanType := reflect.TypeOf(bean).Elem()
@@ -97,7 +95,7 @@ func InitBeans(beanContainerInstance interface{}, beanParsers interface{}) {
 	}
 }*/
 
-func Get (name string) interface{} {
+func Get(name string) interface{} {
 	return beanNameMaps[name].Interface()
 }
 
@@ -105,24 +103,24 @@ func GetAll() map[string]reflect.Value {
 	return beanMaps
 }
 
-func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
+func Register(beanValue reflect.Value, beanDefinition reflect.StructField) {
 	tag := beanDefinition.Tag
 	// beanType := beanDefinition.Type
 	name := tag.Get("name")
 	if name == "" {
 		name = beanDefinition.Name
 	}
-	fmt.Println("[Wand-Go] Init Bean: " + name)
+	fmt.Println("[min-framework] Init Bean: " + name)
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
 	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
 	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
 
-	fmt.Println("[Wand-Go] Init Bean: " + name + " Ok!")
+	fmt.Println("[min-framework] Init Bean: " + name + " Ok!")
 }
 
-func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+func extendParse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 	for i := 0; i < len(coreBeanParsers); i++ {
 		reflect.ValueOf(coreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
 	}
