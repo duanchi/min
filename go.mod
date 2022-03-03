@@ -22,6 +22,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0
+	github.com/nacos-group/nacos-sdk-go/v2 v2.0.0-Beta.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
@@ -32,5 +33,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/yaml.v2 v2.3.0
 	xorm.io/core v0.7.2
-	github.com/nacos-group/nacos-sdk-go/v2 v2.0.0-Beta.1
 )
