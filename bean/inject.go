@@ -2,13 +2,14 @@ package bean
 
 import (
 	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/util"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-func Inject (rawBean reflect.Value, beanMap map[string]reflect.Value) {
+func Inject(rawBean reflect.Value, beanMap map[string]reflect.Value) {
 
 	beanType := rawBean.Type()
 
@@ -17,7 +18,9 @@ func Inject (rawBean reflect.Value, beanMap map[string]reflect.Value) {
 			fieldTag := beanType.Field(i).Tag
 
 			parseTagNamedValue(fieldTag.Get("value"), rawBean.Field(i))
-			parseTagNamedAutowired(fieldTag.Get("autowired"), rawBean.Field(i))
+			if util.IsBeanKind(fieldTag, "autowired") {
+				parseTagNamedAutowired(rawBean.Field(i))
+			}
 		}
 
 	}
@@ -30,7 +33,7 @@ func parseTagNamedValue(value string, field reflect.Value) {
 
 		if regex.MatchString(value) {
 			value = string(regex.ReplaceAllFunc([]byte(value), func(match []byte) []byte {
-				return match[2:len(match) - 1]
+				return match[2 : len(match)-1]
 			})[:])
 
 			configField := strings.Split(value, ",")
@@ -103,10 +106,9 @@ func parseTagNamedValue(value string, field reflect.Value) {
 	}
 }
 
-func parseTagNamedAutowired(value string, field reflect.Value) {
-	setAutowired, _ := strconv.ParseBool(value)
+func parseTagNamedAutowired(field reflect.Value) {
 	beanType := field.Type()
-	if setAutowired && beanType.Kind() == reflect.Ptr {
+	if beanType.Kind() == reflect.Ptr {
 		beanPointer, ok := beanTypeMaps[beanType]
 		if ok {
 			field.Set(beanPointer)

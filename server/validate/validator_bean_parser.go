@@ -12,7 +12,7 @@ type ValidatorBeanParser struct {
 	types.BeanParser
 }
 
-func (parser ValidatorBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+func (parser ValidatorBeanParser) Parse(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
 	isValidator, _ := strconv.ParseBool(tag.Get("validator"))
 
 	if isValidator {
@@ -32,7 +32,7 @@ func (parser ValidatorBeanParser) Parse (tag reflect.StructTag, bean reflect.Val
 						validateFunction  validator.Func
 						validateTranslate string
 					}{
-						validateFunction: func (fl validator.FieldLevel) bool {
+						validateFunction: func(fl validator.FieldLevel) bool {
 							result := bean.Elem().Method(method.Index).Call([]reflect.Value{
 								reflect.ValueOf(fl),
 							})

@@ -9,7 +9,7 @@ type RestfulBeanParser struct {
 	types.BeanParser
 }
 
-func (parser RestfulBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+func (parser RestfulBeanParser) Parse(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
 
 	resource := tag.Get("restful")
 

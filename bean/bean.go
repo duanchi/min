@@ -79,22 +79,6 @@ func InitBeans(beanContainerInstance interface{}, beanParsers interface{}) {
 	}
 }
 
-/*func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Type) {
-	containerType := beanContainerType
-	containerValue := beanContainerInstance
-	for i := 0; i < containerValue.NumField(); i++ {
-		Register(containerValue.Field(i), containerType.Field(i))
-	}
-
-	for _, bean := range beanMaps {
-		Inject(bean, beanMaps)
-	}
-
-	for _, bean := range beanMaps {
-		parseInit(bean)
-	}
-}*/
-
 func Get(name string) interface{} {
 	return beanNameMaps[name].Interface()
 }
@@ -114,18 +98,19 @@ func Register(beanValue reflect.Value, beanDefinition reflect.StructField) {
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
 	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
+	beanKind := tag.Get("bean")
 
-	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
+	parseBean(tag, beanKind, beanMaps[name].Addr(), beanDefinition.Type, name)
 
 	fmt.Println("[min-framework] Init Bean: " + name + " Ok!")
 }
 
-func extendParse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+func parseBean(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
 	for i := 0; i < len(coreBeanParsers); i++ {
-		reflect.ValueOf(coreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
+		reflect.ValueOf(coreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, kind, bean, definition, beanName)
 	}
 
 	for i := 0; i < len(customBeanParsers); i++ {
-		reflect.ValueOf(customBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
+		reflect.ValueOf(customBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, kind, bean, definition, beanName)
 	}
 }
