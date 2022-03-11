@@ -1,16 +1,19 @@
 package db
 
 import (
+	"bytes"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/db/xorm"
 	config2 "github.com/duanchi/min/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	// _ "github.com/mattn/go-sqlite3"
-	"github.com/duanchi/min/db/xorm"
+	_ "github.com/mattn/go-sqlite3"
+	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 	"strings"
 	"xorm.io/core"
 )
@@ -160,21 +163,40 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 			log.Fatal(err)
 			return
 		}
-		/*case "sqlite":
-
-		connection, err = xorm.NewEngine("sqlite3", dbConfig.Dsn[9:])
+	case "sqlite":
+		dbFile := dbConfig.Dsn[9:]
+		isNewFile := false
+		connection, err = xorm.NewEngine("sqlite3", dbFile)
+		if _, fileError := os.Stat(dbFile); fileError != nil {
+			f, createErr := os.Create(dbFile)
+			isNewFile = true
+			defer f.Close()
+			if createErr != nil {
+				fmt.Println("Create DB file Error in " + dbFile)
+				return
+			}
+		}
 		err = connection.Ping()
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
-		sql, readErr := ioutil.ReadFile(dbConfig.MigrateSQL)
-		if readErr != nil {
-			log.Fatal(readErr)
+		if isNewFile && dbConfig.MigrateSQL != "" {
+			sql, readErr := ioutil.ReadFile(dbConfig.MigrateSQL)
+			if readErr != nil {
+				log.Fatal(readErr)
+				return
+			}
+			_, importErr := connection.Import(bytes.NewReader(sql))
+
+			if importErr == nil {
+				fmt.Println("Import DB successful!")
+			} else {
+				fmt.Println("Import DB error, " + importErr.Error())
+			}
+
 			return
 		}
-		fmt.Println(connection.Import(bytes.NewReader(sql)))
-		*/
 	}
 
 	if err == nil {

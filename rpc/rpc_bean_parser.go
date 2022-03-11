@@ -10,7 +10,7 @@ type RpcBeanParser struct {
 	types.BeanParser
 }
 
-func (parser RpcBeanParser) Parse(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
+func (parser RpcBeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 
 	rpc := tag.Get("rpc")
 	packageName := tag.Get("package")

@@ -9,7 +9,7 @@ type RouteBeanParser struct {
 	types.BeanParser
 }
 
-func (parser RouteBeanParser) Parse(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
+func (parser RouteBeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 
 	route := tag.Get("route")
 	method := tag.Get("method")

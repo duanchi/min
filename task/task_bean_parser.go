@@ -2,24 +2,16 @@ package task
 
 import (
 	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/util"
 	"reflect"
-	"strconv"
 )
 
 type TaskBeanParser struct {
 	types.BeanParser
 }
 
-func (parser TaskBeanParser) Parse(tag reflect.StructTag, kind string, bean reflect.Value, definition reflect.Type, beanName string) {
-
-	isTask := false
-	if kind == "middleware" {
-		isTask = true
-	} else {
-		isTask, _ = strconv.ParseBool(tag.Get("middleware"))
-	}
-
-	if isTask {
+func (parser TaskBeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+	if util.IsBeanKind(tag, "task") {
 		Tasks = append(Tasks, bean)
 	}
 }
