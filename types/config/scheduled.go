@@ -1,5 +1,5 @@
 package config
 
-type Task struct {
+type Scheduled struct {
 	Enabled bool `yaml:"enabled" default:"false"`
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/duanchi/min/db"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery"
+	"github.com/duanchi/min/scheduled"
 	"github.com/duanchi/min/server"
-	"github.com/duanchi/min/task"
 	config2 "github.com/duanchi/min/types/config"
 	_ "github.com/joho/godotenv/autoload"
 	"os"
@@ -34,9 +34,9 @@ func Bootstrap(configuration interface{}) {
 		Log.Enabled(false)
 	}
 
-	if checkConfigEnabled("Task.Enabled") {
+	if checkConfigEnabled("Scheduled.Enabled") {
 		Log.Info("Task Enabled!")
-		task.Init()
+		scheduled.Init()
 	}
 
 	if checkConfigEnabled("Db.Enabled") {
@@ -57,15 +57,15 @@ func Bootstrap(configuration interface{}) {
 		feign.Init(config.Get("Feign").(config2.Feign))
 	}*/
 
-	if checkConfigEnabled("Task.Enabled") {
-		go task.RunAfterInit()
+	if checkConfigEnabled("Scheduled.Enabled") {
+		go scheduled.RunOnInit()
 	}
 
 	go server.Init(errs)
 	HttpServer = server.HttpServer
 
-	if checkConfigEnabled("Task.Enabled") {
-		go task.RunOnStart()
+	if checkConfigEnabled("Scheduled.Enabled") {
+		go scheduled.RunOnStart()
 	}
 
 	go func() {
@@ -76,8 +76,8 @@ func Bootstrap(configuration interface{}) {
 
 	err := <-errs
 
-	if checkConfigEnabled("Task.Enabled") {
-		go task.RunOnExit()
+	if checkConfigEnabled("Scheduled.Enabled") {
+		go scheduled.RunOnExit()
 	}
 
 	log.Log.Error("%s", err)

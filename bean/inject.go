@@ -17,7 +17,7 @@ func Inject(rawBean reflect.Value, beanMap map[string]reflect.Value) {
 		if rawBean.Field(i).CanSet() {
 			fieldTag := beanType.Field(i).Tag
 
-			parseTagNamedValue(fieldTag.Get("value"), rawBean.Field(i))
+			ParseValueFromConfig(fieldTag.Get("value"), rawBean.Field(i))
 			if util.IsBeanKind(fieldTag, "autowired") {
 				parseTagNamedAutowired(rawBean.Field(i))
 			}
@@ -26,7 +26,7 @@ func Inject(rawBean reflect.Value, beanMap map[string]reflect.Value) {
 	}
 }
 
-func parseTagNamedValue(value string, field reflect.Value) {
+func ParseValueFromConfig(value string, field reflect.Value) {
 	if value != "" {
 		class := field.Kind()
 		regex, _ := regexp.Compile("^" + regexp.QuoteMeta("${") + "(.+)" + regexp.QuoteMeta("}") + "$")
