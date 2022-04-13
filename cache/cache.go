@@ -22,7 +22,7 @@ func Init() {
 	dsnUrl, _ := url.Parse(dsn)
 
 	if _, ok := CacheEngines[dsnUrl.Scheme]; !ok {
-		dsnUrl, _ = url.Parse("memory://heron")
+		dsnUrl, _ = url.Parse("memory://min")
 	}
 
 	engine = CacheEngines[dsnUrl.Scheme].Interface().(_interface.CacheInterface)
@@ -46,7 +46,7 @@ func SetWithTTL(key string, value interface{}, ttl int) {
 	engine.SetWithTTL(key, value, ttl)
 }
 
-func Del (key string) {
+func Del(key string) {
 	engine.Del(key)
 }
 

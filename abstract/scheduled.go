@@ -6,7 +6,7 @@ import (
 
 type Scheduled struct {
 	Bean
-	_interface.TaskInterface
+	_interface.ScheduledInterface
 }
 
 func (this *Scheduled) Run() {}

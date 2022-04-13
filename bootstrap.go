@@ -11,11 +11,15 @@ import (
 	"github.com/duanchi/min/scheduled"
 	"github.com/duanchi/min/server"
 	config2 "github.com/duanchi/min/types/config"
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 	"os"
 	"os/signal"
 	"syscall"
 )
+
+func init() {
+	initEnv()
+}
 
 func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
@@ -89,4 +93,23 @@ func SetConfigFile(configFile string) {
 
 func checkConfigEnabled(configStack string) bool {
 	return config.Get(configStack).(bool)
+}
+
+func initEnv() {
+	env := os.Getenv("ENV")
+	envFile := ".env."
+	switch env {
+	case "production":
+		envFile += "prod"
+	case "test":
+		envFile += "test"
+	case "development":
+		fallthrough
+	default:
+		envFile += "dev"
+	}
+	fmt.Println("load env file " + envFile + ".local")
+	fmt.Println("load env file " + ".env.local")
+	fmt.Println("load env file " + ".env")
+	godotenv.Overload(".env", ".env.local", envFile+".local")
 }

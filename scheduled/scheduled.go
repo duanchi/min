@@ -2,8 +2,9 @@ package scheduled
 
 import (
 	"fmt"
-	"github.com/duanchi/min/bean"
+	"github.com/duanchi/min/config"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/util"
 	"github.com/robfig/cron/v3"
 	"reflect"
 )
@@ -52,7 +53,7 @@ func RunCron() {
 		for _, scheduled := range Scheduled.Cron {
 
 			expression := ""
-			bean.ParseValueFromConfig(scheduled.Expression, reflect.ValueOf(expression))
+			util.ParseValueFromConfigInstance(scheduled.Expression, reflect.ValueOf(expression), config.ConfigInstance)
 			cronInstance.AddFunc(expression, scheduled.Executor.Interface().(_interface.ScheduledInterface).Run)
 			fmt.Println("Scheduled has been registered!! [" + expression + "]")
 		}
