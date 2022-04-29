@@ -7,9 +7,9 @@ type DiscoveryInterface interface {
 	RegisterInstance()
 	DeregisterInstance()
 	GetService(name string, group string) (discoveryService discovery.Service, err error)
-	GetServices()
-	GetAllInstances()
-	GetInstances()
+	GetServiceList() map[string]discovery.Service
+	GetAllInstances(serviceName string, group string)
+	GetInstances(serviceName string, group string)
 	GetHealthInstance()
 	Subscribe()
 	UnSubscribe()

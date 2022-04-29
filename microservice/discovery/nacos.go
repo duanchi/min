@@ -13,7 +13,7 @@ import (
 
 type NacosDiscovery struct {
 	abstract.Bean
-	serverConfig      constant.ServerConfig
+	serverConfig      []constant.ServerConfig
 	clientConfig      constant.ClientConfig
 	applicationConfig config.Application
 	discoveryConfig   config.Discovery
@@ -24,7 +24,7 @@ func (this *NacosDiscovery) Init() {
 	namingClient, err := clients.NewNamingClient(
 		vo.NacosClientParam{
 			ClientConfig:  &this.clientConfig,
-			ServerConfigs: []constant.ServerConfig{this.serverConfig},
+			ServerConfigs: this.serverConfig,
 		},
 	)
 	if err != nil {
@@ -34,11 +34,11 @@ func (this *NacosDiscovery) Init() {
 	}
 	this.namingClient = namingClient
 
-	this.GetServices()
+	ServiceMap = this.GetServiceList()
 }
 
-func (this *NacosDiscovery) GetServices() {
-	fmt.Println(this.serverConfig, this.clientConfig)
+func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
+	serviceMap := map[string]discovery.Service{}
 	serviceList, err := this.namingClient.GetAllServicesInfo(
 		vo.GetAllServiceInfoParam{
 			NameSpace: this.discoveryConfig.NamespaceId,
@@ -47,15 +47,21 @@ func (this *NacosDiscovery) GetServices() {
 		})
 	if err != nil {
 		fmt.Println("[min-framework]: Discovery Nacos get service list Error! " + err.Error())
-		return
+		return serviceMap
 	}
-	/*if serviceList.Count > 0 {
-		for _, serviceInfo := range serviceList.Doms {
 
+	if serviceList.Count > 0 {
+		for _, serviceName := range serviceList.Doms {
+			this.GetAllInstances(serviceName, this.discoveryConfig.Group)
+			service, err := this.GetService(serviceName, this.discoveryConfig.Group)
+
+			if err == nil {
+				serviceMap[serviceName] = service
+			}
 		}
-	}*/
-	fmt.Println(serviceList)
+	}
 
+	return serviceMap
 }
 
 func (this *NacosDiscovery) RegisterInstance()   {}
@@ -89,8 +95,25 @@ func (this *NacosDiscovery) GetService(name string, group string) (discoveryServ
 	discoveryService.Instances = instances
 	return
 }
-func (this *NacosDiscovery) GetAllInstances()   {}
-func (this *NacosDiscovery) GetInstances()      {}
+func (this *NacosDiscovery) GetAllInstances(serviceName string, group string) {
+	instances, err := this.namingClient.SelectAllInstances(vo.SelectAllInstancesParam{
+		ServiceName: serviceName,
+		Clusters:    []string{"DEFAULT"}, // default value is DEFAULT
+		GroupName:   group,               // default value is DEFAULT_GROUP
+	})
+
+	fmt.Println(instances, err)
+}
+func (this *NacosDiscovery) GetInstances(serviceName string, group string) {
+	instances, err := this.namingClient.SelectInstances(vo.SelectInstancesParam{
+		ServiceName: serviceName,
+		Clusters:    []string{"DEFAULT"}, // default value is DEFAULT
+		GroupName:   group,               // default value is DEFAULT_GROUP
+		HealthyOnly: true,
+	})
+
+	fmt.Println(instances, err)
+}
 func (this *NacosDiscovery) GetHealthInstance() {}
 func (this *NacosDiscovery) Subscribe() {
 

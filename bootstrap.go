@@ -6,6 +6,7 @@ import (
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/db"
+	"github.com/duanchi/min/event"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery"
 	"github.com/duanchi/min/scheduled"
@@ -53,8 +54,7 @@ func Bootstrap(configuration interface{}) {
 	}
 
 	if checkConfigEnabled("Discovery.Enabled") {
-		discovery.Init()
-		Discovery = discovery.Discovery
+		go discovery.Init()
 	}
 
 	/*if checkConfigEnabled("Feign.Enabled") {
@@ -79,6 +79,8 @@ func Bootstrap(configuration interface{}) {
 	}()
 
 	err := <-errs
+
+	event.Emit("EXIT")
 
 	if checkConfigEnabled("Scheduled.Enabled") {
 		go scheduled.RunOnExit()

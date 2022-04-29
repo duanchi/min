@@ -5,6 +5,7 @@ import (
 	json2 "encoding/json"
 	"fmt"
 	"github.com/duanchi/min/util/arrays"
+	"github.com/fatih/structs"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -16,26 +17,26 @@ import (
 
 type Request struct {
 	initialed bool
-	error error
+	error     error
 
-	method string
-	url string
-	baseUrl string
+	method      string
+	url         string
+	baseUrl     string
 	queryString string
-	header http.Header
-	payload []byte
-	formData interface{}
+	header      http.Header
+	payload     []byte
+	formData    interface{}
 }
 
 const (
-	METHOD_POST = "POST"
-	METHOD_GET = "GET"
-	METHOD_PUT = "PUT"
-	METHOD_DELETE = "DELETE"
-	METHOD_HEAD = "HEAD"
-	METHOD_PATCH = "PATCH"
+	METHOD_POST    = "POST"
+	METHOD_GET     = "GET"
+	METHOD_PUT     = "PUT"
+	METHOD_DELETE  = "DELETE"
+	METHOD_HEAD    = "HEAD"
+	METHOD_PATCH   = "PATCH"
 	METHOD_OPTIONS = "OPTIONS"
-	METHOD_TRACE = "TRACE"
+	METHOD_TRACE   = "TRACE"
 )
 
 func POST(url string) *Request {
@@ -117,7 +118,7 @@ func (this *Request) Url(url string) *Request {
 }
 
 func (this *Request) Method(method string) *Request {
-	if _, has := arrays.ContainsString([]string{ METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_OPTIONS, METHOD_PATCH, METHOD_HEAD }, method); has {
+	if _, has := arrays.ContainsString([]string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_OPTIONS, METHOD_PATCH, METHOD_HEAD}, method); has {
 		this.method = method
 	} else {
 		this.method = METHOD_GET
@@ -128,30 +129,30 @@ func (this *Request) Method(method string) *Request {
 func New() Request {
 	instance := Request{
 		initialed: true,
-		header: http.Header{},
+		header:    http.Header{},
 	}
 	return instance
 }
 
-func (this *Request) BaseUrl (url string) *Request {
+func (this *Request) BaseUrl(url string) *Request {
 	this.baseUrl = url
 	return this
 }
 
-func (this *Request) Body (data []byte) *Request {
+func (this *Request) Body(data []byte) *Request {
 	this.payload = data
 
 	return this
 }
 
-func (this *Request) JSON (json interface{}) *Request {
+func (this *Request) JSON(json interface{}) *Request {
 	this.Header("Content-Type", "application/json")
 	this.payload, this.error = json2.Marshal(json)
 
 	return this
 }
 
-func (this *Request) Form (formData interface{}) *Request {
+func (this *Request) Form(formData interface{}) *Request {
 	switch reflect.TypeOf(formData).Kind() {
 	case reflect.String:
 		this.queryString = formData.(string)
@@ -162,7 +163,7 @@ func (this *Request) Form (formData interface{}) *Request {
 	return this
 }
 
-func (this *Request) File (file interface{}) *Request {
+func (this *Request) File(file interface{}) *Request {
 
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
@@ -201,14 +202,14 @@ func (this *Request) File (file interface{}) *Request {
 	return this
 }
 
-func (this *Request) Query (query interface{}) *Request {
+func (this *Request) Query(query interface{}) *Request {
 	switch reflect.TypeOf(query).Kind() {
 	case reflect.String:
 		this.queryString = query.(string)
 	case reflect.Map:
 		var slice []string
 		for k, v := range query.(map[string]string) {
-			slice = append(slice, k + "=" + v)
+			slice = append(slice, k+"="+v)
 		}
 		this.queryString = strings.Join(slice, "&")
 	}
@@ -216,28 +217,28 @@ func (this *Request) Query (query interface{}) *Request {
 	return this
 }
 
-func (this *Request) Header (key string, value string) *Request {
+func (this *Request) Header(key string, value string) *Request {
 	this.header.Set(key, value)
 
 	return this
 }
 
-func (this *Request) Headers (headers http.Header) *Request {
-	for k,v := range headers {
+func (this *Request) Headers(headers http.Header) *Request {
+	for k, v := range headers {
 		this.header[k] = v
 	}
 
 	return this
 }
 
-func (this *Request) BearerToken (token string) *Request {
+func (this *Request) BearerToken(token string) *Request {
 
 	this.Header("Authorization", token)
 
 	return this
 }
 
-func (this *Request) Response () (response Response, err error) {
+func (this *Request) Response() (response Response, err error) {
 	if this.error != nil {
 		return Response{}, this.error
 	}
@@ -268,28 +269,35 @@ func (this *Request) Response () (response Response, err error) {
 
 	err = response.From(httpResponse)
 
-	if err != nil { return }
+	if err != nil {
+		return
+	}
 
 	return
 }
 
 func buildQueryString(data interface{}) string {
 	var slice []string
+
+	if reflect.ValueOf(data).Kind() == reflect.Struct {
+		data = structs.Map(data)
+	}
+
 	for k, v := range data.(map[string]interface{}) {
 
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Array:
 			for _, sub := range v.([]interface{}) {
-				slice = append(slice, k + "[]=" + parseValue(sub))
+				slice = append(slice, k+"[]="+parseValue(sub))
 			}
 		default:
-			slice = append(slice, k + "=" + parseValue(v))
+			slice = append(slice, k+"="+parseValue(v))
 		}
 	}
 	return strings.Join(slice, "&")
 }
 
-func parseValue (value interface{}) string {
+func parseValue(value interface{}) string {
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
 		return value.(string)

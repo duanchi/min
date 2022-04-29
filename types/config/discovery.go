@@ -1,7 +1,9 @@
 package config
 
 type Discovery struct {
-	Enabled     bool   `yaml:"enabled" default:"false"`
-	Url         string `yaml:"url" default:"nacos://127.0.0.1:8848/nacos/v1"`
-	NamespaceId string `yaml:"namespace_id" default:""`
+	Enabled        bool     `yaml:"enabled" default:"false"`
+	Nodes          []string `yaml:"nodes"`
+	NamespaceId    string   `yaml:"namespace_id" default:""`
+	Group          string   `yaml:"group" default:"DEFAULT_GROUP"`
+	UpdateInterval int64    `yaml:"update_interval" default:"10000"`
 }

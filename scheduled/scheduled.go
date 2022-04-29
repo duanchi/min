@@ -2,9 +2,11 @@ package scheduled
 
 import (
 	"fmt"
+	"github.com/duanchi/min/abstract"
 	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/event"
 	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/util"
+	"github.com/duanchi/min/types"
 	"github.com/robfig/cron/v3"
 	"reflect"
 )
@@ -21,14 +23,17 @@ type Cron struct {
 	Executor   reflect.Value
 }
 
-func Init() {
-}
+var cronInstance *cron.Cron
+
+func Init() {}
 
 func RunOnStart() {
 	for _, scheduled := range Scheduled.OnStart {
 		go scheduled.Interface().(_interface.ScheduledInterface).Run()
 	}
 	fmt.Println("Scheduled has been executed at run on start!")
+
+	RunCron()
 }
 
 func RunOnExit() {
@@ -46,18 +51,27 @@ func RunOnInit() {
 }
 
 func RunCron() {
+	event.AddListener("EXIT", &CronExitEvent{})
 	if len(Scheduled.Cron) > 0 {
-		cronInstance := cron.New(cron.WithSeconds())
-		defer cronInstance.Stop()
+		cronInstance = cron.New(cron.WithSeconds())
 
 		for _, scheduled := range Scheduled.Cron {
 
-			expression := ""
-			util.ParseValueFromConfigInstance(scheduled.Expression, reflect.ValueOf(expression), config.ConfigInstance)
+			expression := config.Parse(scheduled.Expression)
+			// expressionValue := reflect.ValueOf(expression)
+			// util.ParseValueFromConfigInstance(scheduled.Expression, reflect.Indirect(reflect.ValueOf(expression)), config.ConfigInstance)
 			cronInstance.AddFunc(expression, scheduled.Executor.Interface().(_interface.ScheduledInterface).Run)
 			fmt.Println("Scheduled has been registered!! [" + expression + "]")
 		}
 
 		cronInstance.Start()
 	}
+}
+
+type CronExitEvent struct {
+	abstract.Event
+}
+
+func (this *CronExitEvent) Run(event types.Event, arguments ...interface{}) {
+	cronInstance.Stop()
 }

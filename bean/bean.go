@@ -2,6 +2,7 @@ package bean
 
 import (
 	"fmt"
+	"github.com/duanchi/min/event"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/rpc"
 	"github.com/duanchi/min/scheduled"
@@ -22,6 +23,7 @@ var coreBeanParsers = []_interface.BeanParserInterface{
 	&route.RestfulBeanParser{},
 	&middleware.MiddlewareBeanParser{},
 	&scheduled.ScheduledBeanParser{},
+	&event.EventBeanParser{},
 	&rpc.RpcBeanParser{},
 	&validate.ValidatorBeanParser{},
 }

@@ -28,6 +28,39 @@ func Get(key string) interface{} {
 	return GetRaw(key).Interface()
 }
 
+func Parse(value string) (config string) {
+	regex, _ := regexp.Compile("^" + regexp.QuoteMeta("${") + "(.+)" + regexp.QuoteMeta("}") + "$")
+
+	if regex.MatchString(value) {
+		config = string(regex.ReplaceAllFunc([]byte(value), func(match []byte) []byte {
+			rawValue := Get(string(match[2 : len(match)-1]))
+			rawType := reflect.TypeOf(rawValue)
+
+			switch rawType.Kind() {
+			case reflect.String:
+				return []byte(rawValue.(string))
+			case reflect.Int:
+				return []byte(strconv.Itoa(rawValue.(int)))
+			case reflect.Int64:
+				return []byte(strconv.FormatInt(rawValue.(int64), 10))
+			case reflect.Float64:
+				return []byte(fmt.Sprintf("%f", rawValue.(float64)))
+			case reflect.Bool:
+
+				if rawValue.(bool) {
+					return []byte("true")
+				} else {
+					return []byte("false")
+				}
+			}
+
+			return []byte{}
+		})[:])
+	}
+
+	return value
+}
+
 func GetRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
