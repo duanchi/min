@@ -1,6 +1,8 @@
 package request
 
-import "github.com/duanchi/min/microservice/discovery/nacos/response"
+import (
+	"github.com/duanchi/min/microservice/discovery/nacos/response"
+)
 
 type RegisterInstance struct {
 	Ip          string            `param:"ip"`          //required
@@ -22,6 +24,23 @@ type DeregisterInstance struct {
 	ServiceName string `param:"serviceName"` //required
 	GroupName   string `param:"groupName"`   //optional,default:DEFAULT_GROUP
 	Ephemeral   bool   `param:"ephemeral"`   //optional
+}
+
+type HeartBeat struct {
+	ServiceName string   `param:"serviceName"` //required
+	GroupName   string   `param:"groupName"`   //optional,default:DEFAULT_GROUP
+	Ephemeral   bool     `param:"ephemeral"`   //optional
+	Beat        BeatInfo `param:"beat"`
+}
+
+type BeatInfo struct {
+	Ip          string            `json:"ip"`
+	Port        uint64            `json:"port"`
+	Weight      float64           `json:"weight"`
+	ServiceName string            `json:"serviceName"`
+	Cluster     string            `json:"cluster"`
+	Metadata    map[string]string `json:"metadata"`
+	Scheduled   bool              `json:"scheduled"`
 }
 
 type UpdateInstance struct {

@@ -73,6 +73,9 @@ func (this *NacosDiscovery) RegisterInstance(instance request.RegisterInstance) 
 func (this *NacosDiscovery) DeregisterInstance(instance request.DeregisterInstance) {
 	this.discoveryClient.DeregisterInstance(instance)
 }
+func (this *NacosDiscovery) HeartBeat(heartBeat request.HeartBeat) {
+	this.discoveryClient.HeartBeat(heartBeat)
+}
 func (this *NacosDiscovery) GetService(serviceName string) (discoveryService discovery.Service, err error) {
 	service, err := this.discoveryClient.GetService(serviceName)
 

@@ -5,6 +5,7 @@ import (
 	"github.com/duanchi/min/microservice/discovery/nacos/holder"
 	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/microservice/discovery/nacos/response"
+	"net/url"
 )
 
 type DiscoveryClient struct {
@@ -45,6 +46,17 @@ func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance
 		"serviceName": param.ServiceName,
 		"groupName":   param.GroupName,
 		"ephemeral":   param.Ephemeral,
+	})
+	return
+}
+
+func (this *DiscoveryClient) HeartBeat(param request.HeartBeat) (ok bool, err error) {
+	beatBytes, err := json.Marshal(param.Beat)
+	ok, err = this.requestHolder.PUT("/ns/instance/beat", map[string]interface{}{
+		"serviceName": param.GroupName,
+		"groupName":   param.GroupName,
+		"ephemeral":   param.Ephemeral,
+		"beat":        url.QueryEscape(string(beatBytes)),
 	})
 	return
 }

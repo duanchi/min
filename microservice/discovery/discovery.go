@@ -5,6 +5,7 @@ import (
 	config2 "github.com/duanchi/min/config"
 	"github.com/duanchi/min/event"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/microservice/discovery/nacos/types"
 	"github.com/duanchi/min/types/config"
 	"github.com/duanchi/min/types/discovery"
@@ -15,6 +16,7 @@ import (
 var Discovery map[string]_interface.DiscoveryInterface
 var ServiceMap map[string]discovery.Service
 var serviceUpdater *ServiceUpdater
+var registerHolder *RegisterHolder
 
 func Init() {
 	discoveryConfig := config2.Get("Discovery").(config.Discovery)
@@ -70,12 +72,23 @@ func Init() {
 		Discovery[discoveryType].Init()
 	}
 
+	if discoveryConfig.Client.Enabled {
+
+	}
+
 	event.Emit("DISCOVERY.INIT")
 
 	fmt.Println("Discovery Update Start!!")
 
-	serviceUpdater = NewServiceUpdater(discoveryConfig, Discovery)
-	StartServiceUpdater()
+	go func() {
+		registerHolder = NewRegisterHolder(applicationConfig, discoveryConfig, Discovery)
+		StartHeartBeat()
+	}()
+
+	go func() {
+		serviceUpdater = NewServiceUpdater(discoveryConfig, Discovery)
+		StartServiceUpdater()
+	}()
 }
 
 func GetServiceList() map[string]discovery.Service {
@@ -92,4 +105,20 @@ func UpdateService() {
 
 func StopServiceUpdater() {
 	serviceUpdater.StopUpdateSchedule()
+}
+
+func RegisterInstance(instance request.RegisterInstance) {
+	registerHolder.RegisterInstance()
+}
+
+func DeregisterInstance(instance request.DeregisterInstance) {
+	registerHolder.DeregisterInstance()
+}
+
+func StartHeartBeat() {
+	registerHolder.StartHeartBeat()
+}
+
+func StopHeartBeat() {
+	registerHolder.StopHeartBeat()
 }

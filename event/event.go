@@ -8,6 +8,16 @@ import (
 
 var EventList = make(map[string]types.ConditionEvent)
 
+func On(eventName string, eventHandler _interface.EventInterface) {
+	/*EventList[eventName] = types.ConditionEvent{
+		Conditions:    map[string]bool{
+			"DEFAULT": false,
+		},
+		EventListener: eventHandleFunction,
+	}*/
+	AddListener(eventName, eventHandler)
+}
+
 func AddListener(eventName string, eventHandler _interface.EventInterface) {
 	conditionList := eventHandler.Conditions()
 	conditions := map[string]bool{
