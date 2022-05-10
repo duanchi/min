@@ -1,87 +1,115 @@
 package nacos
 
 import (
-	config2 "github.com/duanchi/min/config"
+	"encoding/json"
+	"github.com/duanchi/min/microservice/discovery/nacos/holder"
 	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/microservice/discovery/nacos/response"
-	"github.com/duanchi/min/requests/http"
-	"time"
 )
 
 type DiscoveryClient struct {
 	config        request.Client
-	requestHolder http.Request
+	requestHolder *holder.HttpHolder
 }
 
 func NewDiscoveryClient(discoveryConfig request.Client) DiscoveryClient {
 	client := DiscoveryClient{
-		config: discoveryConfig,
+		config:        discoveryConfig,
+		requestHolder: holder.NewHttpHolder(discoveryConfig),
 	}
-
 	return client
 }
 
-func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (bool, error) {
-
-}
-
-func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance) (bool, error) {
-
-}
-
-func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (bool, error) {
-
-}
-
-func (this *DiscoveryClient) GetService(param request.GetService) (response.Service, error)
-
-func (this *DiscoveryClient) SelectAllInstances(param request.SelectAllInstances) ([]response.Instance, error)
-
-func (this *DiscoveryClient) SelectInstances(param request.SelectInstances) ([]response.Instance, error)
-
-func (this *DiscoveryClient) SelectOneHealthyInstance(param request.SelectOneHealthInstance) (*response.Instance, error)
-
-func (this *DiscoveryClient) Subscribe(param *request.Subscribe) error
-
-func (this *DiscoveryClient) Unsubscribe(param *request.Subscribe) error
-
-func (this *DiscoveryClient) GetAllServicesInfo(param request.GetAllServiceInfo) (response.ServiceList, error)
-
-type ServiceUpdater struct {
-	discoveryClient DiscoveryClient
-	clientHolder    request.Client
-	timeTicker      *time.Ticker
-}
-
-func (this *ServiceUpdater) StartUpdateSchedule() {
-	for {
-		select {
-		case <-this.timeTicker.C:
-			go this.UpdateService()
-		}
-	}
-}
-
-func (this *ServiceUpdater) StopUpdateSchedule() {
-	this.timeTicker.Stop()
-}
-
-func (this *ServiceUpdater) UpdateService() {
-
-	interval := config2.Get("Discovery.UpdateInterval").(int64)
-
-	this.timeTicker = time.NewTicker(time.Duration(interval) * time.Millisecond)
-	this.discoveryClient.GetAllServicesInfo(request.GetAllServiceInfo{
-		NameSpace: this.discoveryClient.config.RuntimeConfig.NamespaceId,
-		GroupName: this.discoveryClient.config.RuntimeConfig.Group,
-		PageNo:    1,
-		PageSize:  512,
+func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (ok bool, err error) {
+	metadataString, _ := json.Marshal(param.Metadata)
+	ok, err = this.requestHolder.POST("/ns/instance", map[string]interface{}{
+		"ip":          param.Ip,
+		"port":        param.Port,
+		"weight":      param.Weight,
+		"enable":      param.Enable,
+		"healthy":     param.Healthy,
+		"metadata":    string(metadataString),
+		"clusterName": "DEFAULT",
+		"serviceName": param.ServiceName,
+		"groupName":   param.GroupName,
+		"ephemeral":   param.Ephemeral,
 	})
+	return
 }
 
-func NewServiceUpdater(discoveryConfig DiscoveryClient, clientHolder request.Client) ServiceUpdater {
-	return ServiceUpdater{
-		clientHolder:    clientHolder,
-		discoveryClient: discoveryConfig,
+func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance) (ok bool, err error) {
+	ok, err = this.requestHolder.DELETE("/ns/instance", map[string]interface{}{
+		"ip":          param.Ip,
+		"port":        param.Port,
+		"clusterName": "DEFAULT",
+		"serviceName": param.ServiceName,
+		"groupName":   param.GroupName,
+		"ephemeral":   param.Ephemeral,
+	})
+	return
+}
+
+func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (ok bool, err error) {
+	metadataString, _ := json.Marshal(param.Metadata)
+	ok, err = this.requestHolder.PUT("/ns/instance", map[string]interface{}{
+		"ip":          param.Ip,
+		"port":        param.Port,
+		"weight":      param.Weight,
+		"enable":      param.Enable,
+		"healthy":     param.Healthy,
+		"metadata":    string(metadataString),
+		"clusterName": "DEFAULT",
+		"serviceName": param.ServiceName,
+		"groupName":   param.GroupName,
+		"ephemeral":   param.Ephemeral,
+	})
+	return
+}
+
+func (this *DiscoveryClient) GetService(serviceName string) (response response.Service, err error) {
+	err = this.requestHolder.GET("/ns/service", map[string]interface{}{
+		"serviceName": serviceName,
+		"namespaceId": this.config.ClientConfig.NamespaceId,
+		"groupName":   this.config.RuntimeConfig.Group,
+	}, &response)
+	return
+}
+
+func (this *DiscoveryClient) SelectAllInstances(serviceName string) (instanceResponse []response.Instance, err error) {
+	serviceResponse := response.InstanceResult{}
+	err = this.requestHolder.GET("/ns/instance/list", map[string]interface{}{
+		"serviceName": serviceName,
+		"namespaceId": this.config.ClientConfig.NamespaceId,
+		"groupName":   this.config.RuntimeConfig.Group,
+		"cluster":     "DEFAULT",
+	}, &serviceResponse)
+	if err == nil {
+		instanceResponse = serviceResponse.Hosts
 	}
+	return
+}
+
+func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceResponse []response.Instance, err error) {
+	serviceResponse := response.InstanceResult{}
+	err = this.requestHolder.GET("/ns/instance/list", map[string]interface{}{
+		"serviceName": serviceName,
+		"namespaceId": this.config.ClientConfig.NamespaceId,
+		"groupName":   this.config.RuntimeConfig.Group,
+		"cluster":     "DEFAULT",
+		"healthyOnly": true,
+	}, &serviceResponse)
+	if err == nil {
+		instanceResponse = serviceResponse.Hosts
+	}
+	return
+}
+
+func (this *DiscoveryClient) GetAllServicesInfo() (response response.ServiceList, err error) {
+	err = this.requestHolder.GET("/ns/service/list", map[string]interface{}{
+		"pageNo":      1,
+		"pageSize":    512,
+		"namespaceId": this.config.ClientConfig.NamespaceId,
+		"groupName":   this.config.RuntimeConfig.Group,
+	}, &response)
+	return
 }

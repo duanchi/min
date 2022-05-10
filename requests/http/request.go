@@ -157,6 +157,7 @@ func (this *Request) Form(formData interface{}) *Request {
 	case reflect.String:
 		this.queryString = formData.(string)
 	case reflect.Map:
+	case reflect.Struct:
 		this.queryString = buildQueryString(formData)
 	}
 
@@ -207,11 +208,9 @@ func (this *Request) Query(query interface{}) *Request {
 	case reflect.String:
 		this.queryString = query.(string)
 	case reflect.Map:
-		var slice []string
-		for k, v := range query.(map[string]string) {
-			slice = append(slice, k+"="+v)
-		}
-		this.queryString = strings.Join(slice, "&")
+		fallthrough
+	case reflect.Struct:
+		this.queryString = buildQueryString(query)
 	}
 
 	return this
@@ -305,6 +304,8 @@ func parseValue(value interface{}) string {
 		return strconv.Itoa(value.(int))
 	case reflect.Int64:
 		return strconv.FormatInt(value.(int64), 10)
+	case reflect.Uint32:
+		return strconv.Itoa(int(value.(uint32)))
 	case reflect.Bool:
 		if value.(bool) {
 			return "true"
