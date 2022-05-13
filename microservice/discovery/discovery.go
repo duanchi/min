@@ -1,10 +1,10 @@
 package discovery
 
 import (
-	"fmt"
 	config2 "github.com/duanchi/min/config"
 	"github.com/duanchi/min/event"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/microservice/discovery/nacos/types"
 	"github.com/duanchi/min/types/config"
@@ -28,7 +28,7 @@ func Init() {
 	for _, nodeDsn := range discoveryConfig.Nodes {
 		discoveryUrl, err := url.Parse(nodeDsn)
 		if err != nil {
-			fmt.Println("[min-framework]: Discovery URL Malformed, \"" + nodeDsn + "\"")
+			log.Log.Error("[min-framework]: Discovery URL Malformed, \"" + nodeDsn + "\"")
 			return
 		}
 		discoveryNodes = append(discoveryNodes, discoveryUrl)
@@ -78,7 +78,7 @@ func Init() {
 
 	event.Emit("DISCOVERY.INIT")
 
-	fmt.Println("Discovery Update Start!!")
+	log.Log.Debugf("Discovery Update Start...")
 
 	go func() {
 		registerHolder = NewRegisterHolder(applicationConfig, discoveryConfig, Discovery)

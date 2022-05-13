@@ -45,17 +45,17 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 			if err == nil {
 				instances, listErr := this.GetAllInstances(serviceName)
 				if listErr == nil {
-					for _, instance := range instances {
+					for _, serviceInstance := range instances {
 						service.Instances = append(service.Instances, discovery.Instance{
-							InstanceId:  instance.InstanceId,
-							Ip:          instance.Ip,
-							Port:        instance.Port,
-							Weight:      instance.Weight,
-							Healthy:     instance.Healthy,
-							Enable:      instance.Enable,
-							Ephemeral:   instance.Ephemeral,
+							InstanceId:  serviceInstance.InstanceId,
+							Ip:          serviceInstance.Ip,
+							Port:        serviceInstance.Port,
+							Weight:      serviceInstance.Weight,
+							Healthy:     serviceInstance.Healthy,
+							Enable:      serviceInstance.Enable,
+							Ephemeral:   serviceInstance.Ephemeral,
 							ServiceName: service.Name,
-							Metadata:    instance.Metadata,
+							Metadata:    serviceInstance.Metadata,
 						})
 					}
 				}

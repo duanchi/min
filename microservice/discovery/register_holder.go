@@ -1,11 +1,10 @@
 package discovery
 
 import (
-	"github.com/duanchi/min"
 	"github.com/duanchi/min/abstract"
-	config2 "github.com/duanchi/min/config"
 	"github.com/duanchi/min/event"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/types"
 	"github.com/duanchi/min/types/config"
@@ -60,8 +59,7 @@ func (this *RegisterHolder) DeregisterInstance() {
 }
 
 func (this *RegisterHolder) StartHeartBeat() {
-	interval := config2.Get("Discovery.Client.HeartBeatInterval").(int64)
-	this.timeTicker = time.NewTicker(time.Duration(interval) * time.Millisecond)
+	this.timeTicker = time.NewTicker(time.Duration(this.discoveryConfig.Client.HeartbeatInterval) * time.Millisecond)
 	for {
 		select {
 		case <-this.timeTicker.C:
@@ -98,7 +96,7 @@ func NewRegisterHolder(applicationConfig config.Application, discoveryConfig con
 	}
 	uintPort, err := strconv.ParseUint(port, 10, 0)
 	if err != nil {
-		min.Log.Error("Discovery register failed, Invalid port. %s", err.Error())
+		log.Log.Error("Discovery register failed, Invalid port. %s", err.Error())
 	}
 
 	ip := discoveryConfig.Client.Ip
@@ -125,9 +123,9 @@ func NewRegisterHolder(applicationConfig config.Application, discoveryConfig con
 
 	holder.RegisterInstance()
 
-	event.On("EXIT", DeregisterInstanceEvent{
+	event.On("EXIT", &DeregisterInstanceEvent{
 		holder: holder,
-	}.EventInterface)
+	})
 
 	return
 }
