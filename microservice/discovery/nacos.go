@@ -1,8 +1,8 @@
 package discovery
 
 import (
-	"fmt"
 	"github.com/duanchi/min/abstract"
+	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery/nacos"
 	"github.com/duanchi/min/microservice/discovery/nacos/request"
 	"github.com/duanchi/min/microservice/discovery/nacos/response"
@@ -35,7 +35,7 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 	serviceMap := map[string]discovery.Service{}
 	serviceList, err := this.discoveryClient.GetAllServicesInfo()
 	if err != nil {
-		fmt.Println("[min-framework]: Discovery Nacos get service list Error! " + err.Error())
+		log.Log.Error("[min-framework]: Discovery Nacos get service list Error! " + err.Error())
 		return serviceMap
 	}
 
