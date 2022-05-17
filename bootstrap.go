@@ -62,14 +62,14 @@ func Bootstrap(configuration interface{}) {
 	}*/
 
 	if checkConfigEnabled("Scheduled.Enabled") {
-		go scheduled.RunOnInit()
+		scheduled.RunOnInit()
 	}
 
 	go server.Init(errs)
 	HttpServer = server.HttpServer
 
 	if checkConfigEnabled("Scheduled.Enabled") {
-		go scheduled.RunOnStart()
+		scheduled.RunOnStart()
 	}
 
 	go func() {
@@ -83,7 +83,7 @@ func Bootstrap(configuration interface{}) {
 	event.Emit("EXIT")
 
 	if checkConfigEnabled("Scheduled.Enabled") {
-		go scheduled.RunOnExit()
+		scheduled.RunOnExit()
 	}
 
 	log.Log.Error("%s", err)
