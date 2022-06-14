@@ -22,7 +22,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0
-	github.com/mattn/go-sqlite3 v1.10.0
+	// github.com/mattn/go-sqlite3 v1.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0

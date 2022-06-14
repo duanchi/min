@@ -1,7 +1,6 @@
 package db
 
 import (
-	"bytes"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/config"
@@ -9,11 +8,9 @@ import (
 	config2 "github.com/duanchi/min/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
-	"io/ioutil"
+	// _ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/url"
-	"os"
 	"strings"
 	"xorm.io/core"
 )
@@ -163,7 +160,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 			log.Fatal(err)
 			return
 		}
-	case "sqlite":
+		/*case "sqlite":
 		dbFile := dbConfig.Dsn[9:]
 		isNewFile := false
 		connection, err = xorm.NewEngine("sqlite3", dbFile)
@@ -196,7 +193,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 			}
 
 			return
-		}
+		}*/
 	}
 
 	if err == nil {
