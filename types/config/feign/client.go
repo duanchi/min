@@ -1,5 +1,5 @@
 package feign
 
-type Service struct {
+type Client struct {
 	Enabled bool `yaml:"enabled" default:"true"`
 }

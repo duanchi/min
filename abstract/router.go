@@ -1,9 +1,9 @@
 package abstract
 
-import "github.com/gin-gonic/gin"
+import "github.com/duanchi/min/types"
 
 type Router struct {
 	Bean
 }
 
-func (this *Router) Handle (path string, method string, params gin.Params, ctx *gin.Context) {}
+func (this *Router) Handle(path string, method string, params types.Params, ctx *types.Context) {}

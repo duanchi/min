@@ -24,10 +24,10 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	}
 	response := types.Response{
 		RequestId: requestId,
-		Status: false,
-		Code: -1,
-		Data: nil,
-		Message: "Ok",
+		Status:    false,
+		Code:      -1,
+		Data:      nil,
+		Message:   "Ok",
 	}
 
 	defer func() {
@@ -41,7 +41,6 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 				ctx.JSON(statusCode, response)
 				debug.PrintStack()
 			}()
-
 
 			_, implemented := exception.(types.Error)
 
@@ -139,7 +138,23 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		panic(err)
+		status := http.StatusInternalServerError
+		response.Status = false
+		if _, implemented := err.(types.Error); implemented {
+			runtimeError := reflect.ValueOf(err).Interface().(types.Error)
+
+			response.Data = runtimeError.Data()
+			response.Code = runtimeError.Code()
+			response.Message = runtimeError.Error()
+			status = runtimeError.Status()
+		} else {
+			response.Data = nil
+			response.Code = -1
+			response.Message = err.Error()
+		}
+
+		ctx.JSON(status, response)
+		// panic(err)
 	}
 
 	return

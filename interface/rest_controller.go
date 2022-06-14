@@ -1,9 +1,9 @@
 package _interface
 
 import (
-	"github.com/gorilla/websocket"
 	"github.com/duanchi/min/types"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type RestControllerInterface interface {

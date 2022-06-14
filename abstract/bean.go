@@ -9,12 +9,12 @@ type Bean struct {
 	BeanName string
 }
 
-func (this *Bean) Init () {}
+func (this *Bean) Init() {}
 
-func (this *Bean) GetName () (name string) {
+func (this *Bean) GetName() (name string) {
 	return this.BeanName
 }
 
-func (this *Bean) SetName (name string) {
+func (this *Bean) SetName(name string) {
 	this.BeanName = name
 }

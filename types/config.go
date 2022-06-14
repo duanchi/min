@@ -29,4 +29,6 @@ func (this *Config) SetName(name string) {
 type BeanParser struct {
 }
 
-func (parser BeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {}
+// func (parser BeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {}
+func (parser BeanParser) Parse(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+}

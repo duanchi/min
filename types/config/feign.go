@@ -3,7 +3,8 @@ package config
 import "github.com/duanchi/min/types/config/feign"
 
 type Feign struct {
-	Enabled bool `yaml:"enabled" default:"false"`
-	Services  []feign.Service `yaml:"services"`
-	Debug    string `yaml:"debug" default:"false"`
+	Enabled bool          `yaml:"enabled" default:"false"`
+	Service feign.Service `yaml:"service"`
+	Client  feign.Client  `yaml:"client"`
+	Debug   string        `yaml:"debug" default:"false"`
 }
