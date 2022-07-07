@@ -14,6 +14,10 @@ func (this *RestController) Fetch(id string, resource string, parameters *gin.Pa
 	return "error", nil
 }
 
+func (this *RestController) FetchList(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error) {
+	return "error", nil
+}
+
 func (this *RestController) Create(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error) {
 	return "error", nil
 }

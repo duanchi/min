@@ -102,6 +102,9 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	switch method {
 	case "GET":
 		data, err = executor.Fetch(id, resource, &params, ctx)
+		if id == "" {
+			data, err = executor.FetchList(id, resource, &params, ctx)
+		}
 	case "POST":
 		data, err = executor.Create(id, resource, &params, ctx)
 	case "PUT":

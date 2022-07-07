@@ -9,6 +9,8 @@ import (
 type RestControllerInterface interface {
 	Fetch(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)
 
+	FetchList(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)
+
 	Create(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)
 
 	Update(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)
