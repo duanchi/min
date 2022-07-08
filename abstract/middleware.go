@@ -10,6 +10,13 @@ type Middleware struct {
 	_interface.MiddlewareInterface
 }
 
+func (this *Middleware) Includes() (includes map[string][]string) {
+	return
+}
+func (this *Middleware) Excludes() (excludes map[string][]string) {
+	return
+}
+
 func (this *Middleware) BeforeRoute(ctx *gin.Context) {
 	ctx.Next()
 }
