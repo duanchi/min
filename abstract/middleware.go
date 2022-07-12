@@ -2,6 +2,7 @@ package abstract
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/types/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,10 +11,10 @@ type Middleware struct {
 	_interface.MiddlewareInterface
 }
 
-func (this *Middleware) Includes() (includes map[string][]string) {
+func (this *Middleware) Includes() (includes middleware.Includes) {
 	return
 }
-func (this *Middleware) Excludes() (excludes map[string][]string) {
+func (this *Middleware) Excludes() (excludes middleware.Excludes) {
 	return
 }
 
