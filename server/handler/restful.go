@@ -3,6 +3,7 @@ package handler
 import (
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/middleware"
+	types2 "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/server/websocket"
 	"github.com/duanchi/min/types"
 	"github.com/gin-gonic/gin"
@@ -13,9 +14,9 @@ import (
 	"strings"
 )
 
-func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, engine *gin.Engine) {
+func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Context, engine *gin.Engine) {
 	params := ctx.Params
-	id := ctx.Param("id")
+	id := ctx.Param(controller.ResourceKey)
 	method := ctx.Request.Method
 	requestId := ctx.Request.Header.Get("Request-Id")
 	beforeResponseHandlers := middleware.GetHandlersBeforeResponse()
@@ -86,7 +87,7 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	var data interface{}
 	var err error
 
-	executor := controller.Interface().(_interface.RestControllerInterface)
+	executor := controller.Value.Interface().(_interface.RestControllerInterface)
 
 	// Upgrade Protocol to Websocket
 	if method == "GET" {
