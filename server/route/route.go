@@ -1,14 +1,14 @@
 package route
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/rpc"
+	"github.com/gin-gonic/gin"
 )
 
 func Init(httpServer *gin.Engine) {
 	BaseRoutes.Init(httpServer)
-	RestfulRoutes.Init(httpServer)
+	RestfulRoutesInit(httpServer)
 	if config.Get("Rpc.Server.Enabled").(bool) == true {
 		rpc.RpcBeans.Init(httpServer)
 	}

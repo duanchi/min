@@ -60,7 +60,7 @@ func Emit(eventName string, arguments ...interface{}) {
 		}
 
 		for _, scheduled := range eventHandler.EventListener {
-			go scheduled.Interface().(_interface.EventInterface).Run(event, arguments...)
+			go scheduled.Interface().(_interface.EventInterface).Emit(event, arguments...)
 		}
 	}
 }

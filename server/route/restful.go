@@ -3,21 +3,20 @@ package route
 import (
 	"github.com/duanchi/min/server/handler"
 	"github.com/duanchi/min/server/middleware"
+	"github.com/duanchi/min/server/types"
 	"github.com/gin-gonic/gin"
-	"reflect"
+	"strings"
 )
 
-type RestfulRoutesMap map[string]reflect.Value
+var RestfulRoutes = types.RestfulRoutesMap{}
 
-var RestfulRoutes = RestfulRoutesMap{}
-
-func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
-	for key, _ := range this {
+func RestfulRoutesInit(httpServer *gin.Engine) {
+	for key, _ := range RestfulRoutes {
 
 		resource := key
 
 		handlers := []gin.HandlerFunc{
-			func (ctx *gin.Context) {
+			func(ctx *gin.Context) {
 				ctx.Set("resource", resource)
 				ctx.Next()
 			},
@@ -30,7 +29,7 @@ func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
 			afterResponseHandlers := middleware.GetHandlersAfterResponse()
 			if len(afterResponseHandlers) > 0 {
 				go func() {
-					for _, afterResponseHandler  := range afterResponseHandlers {
+					for _, afterResponseHandler := range afterResponseHandlers {
 						afterResponseHandler(ctx)
 					}
 				}()
@@ -38,8 +37,16 @@ func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
 			ctx.Next()
 		})
 
-		httpServer.Any("/" + resource, handlers...)
-		httpServer.Any("/" + resource + "/", handlers...)
-		httpServer.Any("/" + resource + "/:id", handlers...)
+		if strings.Contains(resource, ":id") {
+			resource := strings.ReplaceAll("/"+resource, "//", "/")
+			httpServer.Any(resource, handlers...)
+			if !strings.HasSuffix(resource, "/") {
+				httpServer.Any(resource+"/", handlers...)
+			}
+		} else {
+			httpServer.Any("/"+resource, handlers...)
+			httpServer.Any("/"+resource+"/", handlers...)
+			httpServer.Any("/"+resource+"/:id", handlers...)
+		}
 	}
 }

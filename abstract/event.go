@@ -14,4 +14,4 @@ func (this *Event) Conditions() (conditions []string) {
 	return
 }
 
-func (this *Event) Run(event types.Event, arguments ...interface{}) {}
+func (this *Event) Emit(event types.Event, arguments ...interface{}) {}
