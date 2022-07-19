@@ -5,6 +5,7 @@ import (
 	"github.com/duanchi/min/bean"
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/context"
 	"github.com/duanchi/min/db"
 	"github.com/duanchi/min/event"
 	"github.com/duanchi/min/log"
@@ -26,6 +27,8 @@ func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
 	Config = configuration
 
+	ApplicationContext = context.NewApplicationContext()
+
 	errs := make(chan error, 3)
 
 	bean.InitBeans(
@@ -33,11 +36,13 @@ func Bootstrap(configuration interface{}) {
 		config.Get("BeanParsers"),
 	)
 
-	log.Init(config.Get("Log").(config2.Log))
-	Log = &log.Log
-	if !checkConfigEnabled("Log.Enabled") {
-		Log.Enabled(false)
+	if checkConfigEnabled("Log.Enabled") {
+		log.Init(config.Get("Log").(config2.Log))
+		Log = &log.Log
 	}
+	/*if !checkConfigEnabled("Log.Enabled") {
+		Log.Enabled(false)
+	}*/
 
 	if checkConfigEnabled("Scheduled.Enabled") {
 		Log.Info("Task Enabled!")

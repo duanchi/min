@@ -76,8 +76,8 @@ func InitBeans(beanContainerInstance interface{}, beanParsers interface{}) {
 		Init(bean, beanMaps)
 	}
 
-	for _, bean := range beanMaps {
-		Inject(bean, beanMaps)
+	for name, bean := range beanMaps {
+		Inject(bean, name, beanMaps)
 	}
 }
 
