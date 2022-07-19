@@ -31,11 +31,6 @@ func Bootstrap(configuration interface{}) {
 
 	errs := make(chan error, 3)
 
-	bean.InitBeans(
-		config.Get("Beans"),
-		config.Get("BeanParsers"),
-	)
-
 	if checkConfigEnabled("Log.Enabled") {
 		log.Init(config.Get("Log").(config2.Log))
 		Log = &log.Log
@@ -57,6 +52,11 @@ func Bootstrap(configuration interface{}) {
 	if checkConfigEnabled("Cache.Enabled") {
 		cache.Init()
 	}
+
+	bean.InitBeans(
+		config.Get("Beans"),
+		config.Get("BeanParsers"),
+	)
 
 	if checkConfigEnabled("Discovery.Enabled") {
 		go discovery.Init()
