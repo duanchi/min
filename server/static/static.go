@@ -1,15 +1,14 @@
 package static
 
 import (
+	"github.com/duanchi/min/context"
 	"github.com/gin-gonic/gin"
-	"github.com/duanchi/min/config"
 	"strings"
 )
 
-func Init (httpServer *gin.Engine) {
+func Init(httpServer *gin.Engine) {
 
-
-	if staticPath := config.Get("Application.StaticPath").(string); staticPath != "" {
+	if staticPath := context.GetApplicationContext().GetConfig("HttpServer.StaticPath").(string); staticPath != "" {
 		staticPathStack := strings.Split(staticPath, ",")
 
 		for _, path := range staticPathStack {

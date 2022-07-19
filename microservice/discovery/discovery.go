@@ -21,6 +21,7 @@ var registerHolder *RegisterHolder
 func Init() {
 	discoveryConfig := config2.Get("Discovery").(config.Discovery)
 	applicationConfig := config2.Get("Application").(config.Application)
+	httpServerConfig := config2.Get("HttpServer").(config.HttpServer)
 	discoveryNodes := []*url.URL{}
 	discoveryServers := map[string]interface{}{
 		"nacos": []types.ServerConfig{},
@@ -81,7 +82,7 @@ func Init() {
 	log.Log.Debugf("Discovery Update Start...")
 
 	go func() {
-		registerHolder = NewRegisterHolder(applicationConfig, discoveryConfig, Discovery)
+		registerHolder = NewRegisterHolder(applicationConfig, httpServerConfig, discoveryConfig, Discovery)
 		StartHeartBeat()
 	}()
 

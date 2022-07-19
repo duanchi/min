@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/context"
 	"github.com/duanchi/min/db/xorm"
 	config2 "github.com/duanchi/min/types/config"
 	_ "github.com/go-sql-driver/mysql"
@@ -21,7 +21,7 @@ var Connections map[string]*xorm.Engine
 func Init() {
 	var err error
 
-	sources := config.Get("Db.Sources").(map[string]config2.DbConfig)
+	sources := context.GetApplicationContext().GetConfig("Db.Sources").(map[string]config2.DbConfig)
 
 	if len(sources) > 0 {
 		Connections = map[string]*xorm.Engine{}
@@ -38,10 +38,10 @@ func Init() {
 			}
 		}
 	} else {
-		parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
+		parsedDsn, _ := url.Parse(context.GetApplicationContext().GetConfig("Db.Dsn").(string))
 		Connection, err = connect(parsedDsn, config2.DbConfig{
-			Dsn:        config.Get("Db.Dsn").(string),
-			MigrateSQL: config.Get("Db.MigrateSQL").(string),
+			Dsn:        context.GetApplicationContext().GetConfig("Db.Dsn").(string),
+			MigrateSQL: context.GetApplicationContext().GetConfig("Db.MigrateSQL").(string),
 		})
 		if err != nil {
 			fmt.Println(err.Error())
@@ -199,7 +199,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 	if err == nil {
 		fmt.Println("connect database success!")
 	}
-	if config.Get("Env").(string) == "development" {
+	if context.GetApplicationContext().GetConfig("Env").(string) == "development" {
 		connection.ShowSQL()
 	}
 

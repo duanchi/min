@@ -12,4 +12,4 @@ var Db *xorm.Engine
 var Config interface{}
 var Log *log.Logger
 var DbMap map[string]*xorm.Engine
-var ApplicationContext = context.NewApplicationContext()
+var ApplicationContext = context.GetApplicationContext()

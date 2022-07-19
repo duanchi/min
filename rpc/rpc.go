@@ -1,34 +1,34 @@
 package rpc
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/duanchi/min/config"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/middleware"
 	"github.com/duanchi/min/types"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
 	"strings"
 )
 
-type RpcBeanMap map[string]struct{
-	Package string
+type RpcBeanMap map[string]struct {
+	Package  string
 	Instance reflect.Value
 }
 
 var RpcBeans = RpcBeanMap{}
 
-func (this RpcBeanMap) Init (httpServer *gin.Engine) {
+func (this RpcBeanMap) Init(httpServer *gin.Engine) {
 	prefix := config.Get("Rpc.Server.Prefix").(string)
 
-	httpServer.POST(prefix + "/rpc/*caller", middleware.HandleAfterRoute, func(ctx *gin.Context) {
+	httpServer.POST(prefix+"/rpc/*caller", middleware.HandleAfterRoute, func(ctx *gin.Context) {
 
 		defer func() {
 			runtimeErr := recover()
 
 			errResponse := struct {
 				Message string
-				Code int
+				Code    int
 			}{Code: 500}
 
 			if runtimeErr != nil {
@@ -47,7 +47,7 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 			}
 		}()
 
-		pathStack := strings.SplitN(ctx.Param("caller")[len(prefix) + 1:], "::", 2)
+		pathStack := strings.SplitN(ctx.Param("caller")[len(prefix)+1:], "::", 2)
 
 		beanName := pathStack[0]
 		methodName := pathStack[1]

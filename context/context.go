@@ -3,13 +3,16 @@ package context
 import (
 	"github.com/duanchi/min/bean"
 	"github.com/duanchi/min/config"
+	"reflect"
 )
 
 type ApplicationContext struct {
 }
 
-func NewApplicationContext() ApplicationContext {
-	return ApplicationContext{}
+var applicationContext = new(ApplicationContext)
+
+func GetApplicationContext() *ApplicationContext {
+	return applicationContext
 }
 
 func (this *ApplicationContext) GetBean(name string) interface{} {
@@ -18,4 +21,8 @@ func (this *ApplicationContext) GetBean(name string) interface{} {
 
 func (this *ApplicationContext) GetConfig(key string) interface{} {
 	return config.Get(key)
+}
+
+func (this *ApplicationContext) GetConfigRaw(key string) reflect.Value {
+	return config.GetRaw(key)
 }

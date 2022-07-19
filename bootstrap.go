@@ -27,22 +27,17 @@ func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
 	Config = configuration
 
-	ApplicationContext = context.NewApplicationContext()
+	ApplicationContext = context.GetApplicationContext()
 
 	errs := make(chan error, 3)
 
 	if checkConfigEnabled("Log.Enabled") {
-		log.Init(config.Get("Log").(config2.Log))
+		log.Init(ApplicationContext.GetConfig("Log").(config2.Log))
 		Log = &log.Log
 	}
 	/*if !checkConfigEnabled("Log.Enabled") {
 		Log.Enabled(false)
 	}*/
-
-	if checkConfigEnabled("Scheduled.Enabled") {
-		Log.Info("Task Enabled!")
-		scheduled.Init()
-	}
 
 	if checkConfigEnabled("Db.Enabled") {
 		db.Init()
@@ -54,9 +49,14 @@ func Bootstrap(configuration interface{}) {
 	}
 
 	bean.InitBeans(
-		config.Get("Beans"),
-		config.Get("BeanParsers"),
+		ApplicationContext.GetConfig("Beans"),
+		ApplicationContext.GetConfig("BeanParsers"),
 	)
+
+	if checkConfigEnabled("Scheduled.Enabled") {
+		Log.Info("Scheduled Enabled!")
+		scheduled.Init()
+	}
 
 	if checkConfigEnabled("Discovery.Enabled") {
 		go discovery.Init()
@@ -70,8 +70,12 @@ func Bootstrap(configuration interface{}) {
 		scheduled.RunOnInit()
 	}
 
-	go server.Init(errs)
-	HttpServer = server.HttpServer
+	if checkConfigEnabled("HttpServer.Enabled") {
+		go func() {
+			server.Init(errs)
+			HttpServer = server.HttpServer
+		}()
+	}
 
 	if checkConfigEnabled("Scheduled.Enabled") {
 		scheduled.RunOnStart()
@@ -99,7 +103,7 @@ func SetConfigFile(configFile string) {
 }
 
 func checkConfigEnabled(configStack string) bool {
-	return config.Get(configStack).(bool)
+	return ApplicationContext.GetConfig(configStack).(bool)
 }
 
 func initEnv() {
