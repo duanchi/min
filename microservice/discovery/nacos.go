@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"fmt"
 	"github.com/duanchi/min/abstract"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery/nacos"
@@ -29,6 +30,7 @@ func (this *NacosDiscovery) Init() {
 	})
 
 	ServiceMap = this.GetServiceList()
+	fmt.Println(ServiceMap)
 }
 
 func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
@@ -40,13 +42,17 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 	}
 
 	if serviceList.Count > 0 {
-		for _, serviceName := range serviceList.Doms {
-			service, err := this.GetService(serviceName)
+		for _, serviceItem := range serviceList.ServiceList {
+			service, err := this.GetService(serviceItem.Name)
 			if err == nil {
-				instances, listErr := this.GetAllInstances(serviceName)
+				instances, listErr := this.GetAllInstances(serviceItem.Name)
+				instanceMap := map[string][]discovery.Instance{}
 				if listErr == nil {
 					for _, serviceInstance := range instances {
-						service.Instances = append(service.Instances, discovery.Instance{
+						if _, has := instanceMap[serviceInstance.ClusterName]; !has {
+							instanceMap[serviceInstance.ClusterName] = []discovery.Instance{}
+						}
+						instanceMap[serviceInstance.ClusterName] = append(instanceMap[serviceInstance.ClusterName], discovery.Instance{
 							InstanceId:  serviceInstance.InstanceId,
 							Ip:          serviceInstance.Ip,
 							Port:        serviceInstance.Port,
@@ -59,7 +65,14 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 						})
 					}
 				}
-				serviceMap[serviceName] = service
+
+				for clusterName, instances := range instanceMap {
+					serviceMap[clusterName+"#"+serviceItem.GroupName+"@@"+serviceItem.Name] = discovery.Service{
+						Instances: instances,
+						Name:      serviceItem.Name,
+						GroupName: serviceItem.GroupName,
+					}
+				}
 			}
 		}
 	}
