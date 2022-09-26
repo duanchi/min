@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"fmt"
 	"github.com/duanchi/min/abstract"
 	"github.com/duanchi/min/log"
 	"github.com/duanchi/min/microservice/discovery/nacos"
@@ -30,7 +29,6 @@ func (this *NacosDiscovery) Init() {
 	})
 
 	ServiceMap = this.GetServiceList()
-	fmt.Println(ServiceMap)
 }
 
 func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
