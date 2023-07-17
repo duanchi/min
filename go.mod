@@ -19,6 +19,7 @@ require (
 	github.com/go-playground/validator v9.30.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.2
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gofiber/fiber/v2 v2.48.0 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0

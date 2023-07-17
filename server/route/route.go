@@ -3,10 +3,10 @@ package route
 import (
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/rpc"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func Init(httpServer *gin.Engine) {
+func Init(httpServer *fiber.App) {
 	BaseRoutes.Init(httpServer)
 	RestfulRoutesInit(httpServer)
 	if config.Get("Rpc.Server.Enabled").(bool) == true {

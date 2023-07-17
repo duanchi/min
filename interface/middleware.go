@@ -2,15 +2,15 @@ package _interface
 
 import (
 	"github.com/duanchi/min/types/middleware"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 type MiddlewareInterface interface {
 	Includes() (includes middleware.Includes)
 	Excludes() (excludes middleware.Excludes)
-	BeforeRoute(ctx *gin.Context)
-	AfterRoute(ctx *gin.Context)
-	BeforeResponse(ctx *gin.Context)
-	AfterResponse(ctx *gin.Context)
-	AfterPanic(ctx *gin.Context)
+	BeforeRoute(ctx *fiber.Ctx)
+	AfterRoute(ctx *fiber.Ctx)
+	BeforeResponse(ctx *fiber.Ctx)
+	AfterResponse(ctx *fiber.Ctx)
+	AfterPanic(ctx *fiber.Ctx)
 }

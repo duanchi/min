@@ -3,22 +3,22 @@ package server
 import (
 	"github.com/duanchi/min/context"
 	"github.com/duanchi/min/log"
+	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/middleware"
 	"github.com/duanchi/min/server/route"
 	"github.com/duanchi/min/server/static"
 	"github.com/duanchi/min/server/validate"
-	"github.com/gin-gonic/gin"
 )
 
-var HttpServer *gin.Engine
+var HttpServer *httpserver.Httpserver
 
 func Init(err chan error) {
-	HttpServer = gin.Default()
+	HttpServer = httpserver.New(struct{}{})
 
 	if context.GetApplicationContext().GetConfig("Env").(string) == "production" {
-		gin.SetMode("release")
+		HttpServer.SetLogLevel(httpserver.LOG_ERROR)
 	} else {
-		gin.SetMode("debug")
+		HttpServer.SetLogLevel(httpserver.LOG_TRACE)
 	}
 
 	validate.Init()
@@ -26,7 +26,10 @@ func Init(err chan error) {
 	static.Init(HttpServer)
 	route.Init(HttpServer)
 
-	serverError := HttpServer.Run(":" + context.GetApplicationContext().GetConfig("HttpServer.ServerPort").(string))
+	serverError := HttpServer.Listen(
+		context.GetApplicationContext().GetConfig("HttpServer.ServerHost").(string),
+		context.GetApplicationContext().GetConfig("HttpServer.ServerPort").(string),
+	)
 
 	if serverError != nil {
 		log.Log.Fatal(serverError)

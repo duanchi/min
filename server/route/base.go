@@ -3,7 +3,7 @@ package route
 import (
 	"github.com/duanchi/min/server/handler"
 	"github.com/duanchi/min/server/middleware"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"reflect"
 	"strings"
 )
@@ -12,7 +12,7 @@ type BaseRoutesMap map[string]reflect.Value
 
 var BaseRoutes = BaseRoutesMap{}
 
-func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
+func (this BaseRoutesMap) Init(httpServer *fiber.App) {
 	for key, _ := range this {
 
 		name := key
@@ -32,12 +32,12 @@ func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
 
 			handlers := middleware.GetHandlersAfterRouter()
 
-			handlers = append(handlers, func(ctx *gin.Context) {
+			handlers = append(handlers, func(ctx *fiber.Handler) {
 				handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
 				afterResponseHandlers := middleware.GetHandlersAfterResponse()
 				if len(afterResponseHandlers) > 0 {
 					go func() {
-						for _, afterResponseHandler  := range afterResponseHandlers {
+						for _, afterResponseHandler := range afterResponseHandlers {
 							afterResponseHandler(ctx)
 						}
 					}()

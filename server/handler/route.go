@@ -3,15 +3,15 @@ package handler
 import (
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/middleware"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"reflect"
 )
 
-func RouteHandle(path string, handle reflect.Value, ctx *gin.Context, engine *gin.Engine) {
+func RouteHandle(path string, handle reflect.Value, ctx *fiber.Ctx, engine *fiber.App) {
 	params := ctx.Params
-	method := ctx.Request.Method
+	method := string(ctx.Request().Header.Method())
 
-	handle.Interface().(_interface.RouterInterface).Handle(ctx.Request.URL.Path, method, params, ctx)
+	handle.Interface().(_interface.RouterInterface).Handle(string(ctx.Request().URI().Path()), method, params, ctx)
 
 	handlers := middleware.GetHandlersBeforeResponse()
 
