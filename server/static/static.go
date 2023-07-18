@@ -2,11 +2,11 @@ package static
 
 import (
 	"github.com/duanchi/min/context"
-	"github.com/gofiber/fiber/v2"
+	"github.com/duanchi/min/server/httpserver"
 	"strings"
 )
 
-func Init(httpServer *fiber.App) {
+func Init(httpServer *httpserver.Httpserver) {
 
 	if staticPath := context.GetApplicationContext().GetConfig("HttpServer.StaticPath").(string); staticPath != "" {
 		staticPathStack := strings.Split(staticPath, ",")

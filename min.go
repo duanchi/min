@@ -4,10 +4,10 @@ import (
 	"github.com/duanchi/min/context"
 	"github.com/duanchi/min/db/xorm"
 	"github.com/duanchi/min/log"
-	"github.com/gin-gonic/gin"
+	"github.com/duanchi/min/server/httpserver"
 )
 
-var HttpServer *gin.Engine
+var HttpServer *httpserver.Httpserver
 var Db *xorm.Engine
 var Config interface{}
 var Log *log.Logger

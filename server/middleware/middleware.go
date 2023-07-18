@@ -2,20 +2,21 @@ package middleware
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/types/middleware"
 	"github.com/duanchi/min/util"
-	"github.com/gofiber/fiber/v2"
 	"reflect"
 	"regexp"
 	"strings"
 )
 
 const (
-	BeforeRoute    = "beforeRoute"
-	AfterRoute     = "afterRoute"
-	BeforeResponse = "beforeResponse"
-	AfterResponse  = "afterResponse"
-	AfterPanic     = "afterPanic"
+	BEFORE_ROUTE    = "beforeRoute"
+	AFTER_ROUTE     = "afterRoute"
+	BEFORE_RESPONSE = "beforeResponse"
+	AFTER_RESPONSE  = "afterResponse"
+	AFTER_PANIC     = "afterPanic"
 )
 
 var Middlewares []reflect.Value
@@ -24,34 +25,34 @@ var Middlewares []reflect.Value
 *
 初始化before-route的中间件
 */
-func Init(httpServer *fiber.App, aop string) {
+func Init(httpServer *httpserver.Httpserver, aop string) {
 	for key, _ := range Middlewares {
 
 		index := key
 		middleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
 		switch aop {
-		case BeforeRoute:
+		case BEFORE_ROUTE:
 			httpServer.Use(middleware.BeforeRoute)
-		case AfterRoute:
-			httpServer.Use(func(context *fiber.Ctx) {
+		case AFTER_ROUTE:
+			httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterRoute(context)
 				}
 			})
-		case BeforeResponse:
-			httpServer.Use(func(context *fiber.Ctx) {
+		case BEFORE_RESPONSE:
+			httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.BeforeResponse(context)
 				}
 			})
-		case AfterResponse:
-			httpServer.Use(func(context *fiber.Ctx) {
+		case AFTER_RESPONSE:
+			httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterResponse(context)
 				}
 			})
-		case AfterPanic:
-			httpServer.Use(func(context *fiber.Ctx) {
+		case AFTER_PANIC:
+			httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterPanic(context)
 				}
@@ -61,7 +62,7 @@ func Init(httpServer *fiber.App, aop string) {
 	}
 }
 
-func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx *fiber.Ctx) bool {
+func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx *context.Context) bool {
 
 	if includes != nil && len(includes) > 0 {
 		if !match(includes, ctx) {
@@ -78,7 +79,7 @@ func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx 
 	return true
 }
 
-func match(patterns map[string]string, ctx *fiber.Ctx) bool {
+func match(patterns map[string]string, ctx *context.Context) bool {
 	for pattern, methods := range patterns {
 		hasMethod := false
 		methods = strings.ToUpper(methods)
@@ -98,7 +99,7 @@ func match(patterns map[string]string, ctx *fiber.Ctx) bool {
 		} else {
 			methodsStack := strings.Split(methods, ",")
 			for _, method := range methodsStack {
-				if s := strings.TrimSpace(method); s == string(ctx.Request().Header.Method()) {
+				if s := strings.TrimSpace(method); s == string(ctx.Request().Method()) {
 					hasMethod = true
 					break
 				}
@@ -110,28 +111,28 @@ func match(patterns map[string]string, ctx *fiber.Ctx) bool {
 			case "":
 				if strings.ContainsAny(patternStack[1], "*?[]!") {
 					// fnmatch匹配
-					if util.Fnmatch(patternStack[1], string(ctx.Request().Header.RequestURI()), 0) {
+					if util.Fnmatch(patternStack[1], string(ctx.Request().RequestURI()), 0) {
 						return true
 					}
 				} else {
 					// 默认任意匹配
-					if strings.Contains(string(ctx.Request().Header.RequestURI()), patternStack[1]) {
+					if strings.Contains(string(ctx.Request().RequestURI()), patternStack[1]) {
 						return true
 					}
 				}
 			case "=":
 				// 默认完全匹配
-				if string(ctx.Request().Header.RequestURI()) == patternStack[1] {
+				if string(ctx.Request().RequestURI()) == patternStack[1] {
 					return true
 				}
 			case "^":
 				// 默认prefix匹配
-				if strings.HasPrefix(string(ctx.Request().Header.RequestURI()), patternStack[1]) {
+				if strings.HasPrefix(string(ctx.Request().RequestURI()), patternStack[1]) {
 					return true
 				}
 			case "~":
 				regex := regexp.MustCompile(patternStack[1])
-				if regex.MatchString(string(ctx.Request().Header.RequestURI())) {
+				if regex.MatchString(string(ctx.Request().RequestURI())) {
 					return true
 				}
 			}
@@ -140,12 +141,12 @@ func match(patterns map[string]string, ctx *fiber.Ctx) bool {
 	return false
 }
 
-func GetHandlersBeforeResponse() []fiber.Handler {
-	var handlers []fiber.Handler
+func GetHandlersBeforeResponse() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *fiber.Ctx) error {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.BeforeResponse(context)
 			}
@@ -156,12 +157,12 @@ func GetHandlersBeforeResponse() []fiber.Handler {
 	return handlers
 }
 
-func GetHandlersAfterResponse() []fiber.Handler {
-	var handlers []fiber.Handler
+func GetHandlersAfterResponse() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *fiber.Ctx) error {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterResponse(context)
 			}
@@ -172,11 +173,11 @@ func GetHandlersAfterResponse() []fiber.Handler {
 	return handlers
 }
 
-func HandleAfterRoute(ctx *fiber.Ctx) {
+func HandleAfterRoute(ctx *context.Context) {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		func(context *fiber.Ctx) {
+		func(context *context.Context) {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}
@@ -184,12 +185,12 @@ func HandleAfterRoute(ctx *fiber.Ctx) {
 	}
 }
 
-func GetHandlersAfterRouter() []fiber.Handler {
-	var handlers []fiber.Handler
+func GetHandlersAfterRoute() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *fiber.Ctx) error {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}
@@ -200,11 +201,11 @@ func GetHandlersAfterRouter() []fiber.Handler {
 	return handlers
 }
 
-func GetHandlersAfterRouterAppend(handlers []fiber.Handler) []fiber.Handler {
+func GetHandlersAfterRouteAppend(handlers []httpserver.Handler) []httpserver.Handler {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *fiber.Ctx) error {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}

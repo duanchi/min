@@ -2,8 +2,9 @@ package route
 
 import (
 	"github.com/duanchi/min/server/handler"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	"github.com/gofiber/fiber/v2"
 	"reflect"
 	"strings"
 )
@@ -12,7 +13,7 @@ type BaseRoutesMap map[string]reflect.Value
 
 var BaseRoutes = BaseRoutesMap{}
 
-func (this BaseRoutesMap) Init(httpServer *fiber.App) {
+func (this BaseRoutesMap) Init(httpServer *httpserver.Httpserver) {
 	for key, _ := range this {
 
 		name := key
@@ -30,9 +31,9 @@ func (this BaseRoutesMap) Init(httpServer *fiber.App) {
 
 		for _, method := range methods {
 
-			handlers := middleware.GetHandlersAfterRouter()
+			handlers := middleware.GetHandlersAfterRoute()
 
-			handlers = append(handlers, func(ctx *fiber.Handler) {
+			handlers = append(handlers, func(ctx *context.Context) error {
 				handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
 				afterResponseHandlers := middleware.GetHandlersAfterResponse()
 				if len(afterResponseHandlers) > 0 {
@@ -42,13 +43,18 @@ func (this BaseRoutesMap) Init(httpServer *fiber.App) {
 						}
 					}()
 				}
-				ctx.Next()
+				return ctx.Next()
+			})
+
+			handlers = append(handlers, func(c *context.Context) error {
+				c.Clear()
+				return nil
 			})
 
 			if method == "ALL" {
-				httpServer.Any(route, handlers...)
+				httpServer.All(route, handlers...)
 			} else {
-				httpServer.Handle(method, route, handlers...)
+				httpServer.Add(method, route, handlers...)
 			}
 		}
 	}

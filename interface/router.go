@@ -1,9 +1,9 @@
 package _interface
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/duanchi/min/server/httpserver/context"
 )
 
 type RouterInterface interface {
-	Handle(path string, method string, params fiber., ctx *fiber.App)
+	Handle(path string, method string, params map[string]string, ctx *context.Context)
 }

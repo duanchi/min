@@ -2,11 +2,12 @@ package handler
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
 	types2 "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/server/websocket"
 	"github.com/duanchi/min/types"
-	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
@@ -14,11 +15,11 @@ import (
 	"strings"
 )
 
-func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Context, engine *gin.Engine) {
-	params := ctx.Params
+func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) {
+	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
-	method := ctx.Request.Method
-	requestId := ctx.Request.Header.Get("Request-Id")
+	method := ctx.Request().Method()
+	requestId := ctx.Request().Header("Request-Id")
 	beforeResponseHandlers := middleware.GetHandlersBeforeResponse()
 	if requestId == "" {
 		requestId = uuid.NewV4().String()
