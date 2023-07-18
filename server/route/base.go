@@ -52,7 +52,7 @@ func (this BaseRoutesMap) Init(httpServer *httpserver.Httpserver) {
 			})
 
 			if method == "ALL" {
-				httpServer.All(route, handlers...)
+				httpServer.Any(route, handlers...)
 			} else {
 				httpServer.Add(method, route, handlers...)
 			}

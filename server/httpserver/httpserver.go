@@ -8,29 +8,6 @@ import (
 	"reflect"
 )
 
-const (
-	LOG_TRACE = iota
-	LOG_DEBUG
-	LOG_INFO
-	LOG_WARN
-	LOG_ERROR
-	LOG_FATAL
-	LOG_PANIC
-)
-
-const (
-	METHOD_GET     = "GET"     // RFC 7231, 4.3.1
-	METHOD_HEAD    = "HEAD"    // RFC 7231, 4.3.2
-	METHOD_POST    = "POST"    // RFC 7231, 4.3.3
-	METHOD_PUT     = "PUT"     // RFC 7231, 4.3.4
-	METHOD_PATCH   = "PATCH"   // RFC 5789
-	METHOD_DELETE  = "DELETE"  // RFC 7231, 4.3.5
-	METHOD_CONNECT = "CONNECT" // RFC 7231, 4.3.6
-	METHOD_OPTIONS = "OPTIONS" // RFC 7231, 4.3.7
-	METHOD_TRACE   = "TRACE"   // RFC 7231, 4.3.8
-	METHOD_USE     = "USE"
-)
-
 type Httpserver struct {
 	instance *fiber.App
 }
@@ -133,7 +110,7 @@ func (this *Httpserver) Patch(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_PATCH, path, handlers...)
 }
 
-func (this *Httpserver) All(path string, handlers ...Handler) Router {
+func (this *Httpserver) Any(path string, handlers ...Handler) Router {
 	for _, method := range []string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_CONNECT, METHOD_DELETE, METHOD_OPTIONS, METHOD_HEAD, METHOD_PATCH, METHOD_TRACE} {
 		_ = this.Add(method, path, handlers...)
 	}

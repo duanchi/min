@@ -1,10 +1,13 @@
 package context
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/gofiber/fiber/v2"
+)
 
 type Context struct {
-	ctx     *fiber.Ctx
-	request *Request
+	ctx      *fiber.Ctx
+	request  *Request
 	response *Response
 }
 
@@ -16,7 +19,7 @@ func New(ctx *fiber.Ctx) *Context {
 			request: ctx.Request(),
 		},
 		response: &Response{
-			ctx: ctx,
+			ctx:      ctx,
 			response: ctx.Response(),
 		},
 	}
@@ -46,9 +49,14 @@ func (this *Context) Next() error {
 	return this.ctx.Next()
 }
 
-func (this *Context) JSON () {
-	this.ctx.
-	return this.ctx.JSON()
+func (this *Context) JSON(obj interface{}) error {
+	this.ctx.Response().SetStatusCode(httpserver.StatusOK)
+	return this.ctx.JSON(obj)
+}
+
+func (this *Context) JSONWithStatusCode(code int, obj interface{}) error {
+	this.ctx.Response().SetStatusCode(code)
+	return this.ctx.JSON(obj)
 }
 
 func (this *Context) Clear() {

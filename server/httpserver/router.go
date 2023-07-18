@@ -17,7 +17,7 @@ type Router interface {
 
 	Add(method, path string, handlers ...Handler) Router
 	Static(prefix, root string, config ...fiber.Static) Router
-	All(path string, handlers ...Handler) Router
+	Any(path string, handlers ...Handler) Router
 
 	Group(prefix string, handlers ...Handler) Router
 
