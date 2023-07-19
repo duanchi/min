@@ -173,7 +173,7 @@ func GetHandlersAfterResponse() []httpserver.Handler {
 	return handlers
 }
 
-func HandleAfterRoute(ctx *context.Context) {
+func HandleAfterRoute(ctx *context.Context) error {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
@@ -183,6 +183,7 @@ func HandleAfterRoute(ctx *context.Context) {
 			}
 		}(ctx)
 	}
+	return nil
 }
 
 func GetHandlersAfterRoute() []httpserver.Handler {

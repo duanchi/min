@@ -1,8 +1,8 @@
 package websocket
 
 import (
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/types"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
@@ -13,11 +13,11 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func Handle(id string, resource string, parameters *gin.Params, ctx *gin.Context,
-	handleFunction func(connection *websocket.Conn, id string, resource string, parameters *gin.Params, ctx *gin.Context) (err types.Error),
+func Handle(id string, resource string, parameters *context.Params, ctx *context.Context,
+	handleFunction func(connection *websocket.Conn, id string, resource string, parameters *context.Params, ctx *context.Context) (err types.Error),
 ) (err error) {
 
-	connection, websocketError := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	/*connection, websocketError := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if websocketError != nil {
 		return types.RuntimeError{
 			Message:   websocketError.Error(),
@@ -28,7 +28,7 @@ func Handle(id string, resource string, parameters *gin.Params, ctx *gin.Context
 	err = handleFunction(connection, id, resource, parameters, ctx)
 	if err != nil {
 		return
-	}
+	}*/
 
 	return
 }

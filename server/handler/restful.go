@@ -37,10 +37,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 
 		if exception := recover(); exception != nil {
 			defer func() {
-				/*if ctx.Writer.Status() != http.StatusOK {
-					statusCode = ctx.Writer.Status()
-				}*/
-				ctx.JSON(statusCode, response)
+				ctx.JSONWithStatus(statusCode, response)
 				debug.PrintStack()
 			}()
 
@@ -48,30 +45,6 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 
 			if implemented {
 				runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
-				/*switch exception.(type) {
-
-				case error2.RequestError:
-					statusCode = http.StatusBadRequest
-
-				case error2.ResponseError:
-					statusCode = http.StatusInternalServerError
-
-				case error2.AuthorizeError:
-					statusCode = http.StatusUnauthorized
-
-				case error2.ForbiddenError:
-					statusCode = http.StatusForbidden
-
-				case error2.NotFoundError:
-					statusCode = http.StatusNotFound
-
-				default:
-					if runtimeError.Code() < 600 {
-						statusCode = runtimeError.Code()
-					} else {
-						statusCode = 500
-					}
-				}*/
 
 				statusCode = runtimeError.Status()
 				response.Message = runtimeError.Error()
@@ -92,11 +65,11 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 
 	// Upgrade Protocol to Websocket
 	if method == "GET" {
-		upgradeRequest := ctx.Request.Header.Get("Connection")
-		upgradeProtocol := ctx.Request.Header.Get("Upgrade")
+		upgradeRequest := ctx.Request().Header("Connection")
+		upgradeProtocol := ctx.Request().Header("Upgrade")
 
 		if upgradeRequest == "Upgrade" && strings.ToLower(upgradeProtocol) == "websocket" {
-			websocket.Handle(id, resource, &params, ctx, executor.Connect)
+			websocket.Handle(id, resource, params, ctx, executor.Connect)
 			return
 		}
 	}
@@ -104,20 +77,20 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 	switch method {
 	case "GET":
 		if id == "" {
-			data, err = executor.FetchList(id, resource, &params, ctx)
+			data, err = executor.FetchList(id, resource, params, ctx)
 		} else {
-			data, err = executor.Fetch(id, resource, &params, ctx)
+			data, err = executor.Fetch(id, resource, params, ctx)
 		}
 	case "POST":
-		data, err = executor.Create(id, resource, &params, ctx)
+		data, err = executor.Create(id, resource, params, ctx)
 	case "PUT":
-		data, err = executor.Update(id, resource, &params, ctx)
+		data, err = executor.Update(id, resource, params, ctx)
 	case "DELETE":
-		data, err = executor.Remove(id, resource, &params, ctx)
+		data, err = executor.Remove(id, resource, params, ctx)
 	case "HEAD":
-		data, err = executor.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, params, ctx)
 	case "OPTIONS":
-		data, err = executor.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, params, ctx)
 	}
 
 	if err == nil {
@@ -139,7 +112,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		ctx.JSON(status, response)
+		ctx.JSONWithStatus(status, response)
 	} else {
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
@@ -159,7 +132,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 			response.Message = err.Error()
 		}
 
-		ctx.JSON(status, response)
+		ctx.JSONWithStatus(status, response)
 		// panic(err)
 	}
 

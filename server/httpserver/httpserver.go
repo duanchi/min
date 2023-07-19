@@ -82,31 +82,31 @@ func (this *Httpserver) Use(args ...interface{}) Router {
 	return this
 }
 
-func (this *Httpserver) Get(path string, handlers ...Handler) Router {
-	return this.Head(path, handlers...).Add(METHOD_GET, path, handlers...)
+func (this *Httpserver) GET(path string, handlers ...Handler) Router {
+	return this.HEAD(path, handlers...).Add(METHOD_GET, path, handlers...)
 }
-func (this *Httpserver) Head(path string, handlers ...Handler) Router {
+func (this *Httpserver) HEAD(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_HEAD, path, handlers...)
 }
-func (this *Httpserver) Post(path string, handlers ...Handler) Router {
+func (this *Httpserver) POST(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_POST, path, handlers...)
 }
-func (this *Httpserver) Put(path string, handlers ...Handler) Router {
+func (this *Httpserver) PUT(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_PUT, path, handlers...)
 }
-func (this *Httpserver) Delete(path string, handlers ...Handler) Router {
+func (this *Httpserver) DELETE(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_DELETE, path, handlers...)
 }
-func (this *Httpserver) Connect(path string, handlers ...Handler) Router {
+func (this *Httpserver) CONNECT(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_CONNECT, path, handlers...)
 }
-func (this *Httpserver) Options(path string, handlers ...Handler) Router {
+func (this *Httpserver) OPTIONS(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_OPTIONS, path, handlers...)
 }
-func (this *Httpserver) Trace(path string, handlers ...Handler) Router {
+func (this *Httpserver) TRACE(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_TRACE, path, handlers...)
 }
-func (this *Httpserver) Patch(path string, handlers ...Handler) Router {
+func (this *Httpserver) PATCH(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_PATCH, path, handlers...)
 }
 

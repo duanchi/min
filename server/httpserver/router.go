@@ -5,15 +5,15 @@ import "github.com/gofiber/fiber/v2"
 type Router interface {
 	Use(args ...interface{}) Router
 
-	Get(path string, handlers ...Handler) Router
-	Head(path string, handlers ...Handler) Router
-	Post(path string, handlers ...Handler) Router
-	Put(path string, handlers ...Handler) Router
-	Delete(path string, handlers ...Handler) Router
-	Connect(path string, handlers ...Handler) Router
-	Options(path string, handlers ...Handler) Router
-	Trace(path string, handlers ...Handler) Router
-	Patch(path string, handlers ...Handler) Router
+	GET(path string, handlers ...Handler) Router
+	HEAD(path string, handlers ...Handler) Router
+	POST(path string, handlers ...Handler) Router
+	PUT(path string, handlers ...Handler) Router
+	DELETE(path string, handlers ...Handler) Router
+	CONNECT(path string, handlers ...Handler) Router
+	OPTIONS(path string, handlers ...Handler) Router
+	TRACE(path string, handlers ...Handler) Router
+	PATCH(path string, handlers ...Handler) Router
 
 	Add(method, path string, handlers ...Handler) Router
 	Static(prefix, root string, config ...fiber.Static) Router

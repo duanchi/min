@@ -9,6 +9,7 @@ type Context struct {
 	ctx      *fiber.Ctx
 	request  *Request
 	response *Response
+	params   *Params
 }
 
 func New(ctx *fiber.Ctx) *Context {
@@ -22,6 +23,9 @@ func New(ctx *fiber.Ctx) *Context {
 			ctx:      ctx,
 			response: ctx.Response(),
 		},
+		params: &Params{
+			params: ctx.AllParams(),
+		},
 	}
 }
 
@@ -30,11 +34,11 @@ func (this *Context) Request() *Request {
 }
 
 func (this *Context) Param(key string, defaults ...string) string {
-	return this.ctx.Params(key, defaults...)
+	return this.params.Get(key, defaults...)
 }
 
-func (this *Context) Params() map[string]string {
-	return this.ctx.AllParams()
+func (this *Context) Params() *Params {
+	return this.params
 }
 
 func (this *Context) Get(key string) interface{} {
@@ -54,9 +58,13 @@ func (this *Context) JSON(obj interface{}) error {
 	return this.ctx.JSON(obj)
 }
 
-func (this *Context) JSONWithStatusCode(code int, obj interface{}) error {
+func (this *Context) JSONWithStatus(code int, obj interface{}) error {
 	this.ctx.Response().SetStatusCode(code)
 	return this.ctx.JSON(obj)
+}
+
+func (this *Context) Bind(obj interface{}) {
+	this.ctx.BodyParser(&obj)
 }
 
 func (this *Context) Clear() {

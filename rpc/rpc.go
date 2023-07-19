@@ -3,9 +3,10 @@ package rpc
 import (
 	"github.com/duanchi/min/config"
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
 	"github.com/duanchi/min/types"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
 	"strings"
@@ -18,10 +19,10 @@ type RpcBeanMap map[string]struct {
 
 var RpcBeans = RpcBeanMap{}
 
-func (this RpcBeanMap) Init(httpServer *gin.Engine) {
+func (this RpcBeanMap) Init(httpServer *httpserver.Httpserver) {
 	prefix := config.Get("Rpc.Server.Prefix").(string)
 
-	httpServer.POST(prefix+"/rpc/*caller", middleware.HandleAfterRoute, func(ctx *gin.Context) {
+	httpServer.POST(prefix+"/rpc/*caller", middleware.HandleAfterRoute, func(ctx *context.Context) error {
 
 		defer func() {
 			runtimeErr := recover()
@@ -38,11 +39,11 @@ func (this RpcBeanMap) Init(httpServer *gin.Engine) {
 							(*_interface.Error)(nil)).
 							Elem()) {
 					errResponse.Message = runtimeErr.(error).Error()
-					ctx.JSON(http.StatusInternalServerError, errResponse)
+					ctx.JSONWithStatus(http.StatusInternalServerError, errResponse)
 				} else {
 					errResponse.Message = runtimeErr.(types.RuntimeError).Error()
 					errResponse.Code = runtimeErr.(types.RuntimeError).Code()
-					ctx.JSON(runtimeErr.(_interface.Error).Code(), errResponse)
+					ctx.JSONWithStatus(runtimeErr.(_interface.Error).Code(), errResponse)
 				}
 			}
 		}()
@@ -66,7 +67,7 @@ func (this RpcBeanMap) Init(httpServer *gin.Engine) {
 				for i := 0; i < methodType.NumIn(); i++ {
 					parameters = append(parameters, reflect.New(methodType.In(i)).Elem().Interface())
 				}
-				ctx.BindJSON(&parameters)
+				ctx.Bind(&parameters)
 
 				if methodType.NumIn() != len(parameters) {
 					panic(types.RuntimeError{
@@ -85,7 +86,7 @@ func (this RpcBeanMap) Init(httpServer *gin.Engine) {
 					response = append(response, returns[i].Interface())
 				}
 
-				ctx.JSON(http.StatusOK, response)
+				return ctx.JSON(response)
 
 			} else {
 				panic(types.RuntimeError{
