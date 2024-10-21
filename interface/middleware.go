@@ -8,9 +8,9 @@ import (
 type MiddlewareInterface interface {
 	Includes() (includes middleware.Includes)
 	Excludes() (excludes middleware.Excludes)
-	BeforeRoute(ctx *context.Context)
-	AfterRoute(ctx *context.Context)
-	BeforeResponse(ctx *context.Context)
-	AfterResponse(ctx *context.Context)
-	AfterPanic(ctx *context.Context)
+	BeforeRoute(ctx *context.Context) error
+	AfterRoute(ctx *context.Context) error
+	BeforeResponse(ctx *context.Context) error
+	AfterResponse(ctx *context.Context) error
+	AfterPanic(ctx *context.Context) error
 }

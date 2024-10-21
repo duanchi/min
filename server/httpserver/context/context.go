@@ -1,7 +1,7 @@
 package context
 
 import (
-	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/constant"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -49,12 +49,16 @@ func (this *Context) Set(key string, value interface{}) {
 	this.ctx.Locals(key, value)
 }
 
+func (this *Context) GetHeader(key string) string {
+	return this.ctx.GetRespHeader(key)
+}
+
 func (this *Context) Next() error {
 	return this.ctx.Next()
 }
 
 func (this *Context) JSON(obj interface{}) error {
-	this.ctx.Response().SetStatusCode(httpserver.StatusOK)
+	this.ctx.Response().SetStatusCode(constant.StatusOK)
 	return this.ctx.JSON(obj)
 }
 
@@ -63,8 +67,12 @@ func (this *Context) JSONWithStatus(code int, obj interface{}) error {
 	return this.ctx.JSON(obj)
 }
 
-func (this *Context) Bind(obj interface{}) {
-	this.ctx.BodyParser(&obj)
+func (this *Context) AbortWithStatus(code int) error {
+	return this.ctx.Status(code).SendString("")
+}
+
+func (this *Context) Bind(obj interface{}) error {
+	return this.ctx.BodyParser(&obj)
 }
 
 func (this *Context) Clear() {

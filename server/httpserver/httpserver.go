@@ -14,7 +14,7 @@ type Httpserver struct {
 
 func New(config interface{}) *Httpserver {
 	return &Httpserver{
-		instance: fiber.New(config.(fiber.Config)),
+		instance: fiber.New(),
 	}
 }
 
