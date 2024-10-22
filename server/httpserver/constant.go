@@ -21,6 +21,7 @@ const (
 	METHOD_OPTIONS = "OPTIONS" // RFC 7231, 4.3.7
 	METHOD_TRACE   = "TRACE"   // RFC 7231, 4.3.8
 	METHOD_USE     = "USE"
+	METHOD_ALL     = "ALL"
 )
 
 const (

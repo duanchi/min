@@ -4,6 +4,7 @@ import (
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
+	"github.com/duanchi/min/types"
 	"github.com/duanchi/min/types/middleware"
 	"github.com/duanchi/min/util"
 	"reflect"
@@ -21,6 +22,12 @@ const (
 
 var Middlewares []reflect.Value
 
+var beforeRouteMiddlewares []types.HandleFunc
+var afterRouteMiddlewares []types.HandleFunc
+var beforeResponseMiddlewares []types.HandleFunc
+var afterResponseMiddlewares []types.HandleFunc
+var afterPanicMiddlewares []types.HandleFunc
+
 /*
 *
 初始化before-route的中间件
@@ -29,36 +36,76 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 	for key, _ := range Middlewares {
 
 		index := key
-		middleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
+		middlewareBean := Middlewares[index].Interface().(_interface.MiddlewareInterface)
 		switch aop {
 		case BEFORE_ROUTE:
-			httpServer.Use(middleware.BeforeRoute)
+			beforeRouteMiddlewares = append(beforeRouteMiddlewares, middlewareBean.BeforeRoute)
+			// httpServer.Use(middlewareBean.BeforeRoute)
 		case AFTER_ROUTE:
-			httpServer.Use(func(context *context.Context) {
+			afterRouteMiddlewares = append(afterRouteMiddlewares, func(context *context.Context) (err error) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					return middlewareBean.AfterRoute(context)
+				}
+				if err != nil {
+					return err
+				} else {
+					return context.Next()
+				}
+			})
+			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterRoute(context)
 				}
-			})
+			})*/
 		case BEFORE_RESPONSE:
-			httpServer.Use(func(context *context.Context) {
+			beforeResponseMiddlewares = append(beforeResponseMiddlewares, func(context *context.Context) (err error) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					err = middlewareBean.BeforeResponse(context)
+				}
+				if err != nil {
+					return err
+				} else {
+					return context.Next()
+				}
+			})
+			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.BeforeResponse(context)
 				}
-			})
+			})*/
 		case AFTER_RESPONSE:
-			httpServer.Use(func(context *context.Context) {
+			afterResponseMiddlewares = append(afterResponseMiddlewares, func(context *context.Context) (err error) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					err = middlewareBean.AfterResponse(context)
+				}
+				if err != nil {
+					return err
+				} else {
+					return context.Next()
+				}
+			})
+			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterResponse(context)
 				}
-			})
+			})*/
 		case AFTER_PANIC:
-			httpServer.Use(func(context *context.Context) {
+			afterPanicMiddlewares = append(afterPanicMiddlewares, func(context *context.Context) (err error) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					err = middlewareBean.AfterPanic(context)
+				}
+				if err != nil {
+					return err
+				} else {
+					return context.Next()
+				}
+			})
+			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterPanic(context)
 				}
-			})
+			})*/
 		}
-
 	}
 }
 

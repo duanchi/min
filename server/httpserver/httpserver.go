@@ -43,7 +43,11 @@ func (this *Httpserver) SetLogLevel(level int) {
 
 // Add allows you to specify a HTTP method to register a route
 func (this *Httpserver) Add(method, path string, handlers ...Handler) Router {
-	this.instance.Add(method, path, toFiberHandlers(handlers...)...)
+	if method == METHOD_ALL {
+		this.instance.All(path, toFiberHandlers(handlers)...)
+	} else {
+		this.instance.Add(method, path, toFiberHandlers(handlers)...)
+	}
 	return this
 }
 
@@ -89,6 +93,7 @@ func (this *Httpserver) HEAD(path string, handlers ...Handler) Router {
 	return this.Add(METHOD_HEAD, path, handlers...)
 }
 func (this *Httpserver) POST(path string, handlers ...Handler) Router {
+	fmt.Println("333333333")
 	return this.Add(METHOD_POST, path, handlers...)
 }
 func (this *Httpserver) PUT(path string, handlers ...Handler) Router {
@@ -111,10 +116,10 @@ func (this *Httpserver) PATCH(path string, handlers ...Handler) Router {
 }
 
 func (this *Httpserver) Any(path string, handlers ...Handler) Router {
-	for _, method := range []string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_CONNECT, METHOD_DELETE, METHOD_OPTIONS, METHOD_HEAD, METHOD_PATCH, METHOD_TRACE} {
+	/*for _, method := range []string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_CONNECT, METHOD_DELETE, METHOD_OPTIONS, METHOD_HEAD, METHOD_PATCH, METHOD_TRACE} {
 		_ = this.Add(method, path, handlers...)
-	}
-	return this
+	}*/
+	return this.Add(METHOD_ALL, path, handlers...)
 }
 
 func (this *Httpserver) Group(prefix string, handlers ...Handler) Router {
@@ -138,10 +143,11 @@ func (this *Httpserver) Stop() error {
 }
 
 func NewContext(ctx *fiber.Ctx) *context.Context {
+	fmt.Println(ctx)
 	return context.New(ctx)
 }
 
-func toFiberHandlers(handlers ...Handler) []fiber.Handler {
+func toFiberHandlers(handlers []Handler) []fiber.Handler {
 	fiberHandlers := []fiber.Handler{}
 	for n, _ := range handlers {
 		fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {
