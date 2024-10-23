@@ -7,10 +7,10 @@ import (
 type Route struct {
 	Url     string
 	Method  string
-	Handler HandleFunc
+	Handler ServerHandleFunc
 }
 
-type HandleFunc func(ctx *context.Context) error
+type ServerHandleFunc func(ctx *context.Context) error
 
 type Response struct {
 	RequestId string      `json:"request_id"`

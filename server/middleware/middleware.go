@@ -22,11 +22,11 @@ const (
 
 var Middlewares []reflect.Value
 
-var beforeRouteMiddlewares []types.HandleFunc
-var afterRouteMiddlewares []types.HandleFunc
-var beforeResponseMiddlewares []types.HandleFunc
-var afterResponseMiddlewares []types.HandleFunc
-var afterPanicMiddlewares []types.HandleFunc
+var beforeRouteMiddlewares []types.ServerHandleFunc
+var afterRouteMiddlewares []types.ServerHandleFunc
+var beforeResponseMiddlewares []types.ServerHandleFunc
+var afterResponseMiddlewares []types.ServerHandleFunc
+var afterPanicMiddlewares []types.ServerHandleFunc
 
 /*
 *
@@ -107,6 +107,14 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 			})*/
 		}
 	}
+}
+
+func GetAfterRouteMiddlewares() []types.ServerHandleFunc {
+	return afterRouteMiddlewares
+}
+
+func GetAfterResponseMiddlewares() []types.ServerHandleFunc {
+	return afterResponseMiddlewares
 }
 
 func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx *context.Context) bool {

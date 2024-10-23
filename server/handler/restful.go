@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) {
+func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
 	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
 	method := ctx.Request().Method()
@@ -69,8 +69,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 		upgradeProtocol := ctx.Request().Header("Upgrade")
 
 		if upgradeRequest == "Upgrade" && strings.ToLower(upgradeProtocol) == "websocket" {
-			websocket.Handle(id, resource, params, ctx, executor.Connect)
-			return
+			return websocket.Handle(id, resource, params, ctx, executor.Connect)
 		}
 	}
 
@@ -112,7 +111,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		ctx.JSONWithStatus(status, response)
+		return ctx.JSONWithStatus(status, response)
 	} else {
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
@@ -132,9 +131,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context
 			response.Message = err.Error()
 		}
 
-		ctx.JSONWithStatus(status, response)
+		return ctx.JSONWithStatus(status, response)
 		// panic(err)
 	}
-
-	return
 }
