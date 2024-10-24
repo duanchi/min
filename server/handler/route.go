@@ -8,13 +8,13 @@ import (
 	"reflect"
 )
 
-func RouteHandle(path string, handle reflect.Value, ctx *context.Context, engine *httpserver.Httpserver) {
-	handle.Interface().(_interface.RouterInterface).Handle(ctx.Request().Path(), ctx.Request().Method(), ctx.Params(), ctx)
+func RouteHandle(path string, handle reflect.Value, ctx *context.Context, engine *httpserver.Httpserver) error {
+	err := handle.Interface().(_interface.RouterInterface).Handle(ctx.Request().Path(), ctx.Request().Method(), ctx.Params(), ctx)
 
 	handlers := middleware.GetHandlersBeforeResponse()
 
 	for _, handler := range handlers {
 		handler(ctx)
 	}
-	return
+	return err
 }

@@ -3,9 +3,9 @@ package httpserver
 import (
 	"fmt"
 	"github.com/duanchi/min/server/httpserver/context"
+	"github.com/duanchi/min/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
-	"reflect"
 )
 
 type Httpserver struct {
@@ -42,7 +42,7 @@ func (this *Httpserver) SetLogLevel(level int) {
 }
 
 // Add allows you to specify a HTTP method to register a route
-func (this *Httpserver) Add(method, path string, handlers ...Handler) Router {
+func (this *Httpserver) Add(method, path string, handlers ...types.ServerHandleFunc) Router {
 	if method == METHOD_ALL {
 		this.instance.All(path, toFiberHandlers(handlers)...)
 	} else {
@@ -57,10 +57,10 @@ func (this *Httpserver) Static(prefix, root string, config ...fiber.Static) Rout
 	return this
 }
 
-func (this *Httpserver) Use(args ...interface{}) Router {
+/*func (this *Httpserver) Use(args ...interface{}) Router {
 	var prefix string
 	var prefixes []string
-	var handlers []Handler
+	var handlers []types.ServerHandleFunc
 
 	for i := 0; i < len(args); i++ {
 		switch arg := args[i].(type) {
@@ -84,45 +84,50 @@ func (this *Httpserver) Use(args ...interface{}) Router {
 	}
 
 	return this
+}*/
+
+func (this *Httpserver) Use(args ...interface{}) Router {
+	this.instance.Use(args)
+	return this
 }
 
-func (this *Httpserver) GET(path string, handlers ...Handler) Router {
+func (this *Httpserver) GET(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.HEAD(path, handlers...).Add(METHOD_GET, path, handlers...)
 }
-func (this *Httpserver) HEAD(path string, handlers ...Handler) Router {
+func (this *Httpserver) HEAD(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_HEAD, path, handlers...)
 }
-func (this *Httpserver) POST(path string, handlers ...Handler) Router {
+func (this *Httpserver) POST(path string, handlers ...types.ServerHandleFunc) Router {
 	fmt.Println("333333333")
 	return this.Add(METHOD_POST, path, handlers...)
 }
-func (this *Httpserver) PUT(path string, handlers ...Handler) Router {
+func (this *Httpserver) PUT(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_PUT, path, handlers...)
 }
-func (this *Httpserver) DELETE(path string, handlers ...Handler) Router {
+func (this *Httpserver) DELETE(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_DELETE, path, handlers...)
 }
-func (this *Httpserver) CONNECT(path string, handlers ...Handler) Router {
+func (this *Httpserver) CONNECT(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_CONNECT, path, handlers...)
 }
-func (this *Httpserver) OPTIONS(path string, handlers ...Handler) Router {
+func (this *Httpserver) OPTIONS(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_OPTIONS, path, handlers...)
 }
-func (this *Httpserver) TRACE(path string, handlers ...Handler) Router {
+func (this *Httpserver) TRACE(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_TRACE, path, handlers...)
 }
-func (this *Httpserver) PATCH(path string, handlers ...Handler) Router {
+func (this *Httpserver) PATCH(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.Add(METHOD_PATCH, path, handlers...)
 }
 
-func (this *Httpserver) Any(path string, handlers ...Handler) Router {
+func (this *Httpserver) ALL(path string, handlers ...types.ServerHandleFunc) Router {
 	/*for _, method := range []string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_CONNECT, METHOD_DELETE, METHOD_OPTIONS, METHOD_HEAD, METHOD_PATCH, METHOD_TRACE} {
 		_ = this.Add(method, path, handlers...)
 	}*/
 	return this.Add(METHOD_ALL, path, handlers...)
 }
 
-func (this *Httpserver) Group(prefix string, handlers ...Handler) Router {
+func (this *Httpserver) Group(prefix string, handlers ...types.ServerHandleFunc) Router {
 	return this
 }
 
@@ -147,7 +152,7 @@ func NewContext(ctx *fiber.Ctx) *context.Context {
 	return context.New(ctx)
 }
 
-func toFiberHandlers(handlers []Handler) []fiber.Handler {
+func toFiberHandlers(handlers []types.ServerHandleFunc) []fiber.Handler {
 	fiberHandlers := []fiber.Handler{}
 	for n, _ := range handlers {
 		fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {

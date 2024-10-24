@@ -5,7 +5,7 @@ import (
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	types2 "github.com/duanchi/min/server/types"
+	serverTypes "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/server/websocket"
 	"github.com/duanchi/min/types"
 	uuid "github.com/satori/go.uuid"
@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
+func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
 	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
 	method := ctx.Request().Method()

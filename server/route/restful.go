@@ -5,15 +5,18 @@ import (
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	server_types "github.com/duanchi/min/server/types"
+	serverTypes "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/types"
 	"strings"
 )
 
-var RestfulRoutes = server_types.RestfulRoutesMap{}
+var RestfulRoutes = serverTypes.RestfulRoutesMap{}
 
-func RestfulRoutesInit(httpServer *httpserver.Httpserver) {
-	for key, _ := range RestfulRoutes {
+func RestfulRouteInit(httpServer *httpserver.Httpserver) {
+	afterResponseMiddlewares := middleware.GetAfterResponseMiddlewares()
+	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
+
+	for key, route := range RestfulRoutes {
 
 		resource := key
 
@@ -22,7 +25,7 @@ func RestfulRoutesInit(httpServer *httpserver.Httpserver) {
 				ctx.Set("resource", resource)
 				return ctx.Next()
 			},
-		}, middleware.GetAfterRouteMiddlewares()...)
+		}, afterRouteMiddlewares...)
 
 		// handlers = middleware.GetHandlersAfterRouteAppend(handlers)
 
@@ -31,7 +34,7 @@ func RestfulRoutesInit(httpServer *httpserver.Httpserver) {
 				return handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
 			},
 			func(ctx *context.Context) error {
-				afterResponseMiddlewares := middleware.GetAfterResponseMiddlewares()
+
 				if len(afterResponseMiddlewares) > 0 {
 					go func() {
 						for _, afterResponseMiddleware := range afterResponseMiddlewares {
@@ -52,16 +55,16 @@ func RestfulRoutesInit(httpServer *httpserver.Httpserver) {
 			return nil
 		})*/
 
-		if strings.Contains(resource, ":id") {
+		if strings.Contains(resource, ":"+route.ResourceKey) {
 			resource := strings.ReplaceAll("/"+resource, "//", "/")
-			httpServer.Any(resource, handlers...)
+			httpServer.ALL(resource, handlers...)
 			if !strings.HasSuffix(resource, "/") {
-				httpServer.Any(resource+"/", handlers...)
+				httpServer.ALL(resource+"/", handlers...)
 			}
 		} else {
-			httpServer.Any("/"+resource, handlers...)
-			httpServer.Any("/"+resource+"/", handlers...)
-			httpServer.Any("/"+resource+"/:id", handlers...)
+			httpServer.ALL("/"+resource, handlers...)
+			httpServer.ALL("/"+resource+"/", handlers...)
+			httpServer.ALL("/"+resource+"/:"+route.ResourceKey, handlers...)
 		}
 	}
 }

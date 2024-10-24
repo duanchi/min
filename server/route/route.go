@@ -7,8 +7,8 @@ import (
 )
 
 func Init(httpServer *httpserver.Httpserver) {
-	BaseRoutes.Init(httpServer)
-	RestfulRoutesInit(httpServer)
+	BaseRouteInit(httpServer)
+	RestfulRouteInit(httpServer)
 	if config.Get("Rpc.Server.Enabled").(bool) == true {
 		rpc.RpcBeans.Init(httpServer)
 	}

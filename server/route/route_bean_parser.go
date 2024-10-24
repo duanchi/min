@@ -15,6 +15,10 @@ func (parser RouteBeanParser) Parse(tag reflect.StructTag, bean reflect.Value, d
 	method := tag.Get("method")
 
 	if route != "" {
-		BaseRoutes[route+"@"+method] = bean
+		BaseRoutes[route+"@"+method] = BaseRoute{
+			Value:  bean,
+			method: method,
+			path:   route,
+		}
 	}
 }

@@ -1,25 +1,28 @@
 package httpserver
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/duanchi/min/types"
+	"github.com/gofiber/fiber/v2"
+)
 
 type Router interface {
 	Use(args ...interface{}) Router
 
-	GET(path string, handlers ...Handler) Router
-	HEAD(path string, handlers ...Handler) Router
-	POST(path string, handlers ...Handler) Router
-	PUT(path string, handlers ...Handler) Router
-	DELETE(path string, handlers ...Handler) Router
-	CONNECT(path string, handlers ...Handler) Router
-	OPTIONS(path string, handlers ...Handler) Router
-	TRACE(path string, handlers ...Handler) Router
-	PATCH(path string, handlers ...Handler) Router
+	GET(path string, handlers ...types.ServerHandleFunc) Router
+	HEAD(path string, handlers ...types.ServerHandleFunc) Router
+	POST(path string, handlers ...types.ServerHandleFunc) Router
+	PUT(path string, handlers ...types.ServerHandleFunc) Router
+	DELETE(path string, handlers ...types.ServerHandleFunc) Router
+	CONNECT(path string, handlers ...types.ServerHandleFunc) Router
+	OPTIONS(path string, handlers ...types.ServerHandleFunc) Router
+	TRACE(path string, handlers ...types.ServerHandleFunc) Router
+	PATCH(path string, handlers ...types.ServerHandleFunc) Router
 
-	Add(method, path string, handlers ...Handler) Router
+	Add(method, path string, handlers ...types.ServerHandleFunc) Router
 	Static(prefix, root string, config ...fiber.Static) Router
-	Any(path string, handlers ...Handler) Router
+	ALL(path string, handlers ...types.ServerHandleFunc) Router
 
-	Group(prefix string, handlers ...Handler) Router
+	Group(prefix string, handlers ...types.ServerHandleFunc) Router
 
 	Route(prefix string, fn func(router Router), name ...string) Router
 
