@@ -6,6 +6,7 @@ import (
 	"github.com/duanchi/min/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
+	"reflect"
 )
 
 type Httpserver struct {
@@ -16,6 +17,10 @@ func New(config interface{}) *Httpserver {
 	return &Httpserver{
 		instance: fiber.New(),
 	}
+}
+
+func (s *Httpserver) Instance() *fiber.App {
+	return s.instance
 }
 
 func (this *Httpserver) Listen(host string, port string) error {
@@ -57,6 +62,35 @@ func (this *Httpserver) Static(prefix, root string, config ...fiber.Static) Rout
 	return this
 }
 
+func (this *Httpserver) Use(args ...interface{}) Router {
+	var prefix string
+	var prefixes []string
+	var handlers []types.ServerHandleFunc
+
+	for i := 0; i < len(args); i++ {
+		switch arg := args[i].(type) {
+		case string:
+			prefix = arg
+		case []string:
+			prefixes = arg
+		case types.ServerHandleFunc:
+			handlers = append(handlers, arg)
+		default:
+			panic(fmt.Sprintf("use: invalid handler %v\n", reflect.TypeOf(arg)))
+		}
+	}
+
+	if len(prefixes) == 0 {
+		prefixes = append(prefixes, prefix)
+	}
+
+	for _, prefix := range prefixes {
+		this.Add(METHOD_USE, prefix, handlers...)
+	}
+
+	return this
+}
+
 /*func (this *Httpserver) Use(args ...interface{}) Router {
 	var prefix string
 	var prefixes []string
@@ -86,11 +120,13 @@ func (this *Httpserver) Static(prefix, root string, config ...fiber.Static) Rout
 	return this
 }*/
 
-func (this *Httpserver) Use(args ...interface{}) Router {
-	this.instance.Use(args)
-	return this
-}
-
+/*
+	func (this *Httpserver) Use(args ...types.ServerHandleFunc) Router {
+		handlers := append([]fiber.Handler{}, toFiberHandlers(args)...)
+		this.instance.Use(handlers...)
+		return this
+	}
+*/
 func (this *Httpserver) GET(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.HEAD(path, handlers...).Add(METHOD_GET, path, handlers...)
 }

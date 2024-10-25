@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type RestControllerInterface interface {
+type RestfulControllerInterface interface {
 	Fetch(id string, resource string, parameters *context.Params, ctx *context.Context) (result interface{}, err types.Error)
 
 	FetchList(id string, resource string, parameters *context.Params, ctx *context.Context) (result interface{}, err types.Error)

@@ -10,7 +10,7 @@ type Route struct {
 	Handler ServerHandleFunc
 }
 
-type ServerHandleFunc func(ctx *context.Context) error
+type ServerHandleFunc func(*context.Context) error
 
 type Response struct {
 	RequestId string      `json:"request_id"`

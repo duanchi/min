@@ -61,7 +61,7 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 	var data interface{}
 	var err error
 
-	executor := controller.Value.Interface().(_interface.RestControllerInterface)
+	executor := controller.Value.Interface().(_interface.RestfulControllerInterface)
 
 	// Upgrade Protocol to Websocket
 	if method == "GET" {

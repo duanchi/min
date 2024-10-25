@@ -22,7 +22,7 @@ const (
 
 var Middlewares []reflect.Value
 
-var beforeRouteMiddlewares []types.ServerHandleFunc
+var beforeRouteMiddlewares []interface{}
 var afterRouteMiddlewares []types.ServerHandleFunc
 var beforeResponseMiddlewares []types.ServerHandleFunc
 var afterResponseMiddlewares []types.ServerHandleFunc
@@ -39,10 +39,9 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 		middlewareBean := Middlewares[index].Interface().(_interface.MiddlewareInterface)
 		switch aop {
 		case BEFORE_ROUTE:
-			beforeRouteMiddlewares = append(beforeRouteMiddlewares, middlewareBean.BeforeRoute)
-			// httpServer.Use(middlewareBean.BeforeRoute)
+			beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
 		case AFTER_ROUTE:
-			afterRouteMiddlewares = append(afterRouteMiddlewares, func(context *context.Context) (err error) {
+			afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
 				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
 					return middlewareBean.AfterRoute(context)
 				}
@@ -51,14 +50,14 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 				} else {
 					return context.Next()
 				}
-			})
+			}))
 			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterRoute(context)
 				}
 			})*/
 		case BEFORE_RESPONSE:
-			beforeResponseMiddlewares = append(beforeResponseMiddlewares, func(context *context.Context) (err error) {
+			beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
 				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
 					err = middlewareBean.BeforeResponse(context)
 				}
@@ -67,14 +66,14 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 				} else {
 					return context.Next()
 				}
-			})
+			}))
 			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.BeforeResponse(context)
 				}
 			})*/
 		case AFTER_RESPONSE:
-			afterResponseMiddlewares = append(afterResponseMiddlewares, func(context *context.Context) (err error) {
+			afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
 				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
 					err = middlewareBean.AfterResponse(context)
 				}
@@ -83,14 +82,14 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 				} else {
 					return context.Next()
 				}
-			})
+			}))
 			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterResponse(context)
 				}
 			})*/
 		case AFTER_PANIC:
-			afterPanicMiddlewares = append(afterPanicMiddlewares, func(context *context.Context) (err error) {
+			afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
 				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
 					err = middlewareBean.AfterPanic(context)
 				}
@@ -99,7 +98,7 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 				} else {
 					return context.Next()
 				}
-			})
+			}))
 			/*httpServer.Use(func(context *context.Context) {
 				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
 					middleware.AfterPanic(context)
@@ -107,6 +106,8 @@ func Init(httpServer *httpserver.Httpserver, aop string) {
 			})*/
 		}
 	}
+
+	httpServer.Use(beforeRouteMiddlewares...)
 }
 
 func GetAfterRouteMiddlewares() []types.ServerHandleFunc {
