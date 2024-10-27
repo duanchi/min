@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
@@ -32,80 +33,60 @@ var afterPanicMiddlewares []types.ServerHandleFunc
 *
 初始化before-route的中间件
 */
-func Init(httpServer *httpserver.Httpserver, aop string) {
+func Init(httpServer *httpserver.Httpserver) {
 	for key, _ := range Middlewares {
 
 		index := key
 		middlewareBean := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		switch aop {
-		case BEFORE_ROUTE:
-			beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
-		case AFTER_ROUTE:
-			afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
-				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-					return middlewareBean.AfterRoute(context)
-				}
-				if err != nil {
-					return err
-				} else {
-					return context.Next()
-				}
-			}))
-			/*httpServer.Use(func(context *context.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterRoute(context)
-				}
-			})*/
-		case BEFORE_RESPONSE:
-			beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
-				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-					err = middlewareBean.BeforeResponse(context)
-				}
-				if err != nil {
-					return err
-				} else {
-					return context.Next()
-				}
-			}))
-			/*httpServer.Use(func(context *context.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.BeforeResponse(context)
-				}
-			})*/
-		case AFTER_RESPONSE:
-			afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
-				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-					err = middlewareBean.AfterResponse(context)
-				}
-				if err != nil {
-					return err
-				} else {
-					return context.Next()
-				}
-			}))
-			/*httpServer.Use(func(context *context.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterResponse(context)
-				}
-			})*/
-		case AFTER_PANIC:
-			afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
-				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-					err = middlewareBean.AfterPanic(context)
-				}
-				if err != nil {
-					return err
-				} else {
-					return context.Next()
-				}
-			}))
-			/*httpServer.Use(func(context *context.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterPanic(context)
-				}
-			})*/
-		}
+
+		beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
+
+		afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				return middlewareBean.AfterRoute(context)
+			}
+			if err != nil {
+				return err
+			} else {
+				return context.Next()
+			}
+		}))
+
+		beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				err = middlewareBean.BeforeResponse(context)
+			}
+			if err != nil {
+				return err
+			} else {
+				return context.Next()
+			}
+		}))
+
+		afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				err = middlewareBean.AfterResponse(context)
+			}
+			if err != nil {
+				return err
+			} else {
+				return context.Next()
+			}
+		}))
+
+		afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				err = middlewareBean.AfterPanic(context)
+			}
+			if err != nil {
+				return err
+			} else {
+				return context.Next()
+			}
+		}))
 	}
+
+	fmt.Println("afterRouteMiddlewares", afterRouteMiddlewares)
 
 	httpServer.Use(beforeRouteMiddlewares...)
 }

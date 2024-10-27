@@ -22,7 +22,7 @@ func Init(err chan error) {
 	}
 
 	validate.Init()
-	middleware.Init(HttpServer, middleware.BEFORE_ROUTE)
+	middleware.Init(HttpServer)
 	static.Init(HttpServer)
 	route.Init(HttpServer)
 
