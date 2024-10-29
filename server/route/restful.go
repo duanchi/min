@@ -3,6 +3,7 @@ package route
 import (
 	"github.com/duanchi/min/server/handler"
 	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/constant"
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
 	serverTypes "github.com/duanchi/min/server/types"
@@ -20,21 +21,20 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 
 		resource := key
 
-		handlers := append([]types.ServerHandleFunc{
-			func(ctx *context.Context) error {
-				ctx.Set("resource", resource)
-				return ctx.Next()
+		handlers := []types.ServerHandleFunc{
+			func(ctx *context.Context) {
+				ctx.Set(constant.RESOURCE, resource)
+				if len(afterRouteMiddlewares) > 0 {
+					for _, handler := range afterRouteMiddlewares {
+						if ctx.IsNext() {
+							handler(ctx)
+						}
+						return
+					}
+				}
 			},
-		}, afterRouteMiddlewares...)
-
-		// handlers = middleware.GetHandlersAfterRouteAppend(handlers)
-
-		handlers = append(handlers,
-			func(ctx *context.Context) error {
-				return handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
-			},
-			func(ctx *context.Context) error {
-
+			func(ctx *context.Context) {
+				handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
 				if len(afterResponseMiddlewares) > 0 {
 					go func() {
 						for _, afterResponseMiddleware := range afterResponseMiddlewares {
@@ -42,18 +42,9 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 						}
 					}()
 				}
-				return ctx.Next()
+				ctx.Clear()
 			},
-			func(c *context.Context) error {
-				c.Clear()
-				return nil
-			},
-		)
-
-		/*handlers = append(handlers, func(c *context.Context) error {
-			c.Clear()
-			return nil
-		})*/
+		}
 
 		if strings.Contains(resource, ":"+route.ResourceKey) {
 			resource := strings.ReplaceAll("/"+resource, "//", "/")

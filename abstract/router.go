@@ -8,6 +8,5 @@ type Router struct {
 	Bean
 }
 
-func (this *Router) Handle(path string, method string, params *context.Params, ctx *context.Context) error {
-	return nil
+func (this *Router) Handle(path string, method string, params *context.Params, ctx *context.Context) {
 }

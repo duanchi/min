@@ -10,6 +10,7 @@ type Context struct {
 	request  *Request
 	response *Response
 	params   *Params
+	next     bool
 }
 
 func New(ctx *fiber.Ctx) *Context {
@@ -26,6 +27,7 @@ func New(ctx *fiber.Ctx) *Context {
 		params: &Params{
 			params: ctx.AllParams(),
 		},
+		next: true,
 	}
 }
 
@@ -50,25 +52,33 @@ func (this *Context) Set(key string, value interface{}) {
 }
 
 func (this *Context) GetHeader(key string) string {
-	return this.ctx.GetRespHeader(key)
+	return this.ctx.Get(key)
 }
 
-func (this *Context) Next() error {
-	return this.ctx.Next()
+func (this *Context) Next() {
+	this.next = true
+	return
 }
 
 func (this *Context) JSON(obj interface{}) error {
 	this.ctx.Response().SetStatusCode(constant.StatusOK)
+	this.next = false
 	return this.ctx.JSON(obj)
 }
 
 func (this *Context) JSONWithStatus(code int, obj interface{}) error {
 	this.ctx.Response().SetStatusCode(code)
+	this.next = false
 	return this.ctx.JSON(obj)
 }
 
 func (this *Context) AbortWithStatus(code int) error {
+	this.next = false
 	return this.ctx.Status(code).SendString("")
+}
+
+func (this *Context) IsNext() bool {
+	return this.next
 }
 
 func (this *Context) Bind(obj interface{}) error {

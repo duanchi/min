@@ -49,9 +49,9 @@ func (this *Httpserver) SetLogLevel(level int) {
 // Add allows you to specify a HTTP method to register a route
 func (this *Httpserver) Add(method, path string, handlers ...types.ServerHandleFunc) Router {
 	if method == METHOD_ALL {
-		this.instance.All(path, toFiberHandlers(handlers)...)
+		this.instance.All(path, toFiberHandlers(handlers))
 	} else {
-		this.instance.Add(method, path, toFiberHandlers(handlers)...)
+		this.instance.Add(method, path, toFiberHandlers(handlers))
 	}
 	return this
 }
@@ -184,16 +184,33 @@ func (this *Httpserver) Stop() error {
 }
 
 func NewContext(ctx *fiber.Ctx) *context.Context {
-	fmt.Println(ctx)
 	return context.New(ctx)
 }
 
-func toFiberHandlers(handlers []types.ServerHandleFunc) []fiber.Handler {
-	fiberHandlers := []fiber.Handler{}
+func toFiberHandlers(handlers []types.ServerHandleFunc) fiber.Handler {
+	/*fiberHandlers := []fiber.Handler{}
+
 	for n, _ := range handlers {
-		fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {
-			return handlers[n](NewContext(ctx))
+
+		/*fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {
+			c := NewContext(ctx)
+			index := n
+			handlers[index](c)
+			fmt.Println("---------------", c.Params())
+			if c.IsNext() {
+				return ctx.Next()
+			}
+			return nil
 		})
+	}*/
+	return func(c *fiber.Ctx) error {
+		ctx := NewContext(c)
+		for _, handler := range handlers {
+			handler(ctx)
+			if !ctx.IsNext() {
+				return nil
+			}
+		}
+		return c.Next()
 	}
-	return fiberHandlers
 }

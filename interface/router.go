@@ -5,5 +5,5 @@ import (
 )
 
 type RouterInterface interface {
-	Handle(path string, method string, params *context.Params, ctx *context.Context) error
+	Handle(path string, method string, params *context.Params, ctx *context.Context)
 }

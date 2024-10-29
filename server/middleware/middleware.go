@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
@@ -41,52 +40,30 @@ func Init(httpServer *httpserver.Httpserver) {
 
 		beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
 
-		afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+		afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
 			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				return middlewareBean.AfterRoute(context)
-			}
-			if err != nil {
-				return err
-			} else {
-				return context.Next()
+				middlewareBean.AfterRoute(context)
 			}
 		}))
 
-		beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+		beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
 			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				err = middlewareBean.BeforeResponse(context)
-			}
-			if err != nil {
-				return err
-			} else {
-				return context.Next()
+				middlewareBean.BeforeResponse(context)
 			}
 		}))
 
-		afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+		afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
 			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				err = middlewareBean.AfterResponse(context)
-			}
-			if err != nil {
-				return err
-			} else {
-				return context.Next()
+				middlewareBean.AfterResponse(context)
 			}
 		}))
 
-		afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) (err error) {
+		afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
 			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				err = middlewareBean.AfterPanic(context)
-			}
-			if err != nil {
-				return err
-			} else {
-				return context.Next()
+				middlewareBean.AfterPanic(context)
 			}
 		}))
 	}
-
-	fmt.Println("afterRouteMiddlewares", afterRouteMiddlewares)
 
 	httpServer.Use(beforeRouteMiddlewares...)
 }
@@ -210,7 +187,7 @@ func GetHandlersAfterResponse() []httpserver.Handler {
 	return handlers
 }
 
-func HandleAfterRoute(ctx *context.Context) error {
+func HandleAfterRoute(ctx *context.Context) {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
@@ -220,7 +197,6 @@ func HandleAfterRoute(ctx *context.Context) error {
 			}
 		}(ctx)
 	}
-	return nil
 }
 
 func GetHandlersAfterRoute() []httpserver.Handler {

@@ -22,7 +22,7 @@ var RpcBeans = RpcBeanMap{}
 func (this RpcBeanMap) Init(httpServer *httpserver.Httpserver) {
 	prefix := config.Get("Rpc.Server.Prefix").(string)
 
-	httpServer.POST(prefix+"/rpc/*caller", middleware.HandleAfterRoute, func(ctx *context.Context) error {
+	httpServer.POST(prefix+"/rpc/*caller", middleware.HandleAfterRoute, func(ctx *context.Context) {
 
 		defer func() {
 			runtimeErr := recover()
@@ -85,9 +85,8 @@ func (this RpcBeanMap) Init(httpServer *httpserver.Httpserver) {
 				for i := 0; i < methodType.NumOut(); i++ {
 					response = append(response, returns[i].Interface())
 				}
-
-				return ctx.JSON(response)
-
+				ctx.JSON(response)
+				return
 			} else {
 				panic(types.RuntimeError{
 					Message:   "No implement of Method \"" + methodName + "\" in Class \"" + beanName + "\"",

@@ -1,22 +1,20 @@
 package route
 
 import (
-	"fmt"
 	"github.com/duanchi/min/server/handler"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	"github.com/duanchi/min/server/types"
+	serverTypes "github.com/duanchi/min/server/types"
+	"github.com/duanchi/min/types"
 	"strings"
 )
 
-var BaseRoutes = types.BaseRoutesMap{}
+var BaseRoutes = serverTypes.BaseRoutesMap{}
 
 func BaseRouteInit(httpServer *httpserver.Httpserver) {
 	afterResponseMiddlewares := middleware.GetAfterResponseMiddlewares()
 	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
-
-	fmt.Println(afterRouteMiddlewares)
 
 	for key, route := range BaseRoutes {
 
@@ -37,12 +35,19 @@ func BaseRouteInit(httpServer *httpserver.Httpserver) {
 
 		for _, method := range methods {
 
-			handlers := append(
-				afterRouteMiddlewares,
-				func(ctx *context.Context) error {
-					return handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, ctx, httpServer)
+			handlers := []types.ServerHandleFunc{
+				func(ctx *context.Context) {
+					if len(afterRouteMiddlewares) > 0 {
+						for _, handler := range afterRouteMiddlewares {
+							if ctx.IsNext() {
+								handler(ctx)
+							}
+							return
+						}
+					}
 				},
-				func(ctx *context.Context) error {
+				func(ctx *context.Context) {
+					handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, ctx, httpServer)
 					if len(afterResponseMiddlewares) > 0 {
 						go func() {
 							for _, afterResponseMiddleware := range afterResponseMiddlewares {
@@ -50,36 +55,11 @@ func BaseRouteInit(httpServer *httpserver.Httpserver) {
 							}
 						}()
 					}
-					return ctx.Next()
+					ctx.Clear()
 				},
-				func(c *context.Context) error {
-					c.Clear()
-					return nil
-				},
-			)
-
-			if method == "ALL" {
-				httpServer.ALL(route.Path, handlers...)
-			} else {
-				// httpServer.Add(method, route.Path, handlers...)
-				httpServer.Add(
-					method,
-					route.Path,
-					func(c *context.Context) error {
-						fmt.Printf("777777777777777777%#v\n", afterRouteMiddlewares)
-						for _, afterRouteMiddleware := range afterRouteMiddlewares {
-
-							if err := afterRouteMiddleware(c); err != nil {
-								return err
-							}
-						}
-						fmt.Println(c.Request().RequestURI())
-						fmt.Printf("%#v\n", handlers[0])
-						// return handlers[0](c)
-						return handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, c, httpServer)
-						// return nil
-					})
 			}
+
+			httpServer.Add(method, route.Path, handlers...)
 		}
 	}
 }
