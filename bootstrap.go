@@ -17,9 +17,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func init() {
+	var cstZone = time.FixedZone("CST", 8*3600) // 东八
+	time.Local = cstZone
 	initEnv()
 }
 
