@@ -22,7 +22,6 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0
-	// github.com/mattn/go-sqlite3 v1.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0
@@ -32,8 +31,6 @@ require (
 	github.com/valyala/fasthttp v1.48.0
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/yaml.v2 v2.3.0
 	xorm.io/core v0.7.2
 )

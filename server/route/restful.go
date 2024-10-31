@@ -6,12 +6,11 @@ import (
 	"github.com/duanchi/min/server/httpserver/constant"
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	serverTypes "github.com/duanchi/min/server/types"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/server/types"
 	"strings"
 )
 
-var RestfulRoutes = serverTypes.RestfulRoutesMap{}
+var RestfulRoutes = types.RestfulRoutesMap{}
 
 func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 	afterResponseMiddlewares := middleware.GetAfterResponseMiddlewares()

@@ -23,11 +23,10 @@ func Inject(rawBean reflect.Value, beanName string, beanMap map[string]reflect.V
 			if err := ParseValueFromConfig(fieldTag.Get("value"), rawBean.Field(i)); err != nil {
 				fmt.Println("[min-framework] Bean " + beanName + " Injected error, " + err.Error())
 			}
-			if util.IsBeanKind(fieldTag, "autowired") {
+			if util.IsBeanKind(fieldTag, "autowired") || util.IsBeanKind(fieldTag, "resource") {
 				parseTagNamedAutowired(rawBean.Field(i))
 			}
 		}
-
 	}
 }
 

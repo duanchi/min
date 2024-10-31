@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 	"reflect"
 	"strings"
 )
@@ -13,8 +13,7 @@ const (
 	fieldErrMsg = "Key: '%s' Error:Field validation for '%s' failed on the '%s' tag"
 )
 
-type ValidationErrors [] fieldError
-
+type ValidationErrors []fieldError
 
 func (ve ValidationErrors) Error() string {
 
@@ -92,19 +91,18 @@ func (ve ValidationErrors) Has(field string) bool {
 	return transFields
 }*/
 
-
 type fieldError struct {
-	tag            string
-	actualTag      string
-	ns             string
-	structNs       string
-	field          string
-	structfield    string
-	value          interface{}
-	param          string
-	kind           reflect.Kind
-	typ            reflect.Type
-	translate	   string
+	tag         string
+	actualTag   string
+	ns          string
+	structNs    string
+	field       string
+	structfield string
+	value       interface{}
+	param       string
+	kind        reflect.Kind
+	typ         reflect.Type
+	translate   string
 }
 
 // Tag returns the validation tag that failed.

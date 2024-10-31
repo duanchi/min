@@ -67,7 +67,9 @@ func RunCron() {
 			expression := config.Parse(scheduled.Expression)
 			// expressionValue := reflect.ValueOf(expression)
 			// util.ParseValueFromConfigInstance(scheduled.Expression, reflect.Indirect(reflect.ValueOf(expression)), config.ConfigInstance)
-			cronInstance.AddFunc(expression, scheduled.Executor.Interface().(_interface.ScheduledInterface).Run)
+			cronInstance.AddFunc(expression, func() {
+				scheduled.Executor.Interface().(_interface.ScheduledInterface).Run()
+			})
 			fmt.Println("Scheduled has been registered!! [" + expression + "]")
 		}
 

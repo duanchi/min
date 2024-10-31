@@ -2,6 +2,7 @@ package context
 
 import (
 	"github.com/duanchi/min/server/httpserver/constant"
+	"github.com/duanchi/min/server/validate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -82,7 +83,13 @@ func (this *Context) IsNext() bool {
 }
 
 func (this *Context) Bind(obj interface{}) error {
-	return this.ctx.BodyParser(&obj)
+	result := this.ctx.BodyParser(&obj)
+
+	err := validate.Validate(obj)
+	if err != nil {
+		return err
+	}
+	return result
 }
 
 func (this *Context) Clear() {

@@ -3,7 +3,7 @@ package httpserver
 import (
 	"fmt"
 	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/server/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"reflect"
@@ -19,8 +19,8 @@ func New(config interface{}) *Httpserver {
 	}
 }
 
-func (s *Httpserver) Instance() *fiber.App {
-	return s.instance
+func (this *Httpserver) Instance() *fiber.App {
+	return this.instance
 }
 
 func (this *Httpserver) Listen(host string, port string) error {
@@ -91,42 +91,6 @@ func (this *Httpserver) Use(args ...interface{}) Router {
 	return this
 }
 
-/*func (this *Httpserver) Use(args ...interface{}) Router {
-	var prefix string
-	var prefixes []string
-	var handlers []types.ServerHandleFunc
-
-	for i := 0; i < len(args); i++ {
-		switch arg := args[i].(type) {
-		case string:
-			prefix = arg
-		case []string:
-			prefixes = arg
-		case Handler:
-			handlers = append(handlers, arg)
-		default:
-			panic(fmt.Sprintf("use: invalid handler %v\n", reflect.TypeOf(arg)))
-		}
-	}
-
-	if len(prefixes) == 0 {
-		prefixes = append(prefixes, prefix)
-	}
-
-	for _, prefix := range prefixes {
-		this.Add(METHOD_USE, prefix, handlers...)
-	}
-
-	return this
-}*/
-
-/*
-	func (this *Httpserver) Use(args ...types.ServerHandleFunc) Router {
-		handlers := append([]fiber.Handler{}, toFiberHandlers(args)...)
-		this.instance.Use(handlers...)
-		return this
-	}
-*/
 func (this *Httpserver) GET(path string, handlers ...types.ServerHandleFunc) Router {
 	return this.HEAD(path, handlers...).Add(METHOD_GET, path, handlers...)
 }
@@ -188,21 +152,6 @@ func NewContext(ctx *fiber.Ctx) *context.Context {
 }
 
 func toFiberHandlers(handlers []types.ServerHandleFunc) fiber.Handler {
-	/*fiberHandlers := []fiber.Handler{}
-
-	for n, _ := range handlers {
-
-		/*fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {
-			c := NewContext(ctx)
-			index := n
-			handlers[index](c)
-			fmt.Println("---------------", c.Params())
-			if c.IsNext() {
-				return ctx.Next()
-			}
-			return nil
-		})
-	}*/
 	return func(c *fiber.Ctx) error {
 		ctx := NewContext(c)
 		for _, handler := range handlers {

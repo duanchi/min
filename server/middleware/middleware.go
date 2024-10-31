@@ -4,7 +4,7 @@ import (
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/types/middleware"
 	"github.com/duanchi/min/util"
 	"reflect"

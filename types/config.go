@@ -18,6 +18,7 @@ type Config struct {
 	Discovery   config.Discovery   `yaml:"discovery"`
 	BeanParsers interface{}        `yaml:"-"`
 	Beans       struct{}           `yaml:"-"`
+	TimeZone    string             `yaml:"timezone" default:""`
 }
 
 func (this *Config) GetName() (name string) {
