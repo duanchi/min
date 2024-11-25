@@ -3,7 +3,7 @@ package validate
 import (
 	"fmt"
 	"github.com/duanchi/min/types"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
 	"reflect"
 	"strconv"
 )

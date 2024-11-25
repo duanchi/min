@@ -2,54 +2,64 @@ package route
 
 import (
 	"github.com/duanchi/min/server/handler"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	"github.com/gin-gonic/gin"
-	"reflect"
+	"github.com/duanchi/min/server/types"
+
 	"strings"
 )
 
-type BaseRoutesMap map[string]reflect.Value
+var BaseRoutes = types.BaseRoutesMap{}
 
-var BaseRoutes = BaseRoutesMap{}
+func BaseRouteInit(httpServer *httpserver.Httpserver) {
+	afterResponseMiddlewares := middleware.GetAfterResponseMiddlewares()
+	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
 
-func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
-	for key, _ := range this {
+	for key, route := range BaseRoutes {
 
-		name := key
+		// name := key
 
-		stack := strings.SplitN(name, "@", 2)
-		route := "/"
+		// stack := strings.SplitN(name, "@", 2)
+		// route := "/"
 		methods := []string{"ALL"}
 
-		if stack[0] != "" {
-			route = stack[0]
+		//if stack[0] != "" {
+		//	route = stack[0]
+		//}
+		if route.Method != "" {
+			methods = strings.Split(strings.ToUpper(route.Method), ",")
 		}
-		if len(stack) > 1 && stack[1] != "" {
-			methods = strings.Split(strings.ToUpper(stack[1]), ",")
-		}
+
+		handleBeanKey := key
 
 		for _, method := range methods {
 
-			handlers := middleware.GetHandlersAfterRouter()
-
-			handlers = append(handlers, func(ctx *gin.Context) {
-				handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
-				afterResponseHandlers := middleware.GetHandlersAfterResponse()
-				if len(afterResponseHandlers) > 0 {
-					go func() {
-						for _, afterResponseHandler  := range afterResponseHandlers {
-							afterResponseHandler(ctx)
+			handlers := []types.ServerHandleFunc{
+				func(ctx *context.Context) {
+					if len(afterRouteMiddlewares) > 0 {
+						for _, handler := range afterRouteMiddlewares {
+							if ctx.IsNext() {
+								handler(ctx)
+							}
+							return
 						}
-					}()
-				}
-				ctx.Next()
-			})
-
-			if method == "ALL" {
-				httpServer.Any(route, handlers...)
-			} else {
-				httpServer.Handle(method, route, handlers...)
+					}
+				},
+				func(ctx *context.Context) {
+					handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, ctx, httpServer)
+					if len(afterResponseMiddlewares) > 0 {
+						go func() {
+							for _, afterResponseMiddleware := range afterResponseMiddlewares {
+								afterResponseMiddleware(ctx)
+							}
+						}()
+					}
+					ctx.Clear()
+				},
 			}
+
+			httpServer.Add(method, route.Path, handlers...)
 		}
 	}
 }

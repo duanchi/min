@@ -1,44 +1,59 @@
 package validate
 
 import (
-	"github.com/gin-gonic/gin/binding"
+	"errors"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
-	zh_translations "github.com/go-playground/validator/translations/zh"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
+	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 	"log"
+	"strings"
 )
 
-var trans ut.Translator
+func Validate(obj interface{}) (err error) {
+	err = engine.Struct(obj)
+	errs := err.(validator.ValidationErrors)
+	es := errs.Translate(trans)
+	if len(es) > 0 {
+		eMessages := []string{}
+		for _, e := range es {
+			eMessages = append(eMessages, e)
+		}
+		return errors.New(strings.Join(eMessages, ", "))
+	} else {
+		return nil
+	}
+}
 
+var trans ut.Translator
+var engine = validator.New()
 var Validators map[string]struct {
-	validateFunction validator.Func
+	validateFunction  validator.Func
 	validateTranslate string
-} = map[string]struct{
-	validateFunction validator.Func
+} = map[string]struct {
+	validateFunction  validator.Func
 	validateTranslate string
 }{}
 
-func Init () {
-	binding.Validator = new(defaultValidator)
+func Init() {
 	zh := zh.New()
 	en := en.New()
 	uni := ut.New(en, zh)
 	trans, _ = uni.GetTranslator("zh")
 
-	zh_translations.RegisterDefaultTranslations(binding.Validator.Engine().(*validator.Validate), trans)
+	zh_translations.RegisterDefaultTranslations(engine, trans)
 
 	for tag, validate := range Validators {
-		binding.Validator.Engine().(*validator.Validate).RegisterValidation(tag, validate.validateFunction)
-		binding.Validator.Engine().(*validator.Validate).RegisterTranslation(tag, trans,
+		engine.RegisterValidation(tag, validate.validateFunction)
+		engine.RegisterTranslation(tag, trans,
 			func(ut ut.Translator) error {
 				return ut.Add(tag, validate.validateTranslate, false)
 			},
 			func(ut ut.Translator, fe validator.FieldError) string {
 				t, err := ut.T(fe.Tag(), fe.Field())
 				if err != nil {
-					log.Printf("警告: 翻译字段错误: %#v", fe)
+					log.Printf("警告: 字段错误: %#v", fe)
 					return fe.(error).Error()
 				}
 
@@ -46,5 +61,4 @@ func Init () {
 			},
 		)
 	}
-
 }

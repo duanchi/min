@@ -2,65 +2,81 @@ package middleware
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
+	"github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/types/middleware"
 	"github.com/duanchi/min/util"
-	"github.com/gin-gonic/gin"
 	"reflect"
 	"regexp"
 	"strings"
 )
 
 const (
-	BeforeRoute    = "beforeRoute"
-	AfterRoute     = "afterRoute"
-	BeforeResponse = "beforeResponse"
-	AfterResponse  = "afterResponse"
-	AfterPanic     = "afterPanic"
+	BEFORE_ROUTE    = "beforeRoute"
+	AFTER_ROUTE     = "afterRoute"
+	BEFORE_RESPONSE = "beforeResponse"
+	AFTER_RESPONSE  = "afterResponse"
+	AFTER_PANIC     = "afterPanic"
 )
 
 var Middlewares []reflect.Value
 
-/**
+var beforeRouteMiddlewares []interface{}
+var afterRouteMiddlewares []types.ServerHandleFunc
+var beforeResponseMiddlewares []types.ServerHandleFunc
+var afterResponseMiddlewares []types.ServerHandleFunc
+var afterPanicMiddlewares []types.ServerHandleFunc
+
+/*
+*
 初始化before-route的中间件
 */
-func Init(httpServer *gin.Engine, aop string) {
+func Init(httpServer *httpserver.Httpserver) {
 	for key, _ := range Middlewares {
 
 		index := key
-		middleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		switch aop {
-		case BeforeRoute:
-			httpServer.Use(middleware.BeforeRoute)
-		case AfterRoute:
-			httpServer.Use(func(context *gin.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterRoute(context)
-				}
-			})
-		case BeforeResponse:
-			httpServer.Use(func(context *gin.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.BeforeResponse(context)
-				}
-			})
-		case AfterResponse:
-			httpServer.Use(func(context *gin.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterResponse(context)
-				}
-			})
-		case AfterPanic:
-			httpServer.Use(func(context *gin.Context) {
-				if matchRoute(middleware.Includes(), middleware.Excludes(), context) {
-					middleware.AfterPanic(context)
-				}
-			})
-		}
+		middlewareBean := Middlewares[index].Interface().(_interface.MiddlewareInterface)
 
+		beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
+
+		afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				middlewareBean.AfterRoute(context)
+			}
+		}))
+
+		beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				middlewareBean.BeforeResponse(context)
+			}
+		}))
+
+		afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				middlewareBean.AfterResponse(context)
+			}
+		}))
+
+		afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
+			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+				middlewareBean.AfterPanic(context)
+			}
+		}))
 	}
+
+	httpServer.Use(beforeRouteMiddlewares...)
 }
 
-func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx *gin.Context) bool {
+func GetAfterRouteMiddlewares() []types.ServerHandleFunc {
+	return afterRouteMiddlewares
+}
+
+func GetAfterResponseMiddlewares() []types.ServerHandleFunc {
+	return afterResponseMiddlewares
+}
+
+func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx *context.Context) bool {
 
 	if includes != nil && len(includes) > 0 {
 		if !match(includes, ctx) {
@@ -77,7 +93,7 @@ func matchRoute(includes middleware.Includes, excludes middleware.Excludes, ctx 
 	return true
 }
 
-func match(patterns map[string]string, ctx *gin.Context) bool {
+func match(patterns map[string]string, ctx *context.Context) bool {
 	for pattern, methods := range patterns {
 		hasMethod := false
 		methods = strings.ToUpper(methods)
@@ -88,16 +104,16 @@ func match(patterns map[string]string, ctx *gin.Context) bool {
 		if strings.Contains(methods, "ALL") {
 			hasMethod = true
 		} else if strings.Contains(methods, "WEBSOCKET") {
-			upgradeRequest := ctx.Request.Header.Get("Connection")
+			/*upgradeRequest := ctx.Request().Header.Get("Connection")
 			upgradeProtocol := ctx.Request.Header.Get("Upgrade")
 
 			if upgradeRequest == "Upgrade" && strings.ToUpper(upgradeProtocol) == "WEBSOCKET" {
 				hasMethod = true
-			}
+			}*/
 		} else {
 			methodsStack := strings.Split(methods, ",")
 			for _, method := range methodsStack {
-				if s := strings.TrimSpace(method); s == ctx.Request.Method {
+				if s := strings.TrimSpace(method); s == string(ctx.Request().Method()) {
 					hasMethod = true
 					break
 				}
@@ -109,28 +125,28 @@ func match(patterns map[string]string, ctx *gin.Context) bool {
 			case "":
 				if strings.ContainsAny(patternStack[1], "*?[]!") {
 					// fnmatch匹配
-					if util.Fnmatch(patternStack[1], ctx.Request.RequestURI, 0) {
+					if util.Fnmatch(patternStack[1], string(ctx.Request().RequestURI()), 0) {
 						return true
 					}
 				} else {
 					// 默认任意匹配
-					if strings.Contains(ctx.Request.RequestURI, patternStack[1]) {
+					if strings.Contains(string(ctx.Request().RequestURI()), patternStack[1]) {
 						return true
 					}
 				}
 			case "=":
 				// 默认完全匹配
-				if ctx.Request.RequestURI == patternStack[1] {
+				if string(ctx.Request().RequestURI()) == patternStack[1] {
 					return true
 				}
 			case "^":
 				// 默认prefix匹配
-				if strings.HasPrefix(ctx.Request.RequestURI, patternStack[1]) {
+				if strings.HasPrefix(string(ctx.Request().RequestURI()), patternStack[1]) {
 					return true
 				}
 			case "~":
 				regex := regexp.MustCompile(patternStack[1])
-				if regex.MatchString(ctx.Request.RequestURI) {
+				if regex.MatchString(string(ctx.Request().RequestURI())) {
 					return true
 				}
 			}
@@ -139,41 +155,43 @@ func match(patterns map[string]string, ctx *gin.Context) bool {
 	return false
 }
 
-func GetHandlersBeforeResponse() []gin.HandlerFunc {
-	var handlers []gin.HandlerFunc
+func GetHandlersBeforeResponse() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *gin.Context) {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.BeforeResponse(context)
 			}
+			return nil
 		})
 	}
 
 	return handlers
 }
 
-func GetHandlersAfterResponse() []gin.HandlerFunc {
-	var handlers []gin.HandlerFunc
+func GetHandlersAfterResponse() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *gin.Context) {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterResponse(context)
 			}
+			return nil
 		})
 	}
 
 	return handlers
 }
 
-func HandleAfterRoute(ctx *gin.Context) {
+func HandleAfterRoute(ctx *context.Context) {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		func(context *gin.Context) {
+		func(context *context.Context) {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}
@@ -181,29 +199,31 @@ func HandleAfterRoute(ctx *gin.Context) {
 	}
 }
 
-func GetHandlersAfterRouter() []gin.HandlerFunc {
-	var handlers []gin.HandlerFunc
+func GetHandlersAfterRoute() []httpserver.Handler {
+	var handlers []httpserver.Handler
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *gin.Context) {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}
+			return nil
 		})
 	}
 
 	return handlers
 }
 
-func GetHandlersAfterRouterAppend(handlers []gin.HandlerFunc) []gin.HandlerFunc {
+func GetHandlersAfterRouteAppend(handlers []httpserver.Handler) []httpserver.Handler {
 	for key, _ := range Middlewares {
 		index := key
 		appendMiddleware := Middlewares[index].Interface().(_interface.MiddlewareInterface)
-		handlers = append(handlers, func(context *gin.Context) {
+		handlers = append(handlers, func(context *context.Context) error {
 			if matchRoute(appendMiddleware.Includes(), appendMiddleware.Excludes(), context) {
 				appendMiddleware.AfterRoute(context)
 			}
+			return nil
 		})
 	}
 

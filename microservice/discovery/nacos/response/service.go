@@ -98,7 +98,21 @@ type ExpressionSelector struct {
 	Expression string `json:"expression"`
 }
 
-type ServiceList struct {
+/*type ServiceList struct {
 	Count int64    `json:"count"`
 	Doms  []string `json:"doms"`
+}*/
+
+type ServiceList struct {
+	Count       int64         `json:"count"`
+	ServiceList []ServiceItem `json:"serviceList"`
+}
+
+type ServiceItem struct {
+	Name                 string `json:"name"`
+	GroupName            string `json:"groupName"`
+	ClusterCount         int    `json:"clusterCount"`
+	IpCount              int    `json:"ipCount"`
+	HealthyInstanceCount int    `json:"healthyInstanceCount"`
+	TriggerFlag          string `json:"triggerFlag"`
 }

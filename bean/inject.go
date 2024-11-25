@@ -1,15 +1,18 @@
 package bean
 
 import (
+	"errors"
+	"fmt"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/util"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 )
 
-func Inject(rawBean reflect.Value, beanMap map[string]reflect.Value) {
+func Inject(rawBean reflect.Value, beanName string, beanMap map[string]reflect.Value) {
 
 	beanType := rawBean.Type()
 
@@ -17,16 +20,23 @@ func Inject(rawBean reflect.Value, beanMap map[string]reflect.Value) {
 		if rawBean.Field(i).CanSet() {
 			fieldTag := beanType.Field(i).Tag
 
-			ParseValueFromConfig(fieldTag.Get("value"), rawBean.Field(i))
-			if util.IsBeanKind(fieldTag, "autowired") {
+			if err := ParseValueFromConfig(fieldTag.Get("value"), rawBean.Field(i)); err != nil {
+				fmt.Println("[min-framework] Bean " + beanName + " Injected error, " + err.Error())
+			}
+			if util.IsBeanKind(fieldTag, "autowired") || util.IsBeanKind(fieldTag, "resource") {
 				parseTagNamedAutowired(rawBean.Field(i))
 			}
 		}
-
 	}
 }
 
-func ParseValueFromConfig(value string, field reflect.Value) {
+func getCurrentGoroutineStack() string {
+	var buf [4096]byte
+	n := runtime.Stack(buf[:], false)
+	return string(buf[:n])
+}
+
+func ParseValueFromConfig(value string, field reflect.Value) error {
 	if value != "" {
 		class := field.Kind()
 		regex, _ := regexp.Compile("^" + regexp.QuoteMeta("${") + "(.+)" + regexp.QuoteMeta("}") + "$")
@@ -70,7 +80,12 @@ func ParseValueFromConfig(value string, field reflect.Value) {
 					}
 				}
 			} else {
-				field.Set(configValue)
+				if configValue.Type() == field.Type() {
+					field.Set(configValue)
+				} else {
+					return errors.New("value " + value + " error while parsing config.")
+				}
+
 			}
 		} else {
 
@@ -104,6 +119,8 @@ func ParseValueFromConfig(value string, field reflect.Value) {
 			}
 		}
 	}
+
+	return nil
 }
 
 func parseTagNamedAutowired(field reflect.Value) {

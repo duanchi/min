@@ -117,11 +117,19 @@ func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceRespon
 }
 
 func (this *DiscoveryClient) GetAllServicesInfo() (response response.ServiceList, err error) {
-	err = this.requestHolder.GET("/ns/service/list", map[string]interface{}{
+	/*err = this.requestHolder.GET("/ns/service/list", map[string]interface{}{
 		"pageNo":      1,
 		"pageSize":    512,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
-		"groupName":   this.config.RuntimeConfig.Group,
+		"groupNameParam":   this.config.RuntimeConfig.Group,
+	}, &response)*/
+
+	// 使用web API 获取所有group的服务
+	err = this.requestHolder.GET("/ns/catalog/services", map[string]interface{}{
+		"pageNo":         1,
+		"pageSize":       512,
+		"namespaceId":    this.config.ClientConfig.NamespaceId,
+		"groupNameParam": this.config.RuntimeConfig.Group,
 	}, &response)
 	return
 }

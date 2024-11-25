@@ -1,9 +1,9 @@
 package _interface
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/duanchi/min/server/httpserver/context"
 )
 
 type RouterInterface interface {
-	Handle(path string, method string, params gin.Params, ctx *gin.Context)
+	Handle(path string, method string, params *context.Params, ctx *context.Context)
 }

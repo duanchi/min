@@ -46,7 +46,6 @@ func Parse(value string) (config string) {
 			case reflect.Float64:
 				return []byte(fmt.Sprintf("%f", rawValue.(float64)))
 			case reflect.Bool:
-
 				if rawValue.(bool) {
 					return []byte("true")
 				} else {
@@ -158,7 +157,6 @@ func parseConfig(config interface{}, defaults string) {
 
 		if configValue.CanSet() {
 			v := ""
-
 			if configValue.IsZero() {
 				v = defaults
 

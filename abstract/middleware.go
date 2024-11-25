@@ -2,8 +2,8 @@ package abstract
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/types/middleware"
-	"github.com/gin-gonic/gin"
 )
 
 type Middleware struct {
@@ -18,22 +18,12 @@ func (this *Middleware) Excludes() (excludes middleware.Excludes) {
 	return
 }
 
-func (this *Middleware) BeforeRoute(ctx *gin.Context) {
-	ctx.Next()
-}
+func (this *Middleware) BeforeRoute(ctx *context.Context) {}
 
-func (this *Middleware) AfterRoute(ctx *gin.Context) {
-	ctx.Next()
-}
+func (this *Middleware) AfterRoute(ctx *context.Context) {}
 
-func (this *Middleware) BeforeResponse(ctx *gin.Context) {
-	ctx.Next()
-}
+func (this *Middleware) BeforeResponse(ctx *context.Context) {}
 
-func (this *Middleware) AfterResponse(ctx *gin.Context) {
-	ctx.Next()
-}
+func (this *Middleware) AfterResponse(ctx *context.Context) {}
 
-func (this *Middleware) AfterPanic(ctx *gin.Context) {
-	ctx.Next()
-}
+func (this *Middleware) AfterPanic(ctx *context.Context) {}

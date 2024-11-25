@@ -5,6 +5,7 @@ import (
 	"github.com/duanchi/min/bean"
 	"github.com/duanchi/min/cache"
 	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/context"
 	"github.com/duanchi/min/db"
 	"github.com/duanchi/min/event"
 	"github.com/duanchi/min/log"
@@ -16,9 +17,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func init() {
+	var cstZone = time.FixedZone("CST", 8*3600) // 东八
+	time.Local = cstZone
 	initEnv()
 }
 
@@ -26,23 +30,17 @@ func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
 	Config = configuration
 
+	ApplicationContext = context.GetApplicationContext()
+
 	errs := make(chan error, 3)
 
-	bean.InitBeans(
-		config.Get("Beans"),
-		config.Get("BeanParsers"),
-	)
-
-	log.Init(config.Get("Log").(config2.Log))
-	Log = &log.Log
-	if !checkConfigEnabled("Log.Enabled") {
+	if checkConfigEnabled("Log.Enabled") {
+		log.Init(ApplicationContext.GetConfig("Log").(config2.Log))
+		Log = &log.Log
+	}
+	/*if !checkConfigEnabled("Log.Enabled") {
 		Log.Enabled(false)
-	}
-
-	if checkConfigEnabled("Scheduled.Enabled") {
-		Log.Info("Task Enabled!")
-		scheduled.Init()
-	}
+	}*/
 
 	if checkConfigEnabled("Db.Enabled") {
 		db.Init()
@@ -51,6 +49,16 @@ func Bootstrap(configuration interface{}) {
 
 	if checkConfigEnabled("Cache.Enabled") {
 		cache.Init()
+	}
+
+	bean.InitBeans(
+		ApplicationContext.GetConfig("Beans"),
+		ApplicationContext.GetConfig("BeanParsers"),
+	)
+
+	if checkConfigEnabled("Scheduled.Enabled") {
+		Log.Info("Scheduled Enabled!")
+		scheduled.Init()
 	}
 
 	if checkConfigEnabled("Discovery.Enabled") {
@@ -65,8 +73,12 @@ func Bootstrap(configuration interface{}) {
 		scheduled.RunOnInit()
 	}
 
-	go server.Init(errs)
-	HttpServer = server.HttpServer
+	if checkConfigEnabled("HttpServer.Enabled") {
+		go func() {
+			server.Init(errs)
+			HttpServer = server.HttpServer
+		}()
+	}
 
 	if checkConfigEnabled("Scheduled.Enabled") {
 		scheduled.RunOnStart()
@@ -94,7 +106,7 @@ func SetConfigFile(configFile string) {
 }
 
 func checkConfigEnabled(configStack string) bool {
-	return config.Get(configStack).(bool)
+	return ApplicationContext.GetConfig(configStack).(bool)
 }
 
 func initEnv() {

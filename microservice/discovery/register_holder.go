@@ -87,11 +87,11 @@ func (this *RegisterHolder) StopHeartBeat() {
 	this.timeTicker.Stop()
 }
 
-func NewRegisterHolder(applicationConfig config.Application, discoveryConfig config.Discovery, discoveryClients map[string]_interface.DiscoveryInterface) (holder *RegisterHolder) {
+func NewRegisterHolder(applicationConfig config.Application, httpServerConfig config.HttpServer, discoveryConfig config.Discovery, discoveryClients map[string]_interface.DiscoveryInterface) (holder *RegisterHolder) {
 
 	port := discoveryConfig.Client.Port
 	if port == "" {
-		port = applicationConfig.ServerPort
+		port = httpServerConfig.ServerPort
 
 	}
 	uintPort, err := strconv.ParseUint(port, 10, 0)

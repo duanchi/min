@@ -72,12 +72,12 @@ func InitBeans(beanContainerInstance interface{}, beanParsers interface{}) {
 		Register(containerValue.Field(i), containerType.Field(i))
 	}
 
-	for _, bean := range beanMaps {
-		Init(bean, beanMaps)
+	for name, bean := range beanMaps {
+		Init(bean, name, beanMaps)
 	}
 
-	for _, bean := range beanMaps {
-		Inject(bean, beanMaps)
+	for name, bean := range beanMaps {
+		Inject(bean, name, beanMaps)
 	}
 }
 
@@ -96,14 +96,13 @@ func Register(beanValue reflect.Value, beanDefinition reflect.StructField) {
 	if name == "" {
 		name = beanDefinition.Name
 	}
-	fmt.Println("[min-framework] Init Bean: " + name)
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
 	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
 	parseBean(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
 
-	fmt.Println("[min-framework] Init Bean: " + name + " Ok!")
+	fmt.Println("[min-framework] Register Bean: " + name + " Ok!")
 }
 
 func parseBean(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {

@@ -1,8 +1,7 @@
 package validate
 
 import (
-	"github.com/gin-gonic/gin/binding"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
 	"reflect"
 	"strings"
 	"sync"
@@ -13,8 +12,6 @@ type defaultValidator struct {
 	validate *validator.Validate
 }
 
-var _ binding.StructValidator = &defaultValidator{}
-
 func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 
 	if kindOfData(obj) == reflect.Struct {
@@ -24,7 +21,7 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 		if errs := v.validate.Struct(obj); errs != nil {
 
 			objType := reflect.TypeOf(reflect.ValueOf(obj).Elem().Interface())
-			replaceMap := map[string]struct{
+			replaceMap := map[string]struct {
 				replace bool
 				comment string
 			}{}
@@ -33,10 +30,10 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 				comment := objType.Field(n).Tag.Get("comment")
 				if comment != "" {
 					replace := false
-					if len(comment) > 9 && comment[len(comment) - 9:len(comment) - 1] == ",replace" {
+					if len(comment) > 9 && comment[len(comment)-9:len(comment)-1] == ",replace" {
 						replace = true
-						comment = comment[0:len(comment) - 9]
- 					}
+						comment = comment[0 : len(comment)-9]
+					}
 					replaceMap[objType.Field(n).Name] = struct {
 						replace bool
 						comment string

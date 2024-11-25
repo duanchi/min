@@ -1,0 +1,14 @@
+package constant
+
+const (
+	METHOD_GET     = "GET"     // RFC 7231, 4.3.1
+	METHOD_HEAD    = "HEAD"    // RFC 7231, 4.3.2
+	METHOD_POST    = "POST"    // RFC 7231, 4.3.3
+	METHOD_PUT     = "PUT"     // RFC 7231, 4.3.4
+	METHOD_PATCH   = "PATCH"   // RFC 5789
+	METHOD_DELETE  = "DELETE"  // RFC 7231, 4.3.5
+	METHOD_CONNECT = "CONNECT" // RFC 7231, 4.3.6
+	METHOD_OPTIONS = "OPTIONS" // RFC 7231, 4.3.7
+	METHOD_TRACE   = "TRACE"   // RFC 7231, 4.3.8
+	METHOD_USE     = "USE"
+)

@@ -1,7 +1,7 @@
 package route
 
 import (
-	types2 "github.com/duanchi/min/server/types"
+	serverTypes "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/types"
 	"reflect"
 	"strings"
@@ -20,13 +20,14 @@ func (parser RestfulBeanParser) Parse(tag reflect.StructTag, bean reflect.Value,
 	}
 
 	if resource != "" {
-		key := tag.Get("resource_key")
+		key := tag.Get("key")
 		if key == "" {
 			key = "id"
 		}
 		resources := strings.Split(resource, ",")
 		for _, res := range resources {
-			RestfulRoutes[strings.TrimSpace(res)] = types2.RestfulRoute{
+			// res = strings.ReplaceAll("/"+res, "//", "/")
+			RestfulRoutes[strings.TrimSpace(res)] = serverTypes.RestfulRoute{
 				Value:       bean,
 				ResourceKey: key,
 			}

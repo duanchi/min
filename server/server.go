@@ -1,42 +1,40 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/context"
+	"github.com/duanchi/min/log"
+	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/middleware"
 	"github.com/duanchi/min/server/route"
 	"github.com/duanchi/min/server/static"
 	"github.com/duanchi/min/server/validate"
-	"log"
 )
 
-var HttpServer *gin.Engine
+var HttpServer *httpserver.Httpserver
 
-func Init (err chan error) {
-	HttpServer = gin.Default()
+func Init(err chan error) {
+	HttpServer = httpserver.New(struct{}{})
 
-
-	if config.Get("Env").(string) == "production" {
-		gin.SetMode("release")
+	if context.GetApplicationContext().GetConfig("Env").(string) == "production" {
+		HttpServer.SetLogLevel(httpserver.LOG_ERROR)
 	} else {
-		gin.SetMode("debug")
+		HttpServer.SetLogLevel(httpserver.LOG_TRACE)
 	}
 
 	validate.Init()
-
-	middleware.Init(HttpServer, middleware.BeforeRoute)
-
+	middleware.Init(HttpServer)
 	static.Init(HttpServer)
-
 	route.Init(HttpServer)
 
-	serverError := HttpServer.Run(":" + config.Get("Application.ServerPort").(string))
+	serverError := HttpServer.Listen(
+		context.GetApplicationContext().GetConfig("HttpServer.ServerHost").(string),
+		context.GetApplicationContext().GetConfig("HttpServer.ServerPort").(string),
+	)
 
 	if serverError != nil {
-		log.Fatal(serverError)
+		log.Log.Fatal(serverError)
 	}
 
 	err <- serverError
-
 	return
 }

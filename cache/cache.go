@@ -3,7 +3,7 @@ package cache
 import (
 	"github.com/duanchi/min/cache/memory"
 	"github.com/duanchi/min/cache/redis"
-	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/context"
 	_interface "github.com/duanchi/min/interface"
 	"net/url"
 	"reflect"
@@ -18,7 +18,7 @@ func Init() {
 	CacheEngines["memory"] = reflect.ValueOf(&memory.MemoryCache{})
 	CacheEngines["redis"] = reflect.ValueOf(&redis.RedisCache{})
 
-	dsn := config.Get("Cache.Dsn").(string)
+	dsn := context.GetApplicationContext().GetConfig("Cache.Dsn").(string)
 	dsnUrl, _ := url.Parse(dsn)
 
 	if _, ok := CacheEngines[dsnUrl.Scheme]; !ok {

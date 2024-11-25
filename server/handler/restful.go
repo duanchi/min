@@ -2,11 +2,12 @@ package handler
 
 import (
 	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/server/middleware"
-	types2 "github.com/duanchi/min/server/types"
+	serverTypes "github.com/duanchi/min/server/types"
 	"github.com/duanchi/min/server/websocket"
 	"github.com/duanchi/min/types"
-	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
@@ -14,11 +15,11 @@ import (
 	"strings"
 )
 
-func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Context, engine *gin.Engine) {
-	params := ctx.Params
+func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
+	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
-	method := ctx.Request.Method
-	requestId := ctx.Request.Header.Get("Request-Id")
+	method := ctx.Request().Method()
+	requestId := ctx.Request().Header("Request-Id")
 	beforeResponseHandlers := middleware.GetHandlersBeforeResponse()
 	if requestId == "" {
 		requestId = uuid.NewV4().String()
@@ -36,10 +37,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Con
 
 		if exception := recover(); exception != nil {
 			defer func() {
-				/*if ctx.Writer.Status() != http.StatusOK {
-					statusCode = ctx.Writer.Status()
-				}*/
-				ctx.JSON(statusCode, response)
+				ctx.JSONWithStatus(statusCode, response)
 				debug.PrintStack()
 			}()
 
@@ -47,30 +45,6 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Con
 
 			if implemented {
 				runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
-				/*switch exception.(type) {
-
-				case error2.RequestError:
-					statusCode = http.StatusBadRequest
-
-				case error2.ResponseError:
-					statusCode = http.StatusInternalServerError
-
-				case error2.AuthorizeError:
-					statusCode = http.StatusUnauthorized
-
-				case error2.ForbiddenError:
-					statusCode = http.StatusForbidden
-
-				case error2.NotFoundError:
-					statusCode = http.StatusNotFound
-
-				default:
-					if runtimeError.Code() < 600 {
-						statusCode = runtimeError.Code()
-					} else {
-						statusCode = 500
-					}
-				}*/
 
 				statusCode = runtimeError.Status()
 				response.Message = runtimeError.Error()
@@ -87,36 +61,35 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Con
 	var data interface{}
 	var err error
 
-	executor := controller.Value.Interface().(_interface.RestControllerInterface)
+	executor := controller.Value.Interface().(_interface.RestfulControllerInterface)
 
 	// Upgrade Protocol to Websocket
 	if method == "GET" {
-		upgradeRequest := ctx.Request.Header.Get("Connection")
-		upgradeProtocol := ctx.Request.Header.Get("Upgrade")
+		upgradeRequest := ctx.Request().Header("Connection")
+		upgradeProtocol := ctx.Request().Header("Upgrade")
 
 		if upgradeRequest == "Upgrade" && strings.ToLower(upgradeProtocol) == "websocket" {
-			websocket.Handle(id, resource, &params, ctx, executor.Connect)
-			return
+			return websocket.Handle(id, resource, params, ctx, executor.Connect)
 		}
 	}
 
 	switch method {
 	case "GET":
 		if id == "" {
-			data, err = executor.FetchList(id, resource, &params, ctx)
+			data, err = executor.FetchList(id, resource, params, ctx)
 		} else {
-			data, err = executor.Fetch(id, resource, &params, ctx)
+			data, err = executor.Fetch(id, resource, params, ctx)
 		}
 	case "POST":
-		data, err = executor.Create(id, resource, &params, ctx)
+		data, err = executor.Create(id, resource, params, ctx)
 	case "PUT":
-		data, err = executor.Update(id, resource, &params, ctx)
+		data, err = executor.Update(id, resource, params, ctx)
 	case "DELETE":
-		data, err = executor.Remove(id, resource, &params, ctx)
+		data, err = executor.Remove(id, resource, params, ctx)
 	case "HEAD":
-		data, err = executor.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, params, ctx)
 	case "OPTIONS":
-		data, err = executor.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, params, ctx)
 	}
 
 	if err == nil {
@@ -138,7 +111,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Con
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		ctx.JSON(status, response)
+		return ctx.JSONWithStatus(status, response)
 	} else {
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
@@ -158,9 +131,7 @@ func RestfulHandle(resource string, controller types2.RestfulRoute, ctx *gin.Con
 			response.Message = err.Error()
 		}
 
-		ctx.JSON(status, response)
+		return ctx.JSONWithStatus(status, response)
 		// panic(err)
 	}
-
-	return
 }
