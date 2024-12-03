@@ -52,6 +52,10 @@ func (this *Context) Set(key string, value interface{}) {
 	this.ctx.Locals(key, value)
 }
 
+func (this *Context) Query(key string, defaults ...string) string {
+	return this.request.ctx.Query(key, defaults...)
+}
+
 func (this *Context) GetHeader(key string) string {
 	return this.ctx.Get(key)
 }

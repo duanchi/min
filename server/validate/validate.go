@@ -13,17 +13,18 @@ import (
 
 func Validate(obj interface{}) (err error) {
 	err = engine.Struct(obj)
-	errs := err.(validator.ValidationErrors)
-	es := errs.Translate(trans)
-	if len(es) > 0 {
-		eMessages := []string{}
-		for _, e := range es {
-			eMessages = append(eMessages, e)
+	if err != nil {
+		errs := err.(validator.ValidationErrors)
+		es := errs.Translate(trans)
+		if len(es) > 0 {
+			eMessages := []string{}
+			for _, e := range es {
+				eMessages = append(eMessages, e)
+			}
+			return errors.New(strings.Join(eMessages, ", "))
 		}
-		return errors.New(strings.Join(eMessages, ", "))
-	} else {
-		return nil
 	}
+	return nil
 }
 
 var trans ut.Translator
