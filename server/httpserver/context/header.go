@@ -9,3 +9,7 @@ func (this Header) Get(key string) string {
 func (this Header) Set(key, value string) {
 	this[key] = value
 }
+
+func (this Header) Del(key string) {
+	delete(this, key)
+}

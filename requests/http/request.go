@@ -2,13 +2,13 @@ package http
 
 import (
 	"bytes"
-	json2 "encoding/json"
+	"encoding/json"
 	"fmt"
 	"github.com/duanchi/min/util/arrays"
 	"github.com/fatih/structs"
+	"github.com/valyala/fasthttp"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"reflect"
 	"strconv"
@@ -23,7 +23,7 @@ type Request struct {
 	url         string
 	baseUrl     string
 	queryString string
-	header      http.Header
+	header      fasthttp.RequestHeader
 	payload     []byte
 	formData    interface{}
 }
@@ -129,7 +129,7 @@ func (this *Request) Method(method string) *Request {
 func New() Request {
 	instance := Request{
 		initialed: true,
-		header:    http.Header{},
+		header:    fasthttp.RequestHeader{},
 	}
 	return instance
 }
@@ -145,9 +145,9 @@ func (this *Request) Body(data []byte) *Request {
 	return this
 }
 
-func (this *Request) JSON(json interface{}) *Request {
+func (this *Request) JSON(obj interface{}) *Request {
 	this.Header("Content-Type", "application/json")
-	this.payload, this.error = json2.Marshal(json)
+	this.payload, this.error = json.Marshal(obj)
 
 	return this
 }
@@ -222,11 +222,8 @@ func (this *Request) Header(key string, value string) *Request {
 	return this
 }
 
-func (this *Request) Headers(headers http.Header) *Request {
-	for k, v := range headers {
-		this.header[k] = v
-	}
-
+func (this *Request) Headers(headers fasthttp.RequestHeader) *Request {
+	headers.CopyTo(&this.header)
 	return this
 }
 
@@ -252,26 +249,21 @@ func (this *Request) Response() (response Response, err error) {
 		}
 	}
 
-	request, err := http.NewRequest(this.method, url, bytes.NewReader(this.payload))
+	httpRequest := fasthttp.AcquireRequest()
+	httpResponse := fasthttp.AcquireResponse()
+	httpRequest.SetRequestURI(url)
+	httpRequest.SetBody(this.payload)
+	this.header.CopyTo(&httpRequest.Header)
+	httpRequest.Header.SetMethod(this.method)
 
-	if err != nil {
-		return
-	}
-
-	request.Header = this.header
-
-	httpResponse, err := (&http.Client{}).Do(request)
-
+	err = (&fasthttp.Client{}).Do(httpRequest, httpResponse)
+	fasthttp.ReleaseRequest(httpRequest)
 	if err != nil {
 		return
 	}
 
 	err = response.From(httpResponse)
-
-	if err != nil {
-		return
-	}
-
+	fasthttp.ReleaseResponse(httpResponse)
 	return
 }
 

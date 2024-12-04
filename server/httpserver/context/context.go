@@ -32,6 +32,10 @@ func New(ctx *fiber.Ctx) *Context {
 	}
 }
 
+func (this *Context) Ctx() *fiber.Ctx {
+	return this.ctx
+}
+
 func (this *Context) Request() *Request {
 	return this.request
 }

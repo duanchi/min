@@ -2,35 +2,29 @@ package http
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
 
 type Response struct {
-	Header http.Header
-	Payload []byte
-	StatusCode int
+	Header        fasthttp.ResponseHeader
+	Payload       []byte
+	StatusCode    int
 	StatusMessage string
-	Raw *http.Response
+	Raw           *fasthttp.Response
 }
 
-func (this *Response) From (httpResponse *http.Response) (err error) {
-	this.Header = httpResponse.Header
-	this.Payload, err = ioutil.ReadAll(httpResponse.Body)
-
-	if err != nil {
-		return
-	}
-
-	this.StatusCode = httpResponse.StatusCode
-	this.StatusMessage = httpResponse.Status
+func (this *Response) From(httpResponse *fasthttp.Response) (err error) {
+	httpResponse.Header.CopyTo(&this.Header)
+	this.Payload = httpResponse.Body()
+	this.StatusCode = httpResponse.StatusCode()
+	this.StatusMessage = string(httpResponse.Header.StatusMessage())
 	this.Raw = httpResponse
 
 	return
 }
 
-func (this *Response) BindJSON (v interface{}) (err error) {
+func (this *Response) BindJSON(v interface{}) (err error) {
 	err = json.Unmarshal(this.Payload, v)
-	
+
 	return
 }
