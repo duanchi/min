@@ -3,7 +3,6 @@ package abstract
 import (
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/types"
-	"github.com/gorilla/websocket"
 )
 
 type RestfulController struct {
@@ -30,6 +29,6 @@ func (this *RestfulController) Remove(id string, resource string, parameters *co
 	return "error", nil
 }
 
-func (this *RestfulController) Connect(connection *websocket.Conn, id string, resource string, parameters *context.Params, ctx *context.Context) (err types.Error) {
+func (this *RestfulController) Connect(connection *context.Websocket, id string, resource string, parameters *context.Params, ctx *context.Context) (err types.Error) {
 	return nil
 }

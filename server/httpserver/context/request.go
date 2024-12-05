@@ -19,12 +19,26 @@ func (this *Request) RequestURI() string {
 	return string(this.request.Header.RequestURI())
 }
 
+func (this *Request) Url() *fasthttp.URI {
+	return this.request.URI()
+}
+
 func (this *Request) Header(key string, defaults ...string) string {
 	return this.ctx.Get(key, defaults...)
 }
 
 func (this *Request) Headers() Header {
-	return this.ctx.GetReqHeaders()
+	headers := make(Header)
+	for k, h := range this.ctx.GetReqHeaders() {
+		if len(h) > 0 {
+			headers[k] = h[0]
+		}
+	}
+	return headers
+}
+
+func (this *Request) Cookie(key string) string {
+	return this.ctx.Cookies(key)
 }
 
 func (this *Request) Path() string {

@@ -3,7 +3,6 @@ package _interface
 import (
 	"github.com/duanchi/min/server/httpserver/context"
 	"github.com/duanchi/min/types"
-	"github.com/gorilla/websocket"
 )
 
 type RestfulControllerInterface interface {
@@ -17,5 +16,5 @@ type RestfulControllerInterface interface {
 
 	Remove(id string, resource string, parameters *context.Params, ctx *context.Context) (result interface{}, err types.Error)
 
-	Connect(connection *websocket.Conn, id string, resource string, parameters *context.Params, ctx *context.Context) (err types.Error)
+	Connect(connection *context.Websocket, id string, resource string, parameters *context.Params, ctx *context.Context) (err types.Error)
 }

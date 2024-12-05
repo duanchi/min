@@ -40,6 +40,8 @@ func (this *Context) Request() *Request {
 	return this.request
 }
 
+func (this *Context) Response() *Response { return this.response }
+
 func (this *Context) Param(key string, defaults ...string) string {
 	return this.params.Get(key, defaults...)
 }
@@ -54,6 +56,10 @@ func (this *Context) Get(key string) interface{} {
 
 func (this *Context) Set(key string, value interface{}) {
 	this.ctx.Locals(key, value)
+}
+
+func (this *Context) Has(key string) bool {
+	return this.ctx.Locals(key) != nil
 }
 
 func (this *Context) Query(key string, defaults ...string) string {
@@ -81,9 +87,17 @@ func (this *Context) JSONWithStatus(code int, obj interface{}) error {
 	return this.ctx.JSON(obj)
 }
 
+func (this *Context) Abort() {
+	this.next = false
+}
+
 func (this *Context) AbortWithStatus(code int) error {
 	this.next = false
 	return this.ctx.Status(code).SendString("")
+}
+
+func (this *Context) DataWithStatus(code int, data []byte) error {
+	return this.ctx.Status(code).Send(data)
 }
 
 func (this *Context) IsNext() bool {

@@ -13,3 +13,11 @@ func (this Header) Set(key, value string) {
 func (this Header) Del(key string) {
 	delete(this, key)
 }
+
+func (this Header) Clone() Header {
+	clone := make(Header, len(this))
+	for k, v := range this {
+		clone[k] = v
+	}
+	return clone
+}

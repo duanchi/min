@@ -23,6 +23,20 @@ func (this *Response) From(httpResponse *fasthttp.Response) (err error) {
 	return
 }
 
+func (this *Response) GetHeader(key string) string {
+	return string(this.Header.Peek(key))
+}
+
+func (this *Response) GetHeaders() map[string]string {
+	keys := this.Header.PeekKeys()
+	maps := make(map[string]string, len(keys))
+	for _, keyBytes := range keys {
+		key := string(keyBytes)
+		maps[key] = string(this.Header.Peek(key))
+	}
+	return maps
+}
+
 func (this *Response) BindJSON(v interface{}) (err error) {
 	err = json.Unmarshal(this.Payload, v)
 

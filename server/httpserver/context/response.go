@@ -27,6 +27,22 @@ func (this *Response) SetStatus(code int, message ...string) *Response {
 	return this
 }
 
+func (this *Response) SetCookie(cookie Cookie) *Response {
+	this.ctx.Cookie(&fiber.Cookie{
+		Name:        cookie.Name,
+		Value:       cookie.Value,
+		Path:        cookie.Path,
+		Domain:      cookie.Domain,
+		MaxAge:      cookie.MaxAge,
+		Expires:     cookie.Expires,
+		Secure:      cookie.Secure,
+		HTTPOnly:    cookie.HTTPOnly,
+		SameSite:    cookie.SameSite,
+		SessionOnly: cookie.SessionOnly,
+	})
+	return this
+}
+
 func (this *Response) Clear() {
 	this.ctx = nil
 	this.response = nil

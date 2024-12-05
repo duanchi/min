@@ -98,7 +98,6 @@ func (this *Httpserver) HEAD(path string, handlers ...types.ServerHandleFunc) Ro
 	return this.Add(METHOD_HEAD, path, handlers...)
 }
 func (this *Httpserver) POST(path string, handlers ...types.ServerHandleFunc) Router {
-	fmt.Println("333333333")
 	return this.Add(METHOD_POST, path, handlers...)
 }
 func (this *Httpserver) PUT(path string, handlers ...types.ServerHandleFunc) Router {

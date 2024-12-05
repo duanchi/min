@@ -13,13 +13,14 @@ require (
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.22.1 // indirect
+	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-redis/redis/v8 v8.11.2
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/gofiber/fiber/v2 v2.48.0
-	github.com/gorilla/websocket v1.4.2
+	github.com/gofiber/contrib/websocket v1.3.2
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -28,7 +29,7 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tealeg/xlsx v1.0.5 // indirect
-	github.com/valyala/fasthttp v1.48.0
+	github.com/valyala/fasthttp v1.52.0
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4
 	gopkg.in/yaml.v2 v2.3.0
