@@ -34,6 +34,13 @@ func (this *Websocket) IP() string {
 func (this *Websocket) Close() {
 	this.connection.Close()
 }
+
+func (this *Websocket) ReadMessage() (messageType int, p []byte, err error) {
+	return this.connection.ReadMessage()
+}
+func (this *Websocket) WriteMessage(messageType int, p []byte) error {
+	return this.connection.WriteMessage(messageType, p)
+}
 func (this *Websocket) Ctx() *websocket.Conn {
 	return this.connection
 }

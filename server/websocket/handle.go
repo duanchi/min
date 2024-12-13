@@ -13,7 +13,12 @@ func Handle(id string, resource string, parameters *context.Params, ctx *context
 	websocketHandle := websocket.New(func(conn *websocket.Conn) {
 		defer conn.Close()
 		connection := context.NewWebsocket(conn)
-		err = handleFunction(connection, id, resource, parameters, ctx)
+		for {
+			err = handleFunction(connection, id, resource, parameters, ctx)
+			if err != nil {
+				return
+			}
+		}
 	})
 
 	err = websocketHandle(ctx.Ctx())
