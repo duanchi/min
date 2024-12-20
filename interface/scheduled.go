@@ -1,5 +1,5 @@
 package _interface
 
 type ScheduledInterface interface {
-	Run()
+	Run(condition string)
 }

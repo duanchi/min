@@ -3,18 +3,18 @@ package abstract
 import _interface "github.com/duanchi/min/interface"
 
 type Service struct {
-	_interface.ServiceInterface
 	Bean
+	_interface.ServiceInterface
 }
 
-func (this *Service) Init () {
-	this.Bean.Init()
-}
+//func (this *Service) Init() {
+//	this.Bean.Init()
+//}
 
-func (this *Service) GetServiceName () (name string) {
+func (this *Service) GetServiceName() (name string) {
 	return this.BeanName
 }
 
-func (this *Service) SetServiceName (name string) {
+func (this *Service) SetServiceName(name string) {
 	this.BeanName = name
 }

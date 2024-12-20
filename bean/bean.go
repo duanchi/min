@@ -97,6 +97,7 @@ func Register(beanValue reflect.Value, beanDefinition reflect.StructField) {
 		name = beanDefinition.Name
 	}
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
+	beanMaps[name].Addr().Interface().(_interface.BeanInterface).SetName(name)
 	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 

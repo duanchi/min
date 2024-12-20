@@ -1,7 +1,6 @@
 package scheduled
 
 import (
-	"fmt"
 	"github.com/duanchi/min/abstract"
 	"github.com/duanchi/min/config"
 	"github.com/duanchi/min/event"
@@ -10,6 +9,13 @@ import (
 	"github.com/duanchi/min/types"
 	"github.com/robfig/cron/v3"
 	"reflect"
+)
+
+const (
+	RUN_ON_START = "RUN_ON_START"
+	RUN_ON_EXIT  = "RUN_ON_EXIT"
+	RUN_ON_INIT  = "RUN_ON_INIT"
+	RUN_CRON     = "RUN_CRON"
 )
 
 var Scheduled struct {
@@ -30,31 +36,32 @@ func Init() {}
 
 func RunOnStart() {
 	go func() {
-		for _, scheduled := range Scheduled.OnStart {
-			scheduled.Interface().(_interface.ScheduledInterface).Run()
+		for _, s := range Scheduled.OnStart {
+			schedule := s
+			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_START)
 		}
 	}()
-	log.Log.Info("Scheduled has been executed at run on start!")
 
 	RunCron()
 }
 
 func RunOnExit() {
 	go func() {
-		for _, scheduled := range Scheduled.OnExit {
-			scheduled.Interface().(_interface.ScheduledInterface).Run()
+		for _, s := range Scheduled.OnExit {
+			schedule := s
+			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_EXIT)
 		}
 	}()
-	log.Log.Info("Scheduled has been executed at run on exit!")
 }
 
 func RunOnInit() {
 	go func() {
-		for _, scheduled := range Scheduled.OnInit {
-			scheduled.Interface().(_interface.ScheduledInterface).Run()
+		for _, s := range Scheduled.OnInit {
+			schedule := s
+			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_INIT)
 		}
 	}()
-	log.Log.Info("Scheduled has been executed at run on init!")
+
 }
 
 func RunCron() {
@@ -62,15 +69,20 @@ func RunCron() {
 	if len(Scheduled.Cron) > 0 {
 		cronInstance = cron.New(cron.WithSeconds())
 
-		for _, scheduled := range Scheduled.Cron {
+		for _, s := range Scheduled.Cron {
 
-			expression := config.Parse(scheduled.Expression)
+			schedule := s
+			expression := config.Parse(schedule.Expression)
+
 			// expressionValue := reflect.ValueOf(expression)
 			// util.ParseValueFromConfigInstance(scheduled.Expression, reflect.Indirect(reflect.ValueOf(expression)), config.ConfigInstance)
-			cronInstance.AddFunc(expression, func() {
-				scheduled.Executor.Interface().(_interface.ScheduledInterface).Run()
+			_, err := cronInstance.AddFunc(expression, func() {
+				log.Log.Infof("[Scheduled] " + schedule.Executor.Interface().(_interface.BeanInterface).GetName() + " run...")
+				schedule.Executor.Interface().(_interface.ScheduledInterface).Run(RUN_CRON)
 			})
-			fmt.Println("Scheduled has been registered!! [" + expression + "]")
+			if err != nil {
+				log.Log.Errorf("[Scheduled] "+schedule.Executor.Interface().(_interface.BeanInterface).GetName()+" init error", err)
+			}
 		}
 
 		cronInstance.Start()

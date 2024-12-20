@@ -9,4 +9,4 @@ type Scheduled struct {
 	_interface.ScheduledInterface
 }
 
-func (this *Scheduled) Run() {}
+func (this *Scheduled) Run(condition string) {}
