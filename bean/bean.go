@@ -2,14 +2,8 @@ package bean
 
 import (
 	"fmt"
-	"github.com/duanchi/min/event"
+	"github.com/duanchi/min/bean/core_parsers"
 	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/rpc"
-	"github.com/duanchi/min/scheduled"
-	"github.com/duanchi/min/server/middleware"
-	"github.com/duanchi/min/server/route"
-	"github.com/duanchi/min/server/validate"
-	"github.com/duanchi/min/service"
 	"reflect"
 )
 
@@ -17,16 +11,6 @@ import (
 var beanMaps = map[string]reflect.Value{}
 var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
-var coreBeanParsers = []_interface.BeanParserInterface{
-	&service.ServiceBeanParser{},
-	&route.RouteBeanParser{},
-	&route.RestfulBeanParser{},
-	&middleware.MiddlewareBeanParser{},
-	&scheduled.ScheduledBeanParser{},
-	&event.EventBeanParser{},
-	&rpc.RpcBeanParser{},
-	&validate.ValidatorBeanParser{},
-}
 
 var customBeanParsers = []_interface.BeanParserInterface{}
 
@@ -107,8 +91,8 @@ func Register(beanValue reflect.Value, beanDefinition reflect.StructField) {
 }
 
 func parseBean(tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
-	for i := 0; i < len(coreBeanParsers); i++ {
-		reflect.ValueOf(coreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
+	for i := 0; i < len(core_parsers.CoreBeanParsers); i++ {
+		reflect.ValueOf(core_parsers.CoreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
 	}
 
 	for i := 0; i < len(customBeanParsers); i++ {

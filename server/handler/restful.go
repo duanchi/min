@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/duanchi/min/config"
 	_interface "github.com/duanchi/min/interface"
 	"github.com/duanchi/min/server/httpserver"
 	"github.com/duanchi/min/server/httpserver/context"
@@ -16,6 +17,7 @@ import (
 )
 
 func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
+	isCustomResponse := config.Get("HttpServer.Restful.CustomResponse").(bool)
 	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
 	method := ctx.Request().Method()
@@ -93,9 +95,6 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 	}
 
 	if err == nil {
-		response.Status = true
-		response.Data = data
-		response.Code = 0
 		status := http.StatusOK
 		switch method {
 		case "GET":
@@ -107,11 +106,17 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 		case "DELETE":
 			status = 204
 		}
-
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		return ctx.JSONWithStatus(status, response)
+		if isCustomResponse {
+			return ctx.JSONWithStatus(status, data)
+		} else {
+			response.Status = true
+			response.Data = data
+			response.Code = 0
+			return ctx.JSONWithStatus(status, response)
+		}
 	} else {
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
