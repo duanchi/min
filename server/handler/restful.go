@@ -12,7 +12,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
-	"runtime/debug"
 	"strings"
 )
 
@@ -40,7 +39,6 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 		if exception := recover(); exception != nil {
 			defer func() {
 				ctx.JSONWithStatus(statusCode, response)
-				debug.PrintStack()
 			}()
 
 			_, implemented := exception.(types.Error)

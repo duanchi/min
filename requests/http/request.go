@@ -23,7 +23,7 @@ type Request struct {
 	url         string
 	baseUrl     string
 	queryString string
-	header      fasthttp.RequestHeader
+	header      *fasthttp.RequestHeader
 	payload     []byte
 	formData    interface{}
 }
@@ -129,7 +129,7 @@ func (this *Request) Method(method string) *Request {
 func New() Request {
 	instance := Request{
 		initialed: true,
-		header:    fasthttp.RequestHeader{},
+		header:    &fasthttp.RequestHeader{},
 	}
 	return instance
 }
@@ -222,8 +222,8 @@ func (this *Request) Header(key string, value string) *Request {
 	return this
 }
 
-func (this *Request) Headers(headers fasthttp.RequestHeader) *Request {
-	headers.CopyTo(&this.header)
+func (this *Request) Headers(headers *fasthttp.RequestHeader) *Request {
+	headers.CopyTo(this.header)
 	return this
 }
 
@@ -240,6 +240,8 @@ func (this *Request) Response() (response Response, err error) {
 	}
 
 	url := this.baseUrl + this.url
+	uri := &fasthttp.URI{}
+	uri.Parse([]byte(""), []byte(url))
 
 	if len(this.queryString) > 0 {
 		if strings.Contains(url, "?") {
@@ -251,7 +253,7 @@ func (this *Request) Response() (response Response, err error) {
 
 	httpRequest := fasthttp.AcquireRequest()
 	httpResponse := fasthttp.AcquireResponse()
-	httpRequest.SetRequestURI(url)
+	httpRequest.SetURI(uri)
 	httpRequest.SetBody(this.payload)
 	this.header.CopyTo(&httpRequest.Header)
 	httpRequest.Header.SetMethod(this.method)
@@ -263,6 +265,9 @@ func (this *Request) Response() (response Response, err error) {
 	}
 
 	err = response.From(httpResponse)
+	if err != nil {
+		return
+	}
 	fasthttp.ReleaseResponse(httpResponse)
 	return
 }
