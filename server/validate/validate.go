@@ -8,20 +8,25 @@ import (
 	"github.com/go-playground/validator/v10"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 	"log"
+	"reflect"
 	"strings"
 )
 
 func Validate(obj interface{}) (err error) {
 	err = engine.Struct(obj)
 	if err != nil {
-		errs := err.(validator.ValidationErrors)
-		es := errs.Translate(trans)
-		if len(es) > 0 {
-			eMessages := []string{}
-			for _, e := range es {
-				eMessages = append(eMessages, e)
+		if reflect.TypeOf(err) == reflect.TypeOf(&validator.InvalidValidationError{}) {
+			return err
+		} else {
+			errs := err.(validator.ValidationErrors)
+			es := errs.Translate(trans)
+			if len(es) > 0 {
+				eMessages := []string{}
+				for _, e := range es {
+					eMessages = append(eMessages, e)
+				}
+				return errors.New(strings.Join(eMessages, ", "))
 			}
-			return errors.New(strings.Join(eMessages, ", "))
 		}
 	}
 	return nil
