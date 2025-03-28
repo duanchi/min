@@ -6,6 +6,7 @@ import (
 	"github.com/duanchi/min/server/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"reflect"
 )
 
@@ -14,8 +15,10 @@ type Httpserver struct {
 }
 
 func New(config interface{}) *Httpserver {
+	app := fiber.New()
+	app.Use(logger.New(logger.Config{Format: "[${ip}]:${port} ${status} - ${method} ${path}\n"}))
 	return &Httpserver{
-		instance: fiber.New(),
+		instance: app,
 	}
 }
 
@@ -24,7 +27,8 @@ func (this *Httpserver) Instance() *fiber.App {
 }
 
 func (this *Httpserver) Listen(host string, port string) error {
-	return this.instance.Listen(host + ":" + port)
+	err := this.instance.Listen(host + ":" + port)
+	return err
 }
 
 func (this *Httpserver) SetLogLevel(level int) {
@@ -48,10 +52,17 @@ func (this *Httpserver) SetLogLevel(level int) {
 
 // Add allows you to specify a HTTP method to register a route
 func (this *Httpserver) Add(method, path string, handlers ...types.ServerHandleFunc) Router {
+	fiberHandlers := []fiber.Handler{}
+	for _, h := range handlers {
+		fiberHandlers = append(fiberHandlers, func(ctx *fiber.Ctx) error {
+			h(ctx.Locals("CONTEXT", context.New(ctx)).(*context.Context))
+			return nil
+		})
+	}
 	if method == METHOD_ALL {
-		this.instance.All(path, toFiberHandlers(handlers))
+		this.instance.All(path, fiberHandlers...)
 	} else {
-		this.instance.Add(method, path, toFiberHandlers(handlers))
+		this.instance.Add(method, path, fiberHandlers...)
 	}
 	return this
 }
@@ -120,9 +131,6 @@ func (this *Httpserver) PATCH(path string, handlers ...types.ServerHandleFunc) R
 }
 
 func (this *Httpserver) ALL(path string, handlers ...types.ServerHandleFunc) Router {
-	/*for _, method := range []string{METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_CONNECT, METHOD_DELETE, METHOD_OPTIONS, METHOD_HEAD, METHOD_PATCH, METHOD_TRACE} {
-		_ = this.Add(method, path, handlers...)
-	}*/
 	return this.Add(METHOD_ALL, path, handlers...)
 }
 
@@ -148,17 +156,4 @@ func (this *Httpserver) Stop() error {
 
 func NewContext(ctx *fiber.Ctx) *context.Context {
 	return context.New(ctx)
-}
-
-func toFiberHandlers(handlers []types.ServerHandleFunc) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		ctx := NewContext(c)
-		for _, handler := range handlers {
-			handler(ctx)
-			if !ctx.IsNext() {
-				return nil
-			}
-		}
-		return c.Next()
-	}
 }

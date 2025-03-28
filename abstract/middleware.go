@@ -18,12 +18,22 @@ func (this *Middleware) Excludes() (excludes middleware.Excludes) {
 	return
 }
 
-func (this *Middleware) BeforeRoute(ctx *context.Context) {}
+func (this *Middleware) BeforeRoute(ctx *context.Context) {
+	ctx.Next()
+}
 
-func (this *Middleware) AfterRoute(ctx *context.Context) {}
+func (this *Middleware) AfterRoute(ctx *context.Context) {
+	ctx.Next()
+}
 
-func (this *Middleware) BeforeResponse(ctx *context.Context) {}
+func (this *Middleware) BeforeResponse(ctx *context.Context) {
+	ctx.Next()
+}
 
-func (this *Middleware) AfterResponse(ctx *context.Context) {}
+func (this *Middleware) AfterResponse(ctx *context.Context) {
+	ctx.Next()
+}
 
-func (this *Middleware) AfterPanic(ctx *context.Context) {}
+func (this *Middleware) AfterPanic(ctx *context.Context) {
+	ctx.Next()
+}

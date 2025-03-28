@@ -14,10 +14,11 @@ func Init(rawBean reflect.Value, name string, beanMap map[string]reflect.Value) 
 func parseInit(rawBean reflect.Value, name string) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("[min-framework] Init Bean: Error, ", err)
+			fmt.Println("[min-framework] Init Bean: Init Error,", rawBean.Type().PkgPath()+"."+name, err)
+		} else {
+			fmt.Println("[min-framework] Init Bean: " + name)
 		}
 	}()
-	fmt.Println("[min-framework] Init Bean: " + name)
 	// rawBean.Addr().Interface().(_interface.BeanInterface).SetName(name)
 	rawBean.Addr().Interface().(_interface.BeanInterface).Init()
 }

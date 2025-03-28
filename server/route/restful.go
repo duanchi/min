@@ -17,44 +17,36 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
 
 	for key, route := range RestfulRoutes {
+		resource := strings.ReplaceAll("/"+key, "//", "/")
 
-		resource := key
-
-		handlers := []types.ServerHandleFunc{
+		handlers := []types.ServerHandleFunc{}
+		if len(afterRouteMiddlewares) > 0 {
+			handlers = append(handlers, afterRouteMiddlewares...)
+		}
+		handlers = append(
+			handlers,
 			func(ctx *context.Context) {
 				ctx.Set(constant.RESOURCE, resource)
-				if len(afterRouteMiddlewares) > 0 {
-					for _, handler := range afterRouteMiddlewares {
-						if ctx.IsNext() {
-							handler(ctx)
-						}
-						return
-					}
-				}
+				ctx.Next()
 			},
 			func(ctx *context.Context) {
 				handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
-				if len(afterResponseMiddlewares) > 0 {
-					go func() {
-						for _, afterResponseMiddleware := range afterResponseMiddlewares {
-							afterResponseMiddleware(ctx)
-						}
-					}()
-				}
-				ctx.Clear()
 			},
+		)
+
+		if len(afterResponseMiddlewares) > 0 {
+			handlers = append(handlers, afterResponseMiddlewares...)
 		}
 
 		if strings.Contains(resource, ":"+route.ResourceKey) {
-			resource := strings.ReplaceAll("/"+resource, "//", "/")
 			httpServer.ALL(resource, handlers...)
 			if !strings.HasSuffix(resource, "/") {
 				httpServer.ALL(resource+"/", handlers...)
 			}
 		} else {
 			httpServer.ALL("/"+resource, handlers...)
-			httpServer.ALL("/"+resource+"/", handlers...)
-			httpServer.ALL("/"+resource+"/:"+route.ResourceKey, handlers...)
+			// httpServer.ALL("/"+resource+"/", handlers...)
+			httpServer.ALL("/"+resource+"/:"+route.ResourceKey+"?", handlers...)
 		}
 	}
 }

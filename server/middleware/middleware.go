@@ -40,32 +40,48 @@ func Init(httpServer *httpserver.Httpserver) {
 
 		beforeRouteMiddlewares = append(beforeRouteMiddlewares, types.ServerHandleFunc(middlewareBean.BeforeRoute))
 
-		afterRouteMiddlewares = append(afterRouteMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
-			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				middlewareBean.AfterRoute(context)
-			}
-		}))
+		afterRouteMiddlewares = append(
+			afterRouteMiddlewares,
+			func(context *context.Context) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					middlewareBean.AfterRoute(context)
+				}
+			},
+		)
 
-		beforeResponseMiddlewares = append(beforeResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
-			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				middlewareBean.BeforeResponse(context)
-			}
-		}))
+		beforeResponseMiddlewares = append(
+			beforeResponseMiddlewares,
+			func(context *context.Context) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					middlewareBean.BeforeResponse(context)
+				}
+			},
+		)
 
-		afterResponseMiddlewares = append(afterResponseMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
-			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				middlewareBean.AfterResponse(context)
-			}
-		}))
+		afterResponseMiddlewares = append(
+			afterResponseMiddlewares,
+			func(context *context.Context) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					middlewareBean.AfterResponse(context)
+				}
+			},
+		)
 
-		afterPanicMiddlewares = append(afterPanicMiddlewares, types.ServerHandleFunc(func(context *context.Context) {
-			if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
-				middlewareBean.AfterPanic(context)
-			}
-		}))
+		afterPanicMiddlewares = append(
+			afterPanicMiddlewares,
+			func(context *context.Context) {
+				if matchRoute(middlewareBean.Includes(), middlewareBean.Excludes(), context) {
+					middlewareBean.AfterPanic(context)
+				}
+			},
+		)
 	}
+}
 
-	httpServer.Use(beforeRouteMiddlewares...)
+func InitBeforeRoute(httpserver *httpserver.Httpserver) {
+	if len(beforeRouteMiddlewares) > 0 {
+		httpserver.Use(beforeRouteMiddlewares...)
+	}
 }
 
 func GetAfterRouteMiddlewares() []types.ServerHandleFunc {

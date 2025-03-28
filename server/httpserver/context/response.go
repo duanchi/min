@@ -13,6 +13,7 @@ type Response struct {
 
 func (this *Response) SetHeader(key string, value string) *Response {
 	this.response.Header.Set(key, value)
+	this.ctx.Set(key, value)
 	return this
 }
 

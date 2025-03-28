@@ -17,48 +17,28 @@ func BaseRouteInit(httpServer *httpserver.Httpserver) {
 	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
 
 	for key, route := range BaseRoutes {
-
-		// name := key
-
-		// stack := strings.SplitN(name, "@", 2)
-		// route := "/"
 		methods := []string{"ALL"}
-
-		//if stack[0] != "" {
-		//	route = stack[0]
-		//}
 		if route.Method != "" {
 			methods = strings.Split(strings.ToUpper(route.Method), ",")
 		}
 
 		handleBeanKey := key
+		handlers := []types.ServerHandleFunc{}
+		if len(afterRouteMiddlewares) > 0 {
+			handlers = append(handlers, afterRouteMiddlewares...)
+		}
+		handlers = append(
+			handlers,
+			func(ctx *context.Context) {
+				handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, ctx, httpServer)
+			},
+		)
+
+		if len(afterResponseMiddlewares) > 0 {
+			handlers = append(handlers, afterResponseMiddlewares...)
+		}
 
 		for _, method := range methods {
-
-			handlers := []types.ServerHandleFunc{
-				func(ctx *context.Context) {
-					if len(afterRouteMiddlewares) > 0 {
-						for _, handler := range afterRouteMiddlewares {
-							if ctx.IsNext() {
-								handler(ctx)
-							}
-							return
-						}
-					}
-				},
-				func(ctx *context.Context) {
-					handler.RouteHandle(route.Path, BaseRoutes[handleBeanKey].Value, ctx, httpServer)
-					if len(afterResponseMiddlewares) > 0 {
-						go func() {
-							for _, afterResponseMiddleware := range afterResponseMiddlewares {
-								afterResponseMiddleware(ctx)
-							}
-						}()
-					}
-					ctx.Clear()
-				},
-			}
-
 			httpServer.Add(method, route.Path, handlers...)
 		}
 	}

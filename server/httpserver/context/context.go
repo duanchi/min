@@ -50,12 +50,19 @@ func (this *Context) Params() *Params {
 	return this.params
 }
 
-func (this *Context) Get(key string) interface{} {
-	return this.ctx.Locals(key)
+func (this *Context) Get(key string, defaults ...interface{}) (value ContextValue) {
+	if len(defaults) > 0 {
+		return this.ctx.Locals(key, ContextValue{value: defaults[0]}).(ContextValue)
+	}
+	val := this.ctx.Locals(key)
+	if val == nil {
+		return ContextValue{}
+	}
+	return val.(ContextValue)
 }
 
 func (this *Context) Set(key string, value interface{}) {
-	this.ctx.Locals(key, value)
+	this.ctx.Locals(key, ContextValue{value: value})
 }
 
 func (this *Context) Has(key string) bool {
@@ -71,7 +78,7 @@ func (this *Context) GetHeader(key string) string {
 }
 
 func (this *Context) Next() {
-	this.next = true
+	this.ctx.Next()
 	return
 }
 
@@ -101,7 +108,12 @@ func (this *Context) DataWithStatus(code int, data []byte) error {
 }
 
 func (this *Context) IsNext() bool {
+	this.ctx.Next()
 	return this.next
+}
+
+func (this *Context) ResetNext() {
+	this.next = false
 }
 
 func (this *Context) Bind(obj interface{}) error {
