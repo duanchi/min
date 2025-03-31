@@ -1,7 +1,7 @@
 package yaml
 
 import (
-	"github.com/duanchi/min/util"
+	"github.com/duanchi/min/v2/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -13,7 +13,7 @@ var configInstance interface{}
 
 var configFile = "./config/application.yaml"
 
-func GetConfig(config interface{}) (err error){
+func GetConfig(config interface{}) (err error) {
 	configYaml, err := readFile()
 	if err != nil {
 		return
@@ -22,7 +22,7 @@ func GetConfig(config interface{}) (err error){
 	pattern, _ := regexp.Compile(`\${.+?}`)
 	configYaml = pattern.ReplaceAllFunc(configYaml, func(b []byte) []byte {
 		s := string(b)
-		value := strings.SplitN(s[2:len(s) - 1], ":", 2)
+		value := strings.SplitN(s[2:len(s)-1], ":", 2)
 		if len(value) > 1 {
 			return []byte(util.Getenv(value[0], value[1]))
 		} else {
@@ -34,7 +34,7 @@ func GetConfig(config interface{}) (err error){
 	return
 }
 
-func readFile() (config []byte, err error){
+func readFile() (config []byte, err error) {
 	config, err = ioutil.ReadFile(configFile)
 	if err != nil {
 		log.Fatalf("yamlFile.Get err %v ", err)
@@ -42,6 +42,6 @@ func readFile() (config []byte, err error){
 	return
 }
 
-func SetConfigFile (config string) {
+func SetConfigFile(config string) {
 	configFile = config
 }

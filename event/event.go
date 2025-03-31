@@ -1,8 +1,8 @@
 package event
 
 import (
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/types"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/types"
 	"reflect"
 )
 

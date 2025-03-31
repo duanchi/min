@@ -1,9 +1,9 @@
 package abstract
 
 import (
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types/middleware"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/types/middleware"
 )
 
 type Middleware struct {

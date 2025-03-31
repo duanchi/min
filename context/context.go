@@ -1,8 +1,8 @@
 package context
 
 import (
-	"github.com/duanchi/min/bean"
-	"github.com/duanchi/min/config"
+	"github.com/duanchi/min/v2/bean"
+	"github.com/duanchi/min/v2/config"
 	"reflect"
 )
 

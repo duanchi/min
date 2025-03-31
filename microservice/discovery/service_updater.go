@@ -1,10 +1,10 @@
 package discovery
 
 import (
-	config2 "github.com/duanchi/min/config"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/log"
-	"github.com/duanchi/min/types/config"
+	config2 "github.com/duanchi/min/v2/config"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/log"
+	"github.com/duanchi/min/v2/types/config"
 	"time"
 )
 

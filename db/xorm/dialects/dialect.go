@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 // URI represents an uri to visit database

@@ -2,8 +2,8 @@ package bean
 
 import (
 	"fmt"
-	"github.com/duanchi/min/bean/core_parsers"
-	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/v2/bean/core_parsers"
+	_interface "github.com/duanchi/min/v2/interface"
 	"reflect"
 )
 

@@ -1,8 +1,8 @@
 package memory
 
 import (
+	"github.com/duanchi/min/v2/abstract"
 	"github.com/patrickmn/go-cache"
-	"github.com/duanchi/min/abstract"
 	"net/url"
 	"time"
 )
@@ -17,7 +17,7 @@ func (this *MemoryCache) Init() {
 }
 
 func (this *MemoryCache) Instance(dsn *url.URL) {
-	this.instance = cache.New(cache.NoExpiration, 1 * time.Minute)
+	this.instance = cache.New(cache.NoExpiration, 1*time.Minute)
 	// this.instance = cache2go.Cache(dsn.Hostname())
 }
 
@@ -41,7 +41,7 @@ func (this *MemoryCache) SetWithTTL(key string, value interface{}, ttl int) {
 		ttl = 0
 	}
 
-	this.instance.Set(key, &value, time.Duration(ttl) * time.Second)
+	this.instance.Set(key, &value, time.Duration(ttl)*time.Second)
 }
 
 func (this *MemoryCache) Del(key string) {
@@ -51,4 +51,3 @@ func (this *MemoryCache) Del(key string) {
 func (this *MemoryCache) Flush() {
 	this.instance.Flush()
 }
-

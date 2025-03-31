@@ -1,12 +1,12 @@
 package scheduled
 
 import (
-	"github.com/duanchi/min/abstract"
-	"github.com/duanchi/min/config"
-	"github.com/duanchi/min/event"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/log"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/abstract"
+	"github.com/duanchi/min/v2/config"
+	"github.com/duanchi/min/v2/event"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/log"
+	"github.com/duanchi/min/v2/types"
 	"github.com/robfig/cron/v3"
 	"reflect"
 )

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/server/httpserver"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/middleware"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/server/httpserver"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/middleware"
 	"reflect"
 )
 

@@ -1,8 +1,8 @@
 package abstract
 
 import (
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/types"
 )
 
 type RestfulController struct {

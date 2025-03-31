@@ -1,8 +1,8 @@
 package holder
 
 import (
-	"github.com/duanchi/min/microservice/discovery/nacos/request"
-	"github.com/duanchi/min/requests/http"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/request"
+	"github.com/duanchi/min/v2/requests/http"
 	"strconv"
 )
 

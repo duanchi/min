@@ -3,15 +3,15 @@ package db
 import (
 	"context"
 	"database/sql"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/db/xorm"
-	"github.com/duanchi/min/db/xorm/caches"
-	"github.com/duanchi/min/db/xorm/contexts"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/dialects"
-	"github.com/duanchi/min/db/xorm/log"
-	"github.com/duanchi/min/db/xorm/names"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm"
+	"github.com/duanchi/min/v2/db/xorm/caches"
+	"github.com/duanchi/min/v2/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/dialects"
+	"github.com/duanchi/min/v2/db/xorm/log"
+	"github.com/duanchi/min/v2/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
+	_interface "github.com/duanchi/min/v2/interface"
 	"io"
 	"reflect"
 	"strings"
@@ -271,7 +271,7 @@ func (this *ModelMapper) Ping() error {
 // SQL method let's you manually write raw SQL and operate
 // For example:
 //
-//         this.engine.SQL("select * from user").Find(&users)
+//	this.engine.SQL("select * from user").Find(&users)
 //
 // This    code will execute "select * from user" and set the records to users
 func (this *ModelMapper) SQL(query interface{}, args ...interface{}) *xorm.Session {
@@ -448,9 +448,8 @@ func (this *ModelMapper) Desc(colNames ...string) *xorm.Session {
 // Asc will generate "ORDER BY column1,column2 Asc"
 // This method can chainable use.
 //
-//        this.engine.Desc("name").Asc("age").Find(&users)
-//        // SELECT * FROM user ORDER BY name DESC, age ASC
-//
+//	this.engine.Desc("name").Asc("age").Find(&users)
+//	// SELECT * FROM user ORDER BY name DESC, age ASC
 func (this *ModelMapper) Asc(colNames ...string) *xorm.Session {
 	return this.NewSession().Asc(colNames...)
 }
@@ -605,9 +604,10 @@ func (this *ModelMapper) InsertOne() (int64, error) {
 // Update records, bean's non-empty fields are updated contents,
 // condiBean' non-empty filds are conditions
 // CAUTION:
-//        1.bool will defaultly be updated content nor conditions
-//         You should call UseBool if you have bool to use.
-//        2.float32 & float64 may be not inexact as conditions
+//
+//	1.bool will defaultly be updated content nor conditions
+//	 You should call UseBool if you have bool to use.
+//	2.float32 & float64 may be not inexact as conditions
 func (this *ModelMapper) Update(condiBeans ...interface{}) (int64, error) {
 	return this.NewSession().Update(this.Mapper, condiBeans...)
 }

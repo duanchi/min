@@ -8,9 +8,9 @@ import (
 	"database/sql"
 	"reflect"
 
-	"github.com/duanchi/min/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/core"
 	"github.com/xormplus/builder"
-	// "github.com/duanchi/min/db/xorm/internal/statements"
+	// "github.com/duanchi/min/v2/db/xorm/private/statements"
 )
 
 func (session *Session) queryPreprocess(sqlStr *string, paramStr ...interface{}) {

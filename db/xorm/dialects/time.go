@@ -7,7 +7,7 @@ package dialects
 import (
 	"time"
 
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 // FormatTime format time as column type

@@ -13,9 +13,9 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/duanchi/min/db/xorm/contexts"
-	"github.com/duanchi/min/db/xorm/log"
-	"github.com/duanchi/min/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/log"
+	"github.com/duanchi/min/v2/db/xorm/names"
 )
 
 var (

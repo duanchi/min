@@ -18,13 +18,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/duanchi/min/db/xorm/contexts"
-	"github.com/duanchi/min/db/xorm/convert"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/internal/json"
-	"github.com/duanchi/min/db/xorm/internal/statements"
-	"github.com/duanchi/min/db/xorm/log"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/convert"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/log"
+	"github.com/duanchi/min/v2/db/xorm/private/json"
+	"github.com/duanchi/min/v2/db/xorm/private/statements"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 type sessionType bool

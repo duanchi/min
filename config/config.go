@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/duanchi/min/config/yaml"
-	"github.com/duanchi/min/util"
+	"github.com/duanchi/min/v2/config/yaml"
+	"github.com/duanchi/min/v2/util"
 	"reflect"
 	"regexp"
 	"strconv"

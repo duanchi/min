@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/duanchi/min/db/xorm/caches"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/internal/statements"
-	"github.com/duanchi/min/db/xorm/internal/utils"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/caches"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/private/statements"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 	"github.com/xormplus/builder"
 )
 

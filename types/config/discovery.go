@@ -1,6 +1,6 @@
 package config
 
-import "github.com/duanchi/min/types/config/discovery"
+import "github.com/duanchi/min/v2/types/config/discovery"
 
 type Discovery struct {
 	Enabled        bool             `yaml:"enabled" default:"false"`

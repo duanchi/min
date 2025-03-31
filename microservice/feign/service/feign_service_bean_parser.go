@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/duanchi/min/types"
-	"github.com/duanchi/min/util"
+	"github.com/duanchi/min/v2/types"
+	"github.com/duanchi/min/v2/util"
 	"reflect"
 )
 

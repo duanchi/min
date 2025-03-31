@@ -1,9 +1,9 @@
 package route
 
 import (
-	"github.com/duanchi/min/config"
-	"github.com/duanchi/min/rpc"
-	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/v2/config"
+	"github.com/duanchi/min/v2/rpc"
+	"github.com/duanchi/min/v2/server/httpserver"
 )
 
 func Init(httpServer *httpserver.Httpserver) {

@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/duanchi/min/abstract"
+	"github.com/duanchi/min/v2/abstract"
 	"github.com/go-redis/redis/v8"
 	"net/url"
 	"strconv"

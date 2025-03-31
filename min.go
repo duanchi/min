@@ -1,10 +1,10 @@
 package min
 
 import (
-	"github.com/duanchi/min/context"
-	"github.com/duanchi/min/db/xorm"
-	"github.com/duanchi/min/log"
-	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/v2/context"
+	"github.com/duanchi/min/v2/db/xorm"
+	"github.com/duanchi/min/v2/log"
+	"github.com/duanchi/min/v2/server/httpserver"
 )
 
 var HttpServer *httpserver.Httpserver

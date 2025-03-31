@@ -11,10 +11,10 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/duanchi/min/db/xorm/caches"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/internal/utils"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/caches"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 // Get retrieve one record from database, bean's non-empty fields

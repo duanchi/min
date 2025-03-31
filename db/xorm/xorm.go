@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build go1.8
 // +build go1.8
 
 package xorm
@@ -12,13 +13,13 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/duanchi/min/db/xorm/caches"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/dialects"
-	"github.com/duanchi/min/db/xorm/log"
-	"github.com/duanchi/min/db/xorm/names"
-	"github.com/duanchi/min/db/xorm/schemas"
-	"github.com/duanchi/min/db/xorm/tags"
+	"github.com/duanchi/min/v2/db/xorm/caches"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/dialects"
+	"github.com/duanchi/min/v2/db/xorm/log"
+	"github.com/duanchi/min/v2/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/tags"
 )
 
 const (

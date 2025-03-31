@@ -13,9 +13,9 @@ import (
 	"time"
 
 	// "github.com/xormplus/builder"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/schemas"
-	// "github.com/duanchi/min/db/xorm/internal/statements"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
+	// "github.com/duanchi/min/v2/db/xorm/private/statements"
 )
 
 func (session *Session) QueryValue(sqlOrArgs ...interface{}) ([]map[string]Value, error) {

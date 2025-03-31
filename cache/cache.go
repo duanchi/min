@@ -1,10 +1,10 @@
 package cache
 
 import (
-	"github.com/duanchi/min/cache/memory"
-	"github.com/duanchi/min/cache/redis"
-	"github.com/duanchi/min/context"
-	_interface "github.com/duanchi/min/interface"
+	"github.com/duanchi/min/v2/cache/memory"
+	"github.com/duanchi/min/v2/cache/redis"
+	"github.com/duanchi/min/v2/context"
+	_interface "github.com/duanchi/min/v2/interface"
 	"net/url"
 	"reflect"
 )

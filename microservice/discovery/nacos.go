@@ -1,14 +1,14 @@
 package discovery
 
 import (
-	"github.com/duanchi/min/abstract"
-	"github.com/duanchi/min/log"
-	"github.com/duanchi/min/microservice/discovery/nacos"
-	"github.com/duanchi/min/microservice/discovery/nacos/request"
-	"github.com/duanchi/min/microservice/discovery/nacos/response"
-	"github.com/duanchi/min/microservice/discovery/nacos/types"
-	"github.com/duanchi/min/types/config"
-	"github.com/duanchi/min/types/discovery"
+	"github.com/duanchi/min/v2/abstract"
+	"github.com/duanchi/min/v2/log"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/request"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/response"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/types"
+	"github.com/duanchi/min/v2/types/config"
+	"github.com/duanchi/min/v2/types/discovery"
 )
 
 type NacosDiscovery struct {

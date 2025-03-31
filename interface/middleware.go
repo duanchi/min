@@ -1,8 +1,8 @@
 package _interface
 
 import (
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types/middleware"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/types/middleware"
 )
 
 type MiddlewareInterface interface {

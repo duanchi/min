@@ -7,7 +7,7 @@ package log
 import (
 	"fmt"
 
-	"github.com/duanchi/min/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/contexts"
 )
 
 // LogContext represents a log context

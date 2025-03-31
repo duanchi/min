@@ -1,8 +1,8 @@
 package static
 
 import (
-	"github.com/duanchi/min/context"
-	"github.com/duanchi/min/server/httpserver"
+	"github.com/duanchi/min/v2/context"
+	"github.com/duanchi/min/v2/server/httpserver"
 	"strings"
 )
 

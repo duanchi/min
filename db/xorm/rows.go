@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
 	"github.com/xormplus/builder"
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/internal/utils"
 )
 
 // Rows rows wrapper a rows to

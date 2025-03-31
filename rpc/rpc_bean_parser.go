@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/types"
 	"reflect"
 )
 

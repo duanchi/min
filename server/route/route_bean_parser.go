@@ -1,8 +1,8 @@
 package route
 
 import (
-	serverTypes "github.com/duanchi/min/server/types"
-	"github.com/duanchi/min/types"
+	serverTypes "github.com/duanchi/min/v2/server/types"
+	"github.com/duanchi/min/v2/types"
 	"reflect"
 )
 

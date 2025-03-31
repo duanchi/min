@@ -1,7 +1,7 @@
 package httpserver
 
 import (
-	"github.com/duanchi/min/server/types"
+	"github.com/duanchi/min/v2/server/types"
 	"github.com/gofiber/fiber/v2"
 )
 

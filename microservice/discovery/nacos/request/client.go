@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/duanchi/min/microservice/discovery/nacos/types"
-	"github.com/duanchi/min/types/config"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/types"
+	"github.com/duanchi/min/v2/types/config"
 )
 
 type Client struct {

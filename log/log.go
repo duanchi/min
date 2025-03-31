@@ -2,8 +2,8 @@ package log
 
 import (
 	"context"
+	"github.com/duanchi/min/v2/types/config"
 	"github.com/sirupsen/logrus"
-	"github.com/duanchi/min/types/config"
 	"io"
 	"os"
 	"strings"
@@ -11,7 +11,7 @@ import (
 )
 
 type Logger struct {
-	std *logrus.Logger
+	std     *logrus.Logger
 	enabled bool
 }
 
@@ -293,11 +293,11 @@ func (this *Logger) Fatalln(args ...interface{}) {
 type Fields map[string]interface{}
 
 var Log = Logger{
-	std: logrus.New(),
+	std:     logrus.New(),
 	enabled: true,
 }
 
-func Init (config config.Log) {
+func Init(config config.Log) {
 
 	if config.Output == "" {
 		config.Output = "stdout://"
@@ -330,19 +330,18 @@ func Init (config config.Log) {
 	switch config.Format.Type {
 	case "json":
 		Log.SetFormatter(&logrus.JSONFormatter{
-			TimestampFormat: config.Format.Timestamp,
+			TimestampFormat:  config.Format.Timestamp,
 			DisableTimestamp: config.Timestamp,
-			PrettyPrint: config.Format.Json.Pretty,
+			PrettyPrint:      config.Format.Json.Pretty,
 		})
 	case "text":
 	case "plain":
 		Log.SetFormatter(&logrus.TextFormatter{
-			DisableColors: config.Format.Text.Colors,
-			TimestampFormat: config.Format.Timestamp,
-			FullTimestamp: config.Format.Text.FullTimestamp,
+			DisableColors:    config.Format.Text.Colors,
+			TimestampFormat:  config.Format.Timestamp,
+			FullTimestamp:    config.Format.Text.FullTimestamp,
 			DisableTimestamp: config.Timestamp,
 		})
 	}
-
 
 }

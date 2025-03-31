@@ -3,19 +3,18 @@ package middleware
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/duanchi/min/abstract"
-	"github.com/duanchi/min/types/gateway"
+	"github.com/duanchi/min/v2/abstract"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/types/gateway"
 )
 
 type GatewayMiddleware struct {
 	abstract.Middleware
 }
 
-func (this *GatewayMiddleware) AfterRoute (ctx *gin.Context) {
+func (this *GatewayMiddleware) AfterRoute(ctx *context.Context) {
 
 	data := gateway.Data{}
-
 
 	gatewayData := ctx.Request.Header.Get("X-Gateway-Data")
 

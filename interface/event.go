@@ -1,6 +1,6 @@
 package _interface
 
-import "github.com/duanchi/min/types"
+import "github.com/duanchi/min/v2/types"
 
 type EventInterface interface {
 	Conditions() (conditions []string)

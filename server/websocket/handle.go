@@ -1,8 +1,8 @@
 package websocket
 
 import (
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/types"
 	"github.com/gofiber/contrib/websocket"
 )
 

@@ -2,8 +2,8 @@ package httpserver
 
 import (
 	"fmt"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/types"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/logger"

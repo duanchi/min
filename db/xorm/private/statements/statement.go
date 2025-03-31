@@ -12,14 +12,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/duanchi/min/v2/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/convert"
+	"github.com/duanchi/min/v2/db/xorm/dialects"
+	"github.com/duanchi/min/v2/db/xorm/private/json"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/tags"
 	"github.com/xormplus/builder"
-	"github.com/duanchi/min/db/xorm/contexts"
-	"github.com/duanchi/min/db/xorm/convert"
-	"github.com/duanchi/min/db/xorm/dialects"
-	"github.com/duanchi/min/db/xorm/internal/json"
-	"github.com/duanchi/min/db/xorm/internal/utils"
-	"github.com/duanchi/min/db/xorm/schemas"
-	"github.com/duanchi/min/db/xorm/tags"
 )
 
 var (

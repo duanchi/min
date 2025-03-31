@@ -1,7 +1,7 @@
 package abstract
 
 import (
-	_interface "github.com/duanchi/min/interface"
+	_interface "github.com/duanchi/min/v2/interface"
 )
 
 type Scheduled struct {

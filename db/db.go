@@ -3,16 +3,17 @@ package db
 import (
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/duanchi/min/context"
-	"github.com/duanchi/min/db/xorm"
-	config2 "github.com/duanchi/min/types/config"
+	"github.com/duanchi/min/v2/context"
+	"github.com/duanchi/min/v2/db/xorm"
+	config2 "github.com/duanchi/min/v2/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	"xorm.io/core"
+
 	// _ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/url"
 	"strings"
-	"xorm.io/core"
 )
 
 var Connection *xorm.Engine

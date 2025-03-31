@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/duanchi/min/db/xorm/internal/utils"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 // Ping test if database is ok

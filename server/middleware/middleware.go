@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/server/httpserver"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/types"
-	"github.com/duanchi/min/types/middleware"
-	"github.com/duanchi/min/util"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/server/httpserver"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/types"
+	"github.com/duanchi/min/v2/types/middleware"
+	"github.com/duanchi/min/v2/util"
 	"reflect"
 	"regexp"
 	"strings"

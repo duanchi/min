@@ -1,8 +1,8 @@
 package context
 
 import (
-	"github.com/duanchi/min/server/httpserver/constant"
-	"github.com/duanchi/min/server/validate"
+	"github.com/duanchi/min/v2/server/httpserver/constant"
+	"github.com/duanchi/min/v2/server/validate"
 	"github.com/gofiber/fiber/v2"
 )
 

@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/duanchi/min/db/xorm/core"
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/core"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 // from http://www.postgresql.org/docs/current/static/sql-keywords-appendix.html

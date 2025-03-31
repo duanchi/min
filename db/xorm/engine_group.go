@@ -8,11 +8,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/duanchi/min/db/xorm/caches"
-	"github.com/duanchi/min/db/xorm/contexts"
-	"github.com/duanchi/min/db/xorm/dialects"
-	"github.com/duanchi/min/db/xorm/log"
-	"github.com/duanchi/min/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/caches"
+	"github.com/duanchi/min/v2/db/xorm/contexts"
+	"github.com/duanchi/min/v2/db/xorm/dialects"
+	"github.com/duanchi/min/v2/db/xorm/log"
+	"github.com/duanchi/min/v2/db/xorm/names"
 )
 
 // EngineGroup defines an engine group

@@ -1,12 +1,12 @@
 package rpc
 
 import (
-	"github.com/duanchi/min/config"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/server/httpserver"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/middleware"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/config"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/server/httpserver"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/middleware"
+	"github.com/duanchi/min/v2/types"
 	"net/http"
 	"reflect"
 	"strings"

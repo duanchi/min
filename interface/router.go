@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	"github.com/duanchi/min/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/httpserver/context"
 )
 
 type RouterInterface interface {

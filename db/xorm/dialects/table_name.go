@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/duanchi/min/db/xorm/internal/utils"
-	"github.com/duanchi/min/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/names"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
 )
 
 // TableNameWithSchema will add schema prefix on table name if possible

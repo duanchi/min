@@ -1,6 +1,6 @@
 package types
 
-import "github.com/duanchi/min/server/httpserver/context"
+import "github.com/duanchi/min/v2/server/httpserver/context"
 
 type Route struct {
 	Url     string

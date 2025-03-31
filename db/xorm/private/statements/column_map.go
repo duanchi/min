@@ -7,7 +7,7 @@ package statements
 import (
 	"strings"
 
-	"github.com/duanchi/min/db/xorm/schemas"
+	"github.com/duanchi/min/v2/db/xorm/schemas"
 )
 
 type columnMap []string

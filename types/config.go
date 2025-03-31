@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/duanchi/min/types/config"
+	"github.com/duanchi/min/v2/types/config"
 	"reflect"
 )
 

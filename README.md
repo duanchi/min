@@ -6,7 +6,7 @@ min-go 支持`go mod`初始化
 
 ```
 require (
-	github.com/duanchi/min v1.6.14
+	github.com/duanchi/min/v2 v1.6.14
 )
 ```
 
@@ -16,12 +16,12 @@ require (
 
 ### 配置结构体
 
-项目中所有的配置可以通过定义一个`struct`类型的变量, 并由config/application.yaml填充配置项内容, 该变量可以引用`github.com/duanchi/min/types`下的`Config`结构体进行组合。
+项目中所有的配置可以通过定义一个`struct`类型的变量, 并由config/application.yaml填充配置项内容, 该变量可以引用`github.com/duanchi/min/v2/types`下的`Config`结构体进行组合。
 
 ```go
 package config
 
-import "github.com/duanchi/min/types"
+import "github.com/duanchi/min/v2/types"
 
 var Config = struct {
 	types.Config	`yaml:",inline"`

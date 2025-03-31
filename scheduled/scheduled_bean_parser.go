@@ -2,9 +2,9 @@ package scheduled
 
 import (
 	"fmt"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/types"
-	"github.com/duanchi/min/util"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/types"
+	"github.com/duanchi/min/v2/util"
 	"reflect"
 	"strings"
 )

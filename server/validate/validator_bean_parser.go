@@ -2,7 +2,7 @@ package validate
 
 import (
 	"fmt"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/types"
 	"github.com/go-playground/validator/v10"
 	"reflect"
 	"strconv"

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duanchi/min/db/xorm"
+	"github.com/duanchi/min/v2/db/xorm"
 )
 
 // MigrateFunc is the func signature for migrating.

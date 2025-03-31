@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/duanchi/min/db/xorm/internal/utils"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
 )
 
 type SqlsExecutor struct {

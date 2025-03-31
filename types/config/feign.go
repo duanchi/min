@@ -1,6 +1,6 @@
 package config
 
-import "github.com/duanchi/min/types/config/feign"
+import "github.com/duanchi/min/v2/types/config/feign"
 
 type Feign struct {
 	Enabled bool          `yaml:"enabled" default:"false"`

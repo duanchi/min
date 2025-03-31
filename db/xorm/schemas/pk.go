@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/duanchi/min/db/xorm/internal/utils"
+	"github.com/duanchi/min/v2/db/xorm/private/utils"
 )
 
 type PK []interface{}

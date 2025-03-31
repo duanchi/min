@@ -2,9 +2,9 @@ package nacos
 
 import (
 	"encoding/json"
-	"github.com/duanchi/min/microservice/discovery/nacos/holder"
-	"github.com/duanchi/min/microservice/discovery/nacos/request"
-	"github.com/duanchi/min/microservice/discovery/nacos/response"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/holder"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/request"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/response"
 	"net/url"
 )
 

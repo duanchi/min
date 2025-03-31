@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/duanchi/min/util/arrays"
+	"github.com/duanchi/min/v2/util/arrays"
 	"github.com/fatih/structs"
 	"github.com/valyala/fasthttp"
 	"io"

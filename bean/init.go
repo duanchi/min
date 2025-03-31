@@ -2,7 +2,7 @@ package bean
 
 import (
 	"fmt"
-	_interface "github.com/duanchi/min/interface"
+	_interface "github.com/duanchi/min/v2/interface"
 	"reflect"
 )
 

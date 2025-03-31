@@ -1,7 +1,7 @@
 package httpserver
 
 import (
-	"github.com/duanchi/min/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/httpserver/context"
 	"github.com/gofiber/fiber/v2"
 )
 

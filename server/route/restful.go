@@ -1,12 +1,12 @@
 package route
 
 import (
-	"github.com/duanchi/min/server/handler"
-	"github.com/duanchi/min/server/httpserver"
-	"github.com/duanchi/min/server/httpserver/constant"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/middleware"
-	"github.com/duanchi/min/server/types"
+	"github.com/duanchi/min/v2/server/handler"
+	"github.com/duanchi/min/v2/server/httpserver"
+	"github.com/duanchi/min/v2/server/httpserver/constant"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/middleware"
+	"github.com/duanchi/min/v2/server/types"
 	"strings"
 )
 

@@ -1,7 +1,7 @@
 package request
 
 import (
-	"github.com/duanchi/min/microservice/discovery/nacos/response"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/response"
 )
 
 type RegisterInstance struct {

@@ -1,14 +1,14 @@
 package discovery
 
 import (
-	config2 "github.com/duanchi/min/config"
-	"github.com/duanchi/min/event"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/log"
-	"github.com/duanchi/min/microservice/discovery/nacos/request"
-	"github.com/duanchi/min/microservice/discovery/nacos/types"
-	"github.com/duanchi/min/types/config"
-	"github.com/duanchi/min/types/discovery"
+	config2 "github.com/duanchi/min/v2/config"
+	"github.com/duanchi/min/v2/event"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/log"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/request"
+	"github.com/duanchi/min/v2/microservice/discovery/nacos/types"
+	"github.com/duanchi/min/v2/types/config"
+	"github.com/duanchi/min/v2/types/discovery"
 	"net/url"
 	"strconv"
 )

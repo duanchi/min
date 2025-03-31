@@ -3,9 +3,9 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/types"
-	"github.com/duanchi/min/util"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/types"
+	"github.com/duanchi/min/v2/util"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func Call (in IN, out *OUT, caller _interface.RpcInterface) (err error) {
+func Call(in IN, out *OUT, caller _interface.RpcInterface) (err error) {
 	pc, _, _, _ := runtime.Caller(1)
 	methodStack := strings.Split(runtime.FuncForPC(pc).Name(), ".")
 
@@ -21,7 +21,7 @@ func Call (in IN, out *OUT, caller _interface.RpcInterface) (err error) {
 		caller.GetApplicationName(),
 		caller.GetPackageName(),
 		reflect.ValueOf(caller).Elem().Type().String(),
-		methodStack[len(methodStack) - 1],
+		methodStack[len(methodStack)-1],
 		&in,
 		out,
 	)
@@ -34,7 +34,7 @@ func rpcRequest(serviceName string, packageName string, className string, method
 
 	requestBody, _ := json.Marshal(in)
 
-	request, err := http.NewRequest(http.MethodPost, "http://" + serviceName + "/" + packageName + "/" + className + "::" + method, bytes.NewReader(requestBody))
+	request, err := http.NewRequest(http.MethodPost, "http://"+serviceName+"/"+packageName+"/"+className+"::"+method, bytes.NewReader(requestBody))
 	if err != nil {
 		// handle error
 		err = types.RuntimeError{

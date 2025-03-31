@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"github.com/duanchi/min/config"
-	_interface "github.com/duanchi/min/interface"
-	"github.com/duanchi/min/server/httpserver"
-	"github.com/duanchi/min/server/httpserver/context"
-	"github.com/duanchi/min/server/middleware"
-	serverTypes "github.com/duanchi/min/server/types"
-	"github.com/duanchi/min/server/websocket"
-	"github.com/duanchi/min/types"
+	"github.com/duanchi/min/v2/config"
+	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/server/httpserver"
+	"github.com/duanchi/min/v2/server/httpserver/context"
+	"github.com/duanchi/min/v2/server/middleware"
+	serverTypes "github.com/duanchi/min/v2/server/types"
+	"github.com/duanchi/min/v2/server/websocket"
+	"github.com/duanchi/min/v2/types"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
