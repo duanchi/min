@@ -1,4 +1,4 @@
-module github.com/duanchi/min
+module github.com/duanchi/min/v2
 
 go 1.22
 
