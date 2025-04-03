@@ -18,15 +18,16 @@ import (
 
 var Connection *xorm.Engine
 var Connections map[string]*xorm.Engine
+var dbConfig config2.Db
 
 func Init() {
 	var err error
 
-	sources := context.GetApplicationContext().GetConfig("Db.Sources").(map[string]config2.DbConfig)
+	dbConfig = context.GetApplicationContext().GetConfig("Db").(config2.Db)
 
-	if len(sources) > 0 {
+	if len(dbConfig.Sources) > 0 {
 		Connections = map[string]*xorm.Engine{}
-		for name, sourceConfig := range sources {
+		for name, sourceConfig := range dbConfig.Sources {
 			parsedDsn, _ := url.Parse(sourceConfig.Dsn)
 			Connections[name], err = connect(parsedDsn, sourceConfig)
 			fmt.Println("Data Source [" + name + "] Inited!")
@@ -51,7 +52,26 @@ func Init() {
 }
 
 func Engine(name string) *xorm.Engine {
-	return Connections[name]
+	if _, has := Connections[name]; has {
+		return Connections[name]
+	} else {
+		if dbConfig.SelectEngine == nil {
+			return nil
+		} else {
+			dsn, err := dbConfig.SelectEngine(name)
+			if err != nil {
+				panic(err)
+			}
+
+			err = NewEngine(name, config2.DbConfig{
+				Dsn: dsn,
+			})
+			if err != nil {
+				panic(err)
+			}
+			return Connections[name]
+		}
+	}
 }
 
 func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
