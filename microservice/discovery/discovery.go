@@ -11,6 +11,7 @@ import (
 	"github.com/duanchi/min/v2/types/discovery"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 var Discovery map[string]_interface.DiscoveryInterface
@@ -23,11 +24,11 @@ func Init() {
 	applicationConfig := config2.Get("Application").(config.Application)
 	httpServerConfig := config2.Get("HttpServer").(config.HttpServer)
 	discoveryNodes := []*url.URL{}
-	discoveryServers := map[string]interface{}{
-		"nacos": []types.ServerConfig{},
+	discoveryServers := map[string][]types.ServerConfig{
+		"nacos": {},
 	}
-	for _, nodeDsn := range discoveryConfig.Nodes {
-		discoveryUrl, err := url.Parse(nodeDsn)
+	for _, nodeDsn := range strings.Split(discoveryConfig.Nodes, ",") {
+		discoveryUrl, err := url.Parse(strings.Trim(nodeDsn, " "))
 		if err != nil {
 			log.Log.Error("[min-framework]: Discovery URL Malformed, \"" + nodeDsn + "\"")
 			return
@@ -43,7 +44,7 @@ func Init() {
 				scheme = "https"
 			}
 			port, _ := strconv.Atoi(discoveryNode.Port())
-			discoveryServers["nacos"] = append(discoveryServers["nacos"].([]types.ServerConfig), types.ServerConfig{
+			discoveryServers["nacos"] = append(discoveryServers["nacos"], types.ServerConfig{
 				Scheme:      scheme,
 				ContextPath: discoveryNode.Path,
 				IpAddr:      discoveryNode.Hostname(),
@@ -66,10 +67,9 @@ func Init() {
 					AppName:     applicationConfig.Name,
 					LogLevel:    "debug",
 				},
-				serverConfig: discoveryServerConfigs.([]types.ServerConfig),
+				serverConfig: discoveryServerConfigs,
 			}
 		}
-
 		Discovery[discoveryType].Init()
 	}
 

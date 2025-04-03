@@ -26,7 +26,7 @@ func (parser RestfulBeanParser) Parse(tag reflect.StructTag, bean reflect.Value,
 		}
 		resources := strings.Split(resource, ",")
 		for _, res := range resources {
-			// res = strings.ReplaceAll("/"+res, "//", "/")
+			res = strings.ReplaceAll("/"+res, "//", "/")
 			RestfulRoutes[strings.TrimSpace(res)] = serverTypes.RestfulRoute{
 				Value:       bean,
 				ResourceKey: key,

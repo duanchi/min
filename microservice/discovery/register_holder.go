@@ -68,6 +68,9 @@ func (this *RegisterHolder) StartHeartBeat() {
 					ServiceName: this.applicationConfig.Name,
 					GroupName:   this.discoveryConfig.Group,
 					Ephemeral:   true,
+					Ip:          this.instance.Ip,
+					Port:        this.instance.Port,
+					Healthy:     true,
 					Beat: request.BeatInfo{
 						Ip:          this.instance.Ip,
 						Port:        this.instance.Port,

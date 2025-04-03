@@ -15,7 +15,6 @@ type HttpHolder struct {
 func NewHttpHolder(client request.Client) (httpHolder *HttpHolder) {
 	if leader > -1 && len(client.ServerConfigs) > leader {
 		service := client.ServerConfigs[leader]
-
 		holder := http.New()
 		holder.BaseUrl(service.Scheme + "://" + service.IpAddr + ":" + strconv.FormatUint(service.Port, 10) + service.ContextPath)
 		httpHolder = &HttpHolder{requestHolder: &holder}
@@ -25,7 +24,8 @@ func NewHttpHolder(client request.Client) (httpHolder *HttpHolder) {
 }
 
 func (this *HttpHolder) GET(url string, parameters interface{}, response interface{}) (err error) {
-	responseData, err := this.requestHolder.Url(url).Method("GET").Query(parameters).Response()
+	responseData, err := this.
+		requestHolder.Url(url).Method("GET").Query(parameters).Response()
 
 	if err == nil {
 		err = responseData.BindJSON(response)
@@ -52,6 +52,10 @@ func (this *HttpHolder) PUT(url string, parameters interface{}) (ok bool, err er
 	}
 
 	return
+}
+
+func (this *HttpHolder) Holder() *http.Request {
+	return this.requestHolder
 }
 
 func (this *HttpHolder) DELETE(url string, parameters interface{}) (ok bool, err error) {

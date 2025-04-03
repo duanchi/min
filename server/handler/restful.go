@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/duanchi/min/v2/config"
 	_interface "github.com/duanchi/min/v2/interface"
 	"github.com/duanchi/min/v2/server/httpserver"
@@ -12,6 +13,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
@@ -55,14 +57,14 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 				commonError := reflect.ValueOf(exception).Interface().(error)
 				response.Message = commonError.Error()
 			}
+			fmt.Println(exception.(error).Error())
+			fmt.Println(string(debug.Stack()))
 		}
 	}()
 
 	var data interface{}
 	var err error
-
 	executor := controller.Value.Interface().(_interface.RestfulControllerInterface)
-
 	// Upgrade Protocol to Websocket
 	if method == "GET" {
 		upgradeRequest := ctx.Request().Header("Connection")

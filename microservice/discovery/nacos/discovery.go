@@ -9,21 +9,25 @@ import (
 )
 
 type DiscoveryClient struct {
-	config        request.Client
-	requestHolder *holder.HttpHolder
+	config request.Client
+	// requestHolder *holder.HttpHolder
 }
 
 func NewDiscoveryClient(discoveryConfig request.Client) DiscoveryClient {
 	client := DiscoveryClient{
-		config:        discoveryConfig,
-		requestHolder: holder.NewHttpHolder(discoveryConfig),
+		config: discoveryConfig,
+		// requestHolder: holder.NewHttpHolder(discoveryConfig),
 	}
 	return client
 }
 
+func (this *DiscoveryClient) getRequestHolder() *holder.HttpHolder {
+	return holder.NewHttpHolder(this.config)
+}
+
 func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (ok bool, err error) {
 	metadataString, _ := json.Marshal(param.Metadata)
-	ok, err = this.requestHolder.POST("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().POST("/ns/instance", map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"weight":      param.Weight,
@@ -39,7 +43,7 @@ func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (o
 }
 
 func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance) (ok bool, err error) {
-	ok, err = this.requestHolder.DELETE("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().DELETE("/ns/instance", map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"clusterName": "DEFAULT",
@@ -52,18 +56,36 @@ func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance
 
 func (this *DiscoveryClient) HeartBeat(param request.HeartBeat) (ok bool, err error) {
 	beatBytes, err := json.Marshal(param.Beat)
-	ok, err = this.requestHolder.PUT("/ns/instance/beat", map[string]interface{}{
-		"serviceName": param.GroupName,
+	// fmt.Println("beatBytes", beatBytes)
+	_, err = this.getRequestHolder().
+		Holder().
+		Url("/ns/instance/beat", "v1").
+		Method("PUT").
+		Query(map[string]interface{}{
+			"serviceName": param.ServiceName,
+			"groupName":   param.GroupName,
+			"ip":          param.Ip,
+			"port":        param.Port,
+			"healthy":     param.Healthy,
+			"ephemeral":   param.Ephemeral,
+			"beat":        url.QueryEscape(string(beatBytes)),
+		}).
+		Response()
+	/*ok, err = this.getRequestHolder().PUT("/ns/instance/beat", map[string]interface{}{
+		"serviceName": param.ServiceName,
 		"groupName":   param.GroupName,
+		"ip":          param.Ip,
+		"port":        param.Port,
+		"healthy":     param.Healthy,
 		"ephemeral":   param.Ephemeral,
 		"beat":        url.QueryEscape(string(beatBytes)),
-	})
-	return
+	})*/
+	return err == nil, err
 }
 
 func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (ok bool, err error) {
 	metadataString, _ := json.Marshal(param.Metadata)
-	ok, err = this.requestHolder.PUT("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().PUT("/ns/instance", map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"weight":      param.Weight,
@@ -78,32 +100,33 @@ func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (ok bo
 	return
 }
 
-func (this *DiscoveryClient) GetService(serviceName string) (response response.Service, err error) {
-	err = this.requestHolder.GET("/ns/service", map[string]interface{}{
+func (this *DiscoveryClient) GetService(serviceName string) (service response.Service, err error) {
+	res := response.Result[response.Service]{}
+	err = this.getRequestHolder().GET("/ns/service", map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
-	}, &response)
-	return
+	}, &res)
+	return res.Data, err
 }
 
 func (this *DiscoveryClient) SelectAllInstances(serviceName string) (instanceResponse []response.Instance, err error) {
-	serviceResponse := response.InstanceResult{}
-	err = this.requestHolder.GET("/ns/instance/list", map[string]interface{}{
+	serviceResponse := response.Result[response.InstanceResult]{}
+	err = this.getRequestHolder().GET("/ns/instance/list", map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
 		"cluster":     "DEFAULT",
 	}, &serviceResponse)
 	if err == nil {
-		instanceResponse = serviceResponse.Hosts
+		instanceResponse = serviceResponse.Data.Hosts
 	}
 	return
 }
 
 func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceResponse []response.Instance, err error) {
-	serviceResponse := response.InstanceResult{}
-	err = this.requestHolder.GET("/ns/instance/list", map[string]interface{}{
+	serviceResponse := response.Result[response.InstanceResult]{}
+	err = this.getRequestHolder().GET("/ns/instance/list", map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
@@ -111,25 +134,19 @@ func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceRespon
 		"healthyOnly": true,
 	}, &serviceResponse)
 	if err == nil {
-		instanceResponse = serviceResponse.Hosts
+		instanceResponse = serviceResponse.Data.Hosts
 	}
 	return
 }
 
-func (this *DiscoveryClient) GetAllServicesInfo() (response response.ServiceList, err error) {
-	/*err = this.requestHolder.GET("/ns/service/list", map[string]interface{}{
-		"pageNo":      1,
-		"pageSize":    512,
-		"namespaceId": this.config.ClientConfig.NamespaceId,
-		"groupNameParam":   this.config.RuntimeConfig.Group,
-	}, &response)*/
-
+func (this *DiscoveryClient) GetAllServicesInfo() (serviceList response.ServiceList, err error) {
 	// 使用web API 获取所有group的服务
-	err = this.requestHolder.GET("/ns/catalog/services", map[string]interface{}{
+	res := response.Result[response.ServiceList]{}
+	err = this.getRequestHolder().GET("/ns/service/list", map[string]interface{}{
 		"pageNo":         1,
 		"pageSize":       512,
 		"namespaceId":    this.config.ClientConfig.NamespaceId,
 		"groupNameParam": this.config.RuntimeConfig.Group,
-	}, &response)
-	return
+	}, &res)
+	return res.Data, err
 }

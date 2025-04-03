@@ -104,8 +104,9 @@ type ExpressionSelector struct {
 }*/
 
 type ServiceList struct {
-	Count       int64         `json:"count"`
-	ServiceList []ServiceItem `json:"serviceList"`
+	Count int64 `json:"count"`
+	// ServiceList []ServiceItem `json:"serviceList"`
+	ServiceList []string `json:"services"`
 }
 
 type ServiceItem struct {

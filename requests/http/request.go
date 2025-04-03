@@ -25,7 +25,7 @@ type Request struct {
 	queryString string
 	header      *fasthttp.RequestHeader
 	payload     []byte
-	formData    interface{}
+	formData    string
 }
 
 const (
@@ -111,9 +111,12 @@ func TRACE(url string) *Request {
 	return &request
 }
 
-func (this *Request) Url(url string) *Request {
-	this.url = url
-
+func (this *Request) Url(url string, version ...string) *Request {
+	if len(version) > 0 {
+		this.url = "/nacos/" + version[0] + url
+	} else {
+		this.url = "/nacos/v2" + url
+	}
 	return this
 }
 
@@ -155,12 +158,14 @@ func (this *Request) JSON(obj interface{}) *Request {
 func (this *Request) Form(formData interface{}) *Request {
 	switch reflect.TypeOf(formData).Kind() {
 	case reflect.String:
-		this.queryString = formData.(string)
+		this.formData = formData.(string)
 	case reflect.Map:
+		fallthrough
 	case reflect.Struct:
-		this.queryString = buildQueryString(formData)
+		this.formData = buildQueryString(formData)
 	}
-
+	this.Header("Content-Type", "application/x-www-form-urlencoded")
+	this.Body([]byte(this.formData))
 	return this
 }
 
@@ -240,9 +245,6 @@ func (this *Request) Response() (response Response, err error) {
 	}
 
 	url := this.baseUrl + this.url
-	uri := &fasthttp.URI{}
-	uri.Parse([]byte(""), []byte(url))
-
 	if len(this.queryString) > 0 {
 		if strings.Contains(url, "?") {
 			url += "&" + this.queryString
@@ -251,10 +253,15 @@ func (this *Request) Response() (response Response, err error) {
 		}
 	}
 
+	uri := &fasthttp.URI{}
+	uri.Parse([]byte(""), []byte(url))
+
 	httpRequest := fasthttp.AcquireRequest()
 	httpResponse := fasthttp.AcquireResponse()
 	httpRequest.SetURI(uri)
-	httpRequest.SetBody(this.payload)
+	if len(this.payload) > 0 {
+		httpRequest.SetBody(this.payload)
+	}
 	this.header.CopyTo(&httpRequest.Header)
 	httpRequest.Header.SetMethod(this.method)
 
@@ -303,6 +310,8 @@ func parseValue(value interface{}) string {
 		return strconv.FormatInt(value.(int64), 10)
 	case reflect.Uint32:
 		return strconv.Itoa(int(value.(uint32)))
+	case reflect.Uint64:
+		return strconv.Itoa(int(value.(uint64)))
 	case reflect.Bool:
 		if value.(bool) {
 			return "true"
@@ -310,7 +319,7 @@ func parseValue(value interface{}) string {
 		return "false"
 	case reflect.Float64:
 		return strconv.FormatFloat(value.(float64), 'f', -1, 64)
+	default:
+		return fmt.Sprintf("%s", value)
 	}
-
-	return ""
 }

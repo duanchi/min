@@ -17,8 +17,7 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 	afterRouteMiddlewares := middleware.GetAfterRouteMiddlewares()
 
 	for key, route := range RestfulRoutes {
-		resource := strings.ReplaceAll("/"+key, "//", "/")
-
+		resource := key + ""
 		handlers := []types.ServerHandleFunc{}
 		if len(afterRouteMiddlewares) > 0 {
 			handlers = append(handlers, afterRouteMiddlewares...)
@@ -44,9 +43,9 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 				httpServer.ALL(resource+"/", handlers...)
 			}
 		} else {
-			httpServer.ALL("/"+resource, handlers...)
+			httpServer.ALL(resource, handlers...)
 			// httpServer.ALL("/"+resource+"/", handlers...)
-			httpServer.ALL("/"+resource+"/:"+route.ResourceKey+"?", handlers...)
+			httpServer.ALL(resource+"/:"+route.ResourceKey+"?", handlers...)
 		}
 	}
 }

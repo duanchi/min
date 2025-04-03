@@ -31,6 +31,9 @@ type HeartBeat struct {
 	GroupName   string   `param:"groupName"`   //optional,default:DEFAULT_GROUP
 	Ephemeral   bool     `param:"ephemeral"`   //optional
 	Beat        BeatInfo `param:"beat"`
+	Healthy     bool     `param:"healthy"`
+	Ip          string   `param:"ip"`
+	Port        uint64   `param:"port"`
 }
 
 type BeatInfo struct {

@@ -3,7 +3,6 @@ package discovery
 import (
 	config2 "github.com/duanchi/min/v2/config"
 	_interface "github.com/duanchi/min/v2/interface"
-	"github.com/duanchi/min/v2/log"
 	"github.com/duanchi/min/v2/types/config"
 	"time"
 )
@@ -31,7 +30,7 @@ func (this *ServiceUpdater) StopUpdateSchedule() {
 
 func (this *ServiceUpdater) UpdateService() {
 	for _, discoveryClient := range this.discoveryClients {
-		log.Log.Info("RUN Service Updater!!!")
+		// log.Log.Info("RUN Service Updater!!!")
 		ServiceMap = discoveryClient.GetServiceList()
 	}
 }

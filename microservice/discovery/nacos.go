@@ -21,7 +21,6 @@ type NacosDiscovery struct {
 }
 
 func (this *NacosDiscovery) Init() {
-
 	this.discoveryClient = nacos.NewDiscoveryClient(request.Client{
 		ClientConfig:  &this.clientConfig,
 		ServerConfigs: this.serverConfig,
@@ -41,9 +40,9 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 
 	if serviceList.Count > 0 {
 		for _, serviceItem := range serviceList.ServiceList {
-			service, err := this.GetService(serviceItem.Name)
+			service, err := this.GetService(serviceItem)
 			if err == nil {
-				instances, listErr := this.GetAllInstances(serviceItem.Name)
+				instances, listErr := this.GetAllInstances(serviceItem)
 				instanceMap := map[string][]discovery.Instance{}
 				if listErr == nil {
 					for _, serviceInstance := range instances {
@@ -65,10 +64,10 @@ func (this *NacosDiscovery) GetServiceList() map[string]discovery.Service {
 				}
 
 				for clusterName, instances := range instanceMap {
-					serviceMap[clusterName+"#"+serviceItem.GroupName+"@@"+serviceItem.Name] = discovery.Service{
+					serviceMap[clusterName+"#"+this.discoveryConfig.Group+"@@"+serviceItem] = discovery.Service{
 						Instances: instances,
-						Name:      serviceItem.Name,
-						GroupName: serviceItem.GroupName,
+						Name:      serviceItem,
+						GroupName: this.discoveryConfig.Group,
 					}
 				}
 			}

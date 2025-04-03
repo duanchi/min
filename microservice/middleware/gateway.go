@@ -14,9 +14,9 @@ type GatewayMiddleware struct {
 
 func (this *GatewayMiddleware) AfterRoute(ctx *context.Context) {
 
-	data := gateway.Data{}
+	data := gateway.GatewayRecord{}
 
-	gatewayData := ctx.Request.Header.Get("X-Gateway-Data")
+	gatewayData := ctx.Request().Header("X-Gateway-Data")
 
 	if gatewayData == "" && ctx.Query("__X-GATEWAY-DATA__") != "" {
 		gatewayData = ctx.Query("__X-GATEWAY-DATA__")
@@ -27,4 +27,5 @@ func (this *GatewayMiddleware) AfterRoute(ctx *context.Context) {
 	}
 
 	ctx.Set("GATEWAY_DATA", data)
+	ctx.Next()
 }
