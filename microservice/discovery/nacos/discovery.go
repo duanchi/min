@@ -27,7 +27,7 @@ func (this *DiscoveryClient) getRequestHolder() *holder.HttpHolder {
 
 func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (ok bool, err error) {
 	metadataString, _ := json.Marshal(param.Metadata)
-	ok, err = this.getRequestHolder().POST("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().POST(this.parseUrl("/ns/instance"), map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"weight":      param.Weight,
@@ -43,7 +43,7 @@ func (this *DiscoveryClient) RegisterInstance(param request.RegisterInstance) (o
 }
 
 func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance) (ok bool, err error) {
-	ok, err = this.getRequestHolder().DELETE("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().DELETE(this.parseUrl("/ns/instance"), map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"clusterName": "DEFAULT",
@@ -54,12 +54,19 @@ func (this *DiscoveryClient) DeregisterInstance(param request.DeregisterInstance
 	return
 }
 
+func (this *DiscoveryClient) parseUrl(path string, version ...string) string {
+	if len(version) > 0 {
+		return "/nacos/" + version[0] + path
+	} else {
+		return "/nacos/v2" + path
+	}
+}
+
 func (this *DiscoveryClient) HeartBeat(param request.HeartBeat) (ok bool, err error) {
 	beatBytes, err := json.Marshal(param.Beat)
-	// fmt.Println("beatBytes", beatBytes)
 	_, err = this.getRequestHolder().
 		Holder().
-		Url("/ns/instance/beat", "v1").
+		Url(this.parseUrl("/ns/instance/beat", "v1")).
 		Method("PUT").
 		Query(map[string]interface{}{
 			"serviceName": param.ServiceName,
@@ -85,7 +92,7 @@ func (this *DiscoveryClient) HeartBeat(param request.HeartBeat) (ok bool, err er
 
 func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (ok bool, err error) {
 	metadataString, _ := json.Marshal(param.Metadata)
-	ok, err = this.getRequestHolder().PUT("/ns/instance", map[string]interface{}{
+	ok, err = this.getRequestHolder().PUT(this.parseUrl("/ns/instance"), map[string]interface{}{
 		"ip":          param.Ip,
 		"port":        param.Port,
 		"weight":      param.Weight,
@@ -102,7 +109,7 @@ func (this *DiscoveryClient) UpdateInstance(param request.UpdateInstance) (ok bo
 
 func (this *DiscoveryClient) GetService(serviceName string) (service response.Service, err error) {
 	res := response.Result[response.Service]{}
-	err = this.getRequestHolder().GET("/ns/service", map[string]interface{}{
+	err = this.getRequestHolder().GET(this.parseUrl("/ns/service"), map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
@@ -112,7 +119,7 @@ func (this *DiscoveryClient) GetService(serviceName string) (service response.Se
 
 func (this *DiscoveryClient) SelectAllInstances(serviceName string) (instanceResponse []response.Instance, err error) {
 	serviceResponse := response.Result[response.InstanceResult]{}
-	err = this.getRequestHolder().GET("/ns/instance/list", map[string]interface{}{
+	err = this.getRequestHolder().GET(this.parseUrl("/ns/instance/list"), map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
@@ -126,7 +133,7 @@ func (this *DiscoveryClient) SelectAllInstances(serviceName string) (instanceRes
 
 func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceResponse []response.Instance, err error) {
 	serviceResponse := response.Result[response.InstanceResult]{}
-	err = this.getRequestHolder().GET("/ns/instance/list", map[string]interface{}{
+	err = this.getRequestHolder().GET(this.parseUrl("/ns/instance/list"), map[string]interface{}{
 		"serviceName": serviceName,
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
@@ -142,7 +149,7 @@ func (this *DiscoveryClient) SelectInstances(serviceName string) (instanceRespon
 func (this *DiscoveryClient) GetAllServicesInfo() (serviceList response.ServiceList, err error) {
 	// 使用web API 获取所有group的服务
 	res := response.Result[response.ServiceList]{}
-	err = this.getRequestHolder().GET("/ns/service/list", map[string]interface{}{
+	err = this.getRequestHolder().GET(this.parseUrl("/ns/service/list"), map[string]interface{}{
 		"pageNo":         1,
 		"pageSize":       512,
 		"namespaceId":    this.config.ClientConfig.NamespaceId,

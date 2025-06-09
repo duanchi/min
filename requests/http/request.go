@@ -111,12 +111,8 @@ func TRACE(url string) *Request {
 	return &request
 }
 
-func (this *Request) Url(url string, version ...string) *Request {
-	if len(version) > 0 {
-		this.url = "/nacos/" + version[0] + url
-	} else {
-		this.url = "/nacos/v2" + url
-	}
+func (this *Request) Url(url string) *Request {
+	this.url = url
 	return this
 }
 

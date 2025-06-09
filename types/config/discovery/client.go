@@ -7,5 +7,5 @@ type Client struct {
 	Scheme            string            `yaml:"scheme" default:"http"`
 	InstanceId        string            `yaml:"instance_id"`
 	Metadata          map[string]string `yaml:"metadata"`
-	HeartbeatInterval int64             `yaml:"heartbeat_interval" default:"30000"`
+	HeartbeatInterval int64             `yaml:"heartbeat_interval" default:"4000"`
 }
