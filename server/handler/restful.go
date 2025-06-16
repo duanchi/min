@@ -2,6 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"reflect"
+	"runtime/debug"
+	"strings"
+
 	"github.com/duanchi/min/v2/config"
 	_interface "github.com/duanchi/min/v2/interface"
 	"github.com/duanchi/min/v2/server/httpserver"
@@ -11,14 +16,11 @@ import (
 	"github.com/duanchi/min/v2/server/websocket"
 	"github.com/duanchi/min/v2/types"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
-	"reflect"
-	"runtime/debug"
-	"strings"
 )
 
 func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *context.Context, engine *httpserver.Httpserver) error {
 	isCustomResponse := config.Get("HttpServer.Restful.CustomResponse").(bool)
+	ctx.SetCustomResponse(isCustomResponse)
 	params := ctx.Params()
 	id := ctx.Param(controller.ResourceKey)
 	method := ctx.Request().Method()
@@ -109,7 +111,7 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}
-		if isCustomResponse {
+		if ctx.GetCustomResponse() {
 			return ctx.JSONWithStatus(status, data)
 		} else {
 			response.Status = true

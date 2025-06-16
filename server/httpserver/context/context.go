@@ -50,13 +50,28 @@ func (this *Context) Params() *Params {
 	return this.params
 }
 
-func (this *Context) Get(key string, defaults ...interface{}) (value ContextValue) {
-	if len(defaults) > 0 {
-		return this.ctx.Locals(key, ContextValue{value: defaults[0]}).(ContextValue)
+func (this *Context) SetCustomResponse(isCustomResponse bool, force ...bool) *Context {
+	customResponseIsSet := this.getParam("customResponseIsSet", false).(bool)
+
+	if !customResponseIsSet || (len(force) > 0 && force[0]) {
+		this.setParam("customResponse", isCustomResponse)
+		this.setParam("customResponseIsSet", true)
 	}
+	return this
+}
+
+func (this *Context) GetCustomResponse() bool {
+	return this.getParam("customResponse", false).(bool)
+}
+
+func (this *Context) Get(key string, defaults ...interface{}) (value ContextValue) {
 	val := this.ctx.Locals(key)
 	if val == nil {
-		return ContextValue{}
+		if len(defaults) > 0 {
+			return ContextValue{value: defaults[0]}
+		} else {
+			return ContextValue{}
+		}
 	}
 	return val.(ContextValue)
 }
@@ -132,4 +147,26 @@ func (this *Context) Clear() {
 	this.ctx = nil
 	this.request = nil
 	this.response = nil
+}
+
+func (this *Context) getParam(key string, defaults ...any) any {
+	if value := this.ctx.Locals("CONTEXT_PARAMS"); value != nil {
+		if v, has := value.(map[string]any)[key]; has {
+			return v
+		}
+	}
+	if len(defaults) > 0 {
+		return defaults[0]
+	}
+	return nil
+}
+
+func (this *Context) setParam(key string, value any) {
+	if v := this.ctx.Locals("CONTEXT_PARAMS"); v != nil {
+		v.(map[string]any)[key] = value
+		this.ctx.Locals("CONTEXT_PARAMS", v)
+	} else {
+		v = map[string]any{key: value}
+		this.ctx.Locals("CONTEXT_PARAMS", v)
+	}
 }
