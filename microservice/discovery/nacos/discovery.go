@@ -114,7 +114,7 @@ func (this *DiscoveryClient) GetService(serviceName string) (service response.Se
 		"namespaceId": this.config.ClientConfig.NamespaceId,
 		"groupName":   this.config.RuntimeConfig.Group,
 	}, &res)
-	return res.Data, err
+	return res.Data, nil
 }
 
 func (this *DiscoveryClient) SelectAllInstances(serviceName string) (instanceResponse []response.Instance, err error) {

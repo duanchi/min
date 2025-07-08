@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/v2/context"
 	"github.com/duanchi/min/v2/db/xorm"
@@ -71,6 +72,13 @@ func Engine(name string) *xorm.Engine {
 			}
 			return Connections[name]
 		}
+	}
+}
+
+func Remove(name string) {
+	if _, has := Connections[name]; has {
+		Engine(name).Close()
+		delete(Connections, name)
 	}
 }
 
