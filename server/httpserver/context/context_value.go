@@ -18,9 +18,9 @@ type ContextValue struct {
 }
 
 func (this ContextValue) Value() interface{} {
-	if this.IsNil() {
+	/*if this.IsNil() {
 		return interface{}(nil)
-	}
+	}*/
 	return this.value
 }
 

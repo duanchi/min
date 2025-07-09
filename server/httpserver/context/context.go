@@ -66,7 +66,7 @@ func (this *Context) GetCustomResponse() bool {
 
 func (this *Context) Get(key string, defaults ...interface{}) (value ContextValue) {
 	val := this.ctx.Locals(key)
-	if val == nil {
+	if val == nil || val.(ContextValue).Value() == nil {
 		if len(defaults) > 0 {
 			return ContextValue{value: defaults[0]}
 		} else {
