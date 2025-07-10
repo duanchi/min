@@ -1,13 +1,14 @@
 package route
 
 import (
+	"strings"
+
 	"github.com/duanchi/min/v2/server/handler"
 	"github.com/duanchi/min/v2/server/httpserver"
 	"github.com/duanchi/min/v2/server/httpserver/constant"
 	"github.com/duanchi/min/v2/server/httpserver/context"
 	"github.com/duanchi/min/v2/server/middleware"
 	"github.com/duanchi/min/v2/server/types"
-	"strings"
 )
 
 var RestfulRoutes = types.RestfulRoutesMap{}
@@ -43,7 +44,7 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 				httpServer.ALL(resource+"/", handlers...)
 			}
 		} else {
-			httpServer.ALL(resource, handlers...)
+			// httpServer.ALL(resource, handlers...)
 			// httpServer.ALL("/"+resource+"/", handlers...)
 			httpServer.ALL(resource+"/:"+route.ResourceKey+"?", handlers...)
 		}
