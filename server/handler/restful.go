@@ -108,6 +108,9 @@ func RestfulHandle(resource string, controller serverTypes.RestfulRoute, ctx *co
 		case "DELETE":
 			status = 204
 		}
+		if ctx.GetStatus() > 0 {
+			status = ctx.GetStatus()
+		}
 		for _, handler := range beforeResponseHandlers {
 			handler(ctx)
 		}

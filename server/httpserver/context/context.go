@@ -12,6 +12,8 @@ type Context struct {
 	response *Response
 	params   *Params
 	next     bool
+	status   int
+	message  string
 }
 
 func New(ctx *fiber.Ctx) *Context {
@@ -95,6 +97,18 @@ func (this *Context) GetHeader(key string) string {
 func (this *Context) Next() {
 	this.ctx.Next()
 	return
+}
+
+func (this *Context) Status(code int, message ...string) {
+	this.status = code
+	if len(message) > 0 {
+		this.message = message[0]
+	}
+	this.Response().SetStatus(code, message...)
+}
+
+func (this *Context) GetStatus() int {
+	return this.status
 }
 
 func (this *Context) JSON(obj interface{}) error {
