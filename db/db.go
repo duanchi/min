@@ -23,11 +23,10 @@ var dbConfig config2.Db
 
 func Init() {
 	var err error
-
+	Connections = map[string]*xorm.Engine{}
 	dbConfig = context.GetApplicationContext().GetConfig("Db").(config2.Db)
 
 	if len(dbConfig.Sources) > 0 {
-		Connections = map[string]*xorm.Engine{}
 		for name, sourceConfig := range dbConfig.Sources {
 			parsedDsn, _ := url.Parse(sourceConfig.Dsn)
 			Connections[name], err = connect(parsedDsn, sourceConfig)
