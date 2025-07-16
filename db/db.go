@@ -11,8 +11,6 @@ import (
 	_ "github.com/lib/pq"
 	"xorm.io/core"
 
-	// _ "github.com/mattn/go-sqlite3"
-	"log"
 	"net/url"
 	"strings"
 )
@@ -90,11 +88,19 @@ func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 
 func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engine, err error) {
 
-	defer func() {
+	/*defer func() {
 		e := recover()
 		if e != nil {
 			fmt.Printf("%s", e)
 			log.Fatal(err)
+		}
+		return
+	}()*/
+
+	defer func() {
+		e := recover()
+		if e != nil {
+			err = e.(error)
 		}
 		return
 	}()
@@ -138,7 +144,6 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 
 		err = connection.Ping()
 		if err != nil {
-			log.Fatal(err)
 			return
 		}
 
@@ -174,7 +179,6 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 
 		err = connection.Ping()
 		if err != nil {
-			log.Fatal(err)
 			return
 		}
 
@@ -185,7 +189,6 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 
 		err = connection.Ping()
 		if err != nil {
-			log.Fatal(err)
 			return
 		}
 		/*case "sqlite":
