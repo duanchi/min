@@ -2,9 +2,10 @@ package bean
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/duanchi/min/v2/bean/core_parsers"
 	_interface "github.com/duanchi/min/v2/interface"
-	"reflect"
 )
 
 // var beanContainer interface{}

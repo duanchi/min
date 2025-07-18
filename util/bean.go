@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -129,4 +130,32 @@ func GetRawConfigFromInstance(key string, configInstance interface{}) reflect.Va
 	}
 
 	return value
+}
+
+func ParseTag(name string, tag reflect.StructTag, defaultKey ...string) (tagMapList []map[string]string) {
+	tags := GetTags(name, tag)
+	tagMapList = []map[string]string{}
+	key := "name"
+
+	if len(defaultKey) > 0 && defaultKey[0] != "" {
+		key = defaultKey[0]
+	}
+
+	for _, tagString := range tags {
+		tagStack := strings.Split(tagString, ",")
+
+		tagMap := map[string]string{}
+		for _, tagItem := range tagStack {
+			colons := strings.SplitN(strings.TrimSpace(tagItem), ":", 2)
+			fmt.Println(colons)
+			if len(colons) < 2 {
+				tagMap[key] = colons[0]
+			} else {
+				tagMap[colons[0]] = colons[1]
+			}
+		}
+		tagMapList = append(tagMapList, tagMap)
+	}
+
+	return
 }
