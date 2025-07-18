@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -147,7 +146,6 @@ func ParseTag(name string, tag reflect.StructTag, defaultKey ...string) (tagMapL
 		tagMap := map[string]string{}
 		for _, tagItem := range tagStack {
 			colons := strings.SplitN(strings.TrimSpace(tagItem), ":", 2)
-			fmt.Println(colons)
 			if len(colons) < 2 {
 				tagMap[key] = colons[0]
 			} else {
