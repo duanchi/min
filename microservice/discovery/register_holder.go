@@ -1,6 +1,10 @@
 package discovery
 
 import (
+	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/duanchi/min/v2/abstract"
 	"github.com/duanchi/min/v2/event"
 	_interface "github.com/duanchi/min/v2/interface"
@@ -9,8 +13,6 @@ import (
 	"github.com/duanchi/min/v2/types"
 	"github.com/duanchi/min/v2/types/config"
 	"github.com/duanchi/min/v2/util"
-	"strconv"
-	"time"
 )
 
 type instance struct {
@@ -108,6 +110,12 @@ func NewRegisterHolder(applicationConfig config.Application, httpServerConfig co
 	}
 
 	metadata := discoveryConfig.Client.Metadata
+
+	if nil == metadata {
+		metadata = map[string]string{}
+	}
+
+	fmt.Println("metadata:", metadata)
 
 	if discoveryConfig.Client.InstanceId != "" {
 		metadata["instance-id"] = discoveryConfig.Client.InstanceId

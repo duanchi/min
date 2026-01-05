@@ -184,3 +184,7 @@ func (this *Context) setParam(key string, value any) {
 		this.ctx.Locals("CONTEXT_PARAMS", v)
 	}
 }
+
+func (this *Context) IP() string {
+	return this.ctx.IP()
+}

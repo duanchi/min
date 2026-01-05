@@ -6,14 +6,23 @@ import (
 	"strings"
 )
 
-func GetTags(key string, tag reflect.StructTag) (tags []string) {
+func GetTags(key string, tag reflect.StructTag, fullMatch ...bool) (tags []string) {
 	tagString := string(tag)
-	//fmt.Println(tagString)
-	idx := strings.Index(tagString, key+":\"")
-	if idx == -1 {
-		return
+	idx := -1
+	matchKey := key
+	if val, _ := GetOptionalParameter(fullMatch); !val {
+		matchKey = "@" + key
+		idx = strings.Index(tagString, matchKey+":\"")
 	}
-	tagStack := strings.Split(tagString[idx+len(key)+2:], key+":\"")
+	if idx == -1 {
+		matchKey = key
+		idx = strings.Index(tagString, matchKey+":\"")
+		if idx == -1 {
+			return
+		}
+	}
+
+	tagStack := strings.Split(tagString[idx+len(matchKey)+2:], matchKey+":\"")
 	tags = []string{}
 
 	for _, tagItem := range tagStack {

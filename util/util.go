@@ -1,13 +1,14 @@
 package util
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"math/rand"
 	"net"
 	"os"
 	"reflect"
 	"time"
 	"unsafe"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func GetType(i interface{}) reflect.Type {
@@ -48,7 +49,10 @@ func RandomString(n int) string {
 }
 
 func IsBeanKind(tag reflect.StructTag, kind string) bool {
-	beanKind := tag.Get("bean")
+	beanKind := tag.Get("@bean")
+	if beanKind == "" {
+		beanKind = tag.Get("bean")
+	}
 	if beanKind == kind {
 		return true
 	}
@@ -78,4 +82,12 @@ func GetIp() string {
 	}
 
 	return ""
+}
+
+func GetOptionalParameter[T any](param []T) (value T, has bool) {
+	has = len(param) > 0
+	if has {
+		value = param[0]
+	}
+	return
 }
