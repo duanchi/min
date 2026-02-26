@@ -2,20 +2,26 @@ package httpserver
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/duanchi/min/v2/server/httpserver/context"
 	"github.com/duanchi/min/v2/server/types"
+	"github.com/duanchi/min/v2/types/config"
+	"github.com/duanchi/min/v2/util"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"reflect"
 )
 
 type Httpserver struct {
 	instance *fiber.App
 }
 
-func New(config interface{}) *Httpserver {
-	app := fiber.New()
+func New(configuration config.ServerConfig) *Httpserver {
+	app := fiber.New(fiber.Config{
+		BodyLimit:   util.Unit2Int(configuration.ClientMaxBodySize),
+		Concurrency: configuration.Concurrency,
+	})
 	app.Use(logger.New(logger.Config{Format: "[${ip}]:${port} ${status} - ${method} ${path}\n"}))
 	return &Httpserver{
 		instance: app,

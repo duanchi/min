@@ -8,12 +8,15 @@ import (
 	"github.com/duanchi/min/v2/server/route"
 	"github.com/duanchi/min/v2/server/static"
 	"github.com/duanchi/min/v2/server/validate"
+	"github.com/duanchi/min/v2/types/config"
 )
 
 var HttpServer *httpserver.Httpserver
 
 func Init(err chan error) {
-	HttpServer = httpserver.New(struct{}{})
+	serverConfig := context.GetApplicationContext().GetConfig("HttpServer.Config").(config.ServerConfig)
+
+	HttpServer = httpserver.New(serverConfig)
 
 	if context.GetApplicationContext().GetConfig("Env").(string) == "production" {
 		HttpServer.SetLogLevel(httpserver.LOG_ERROR)
