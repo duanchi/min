@@ -90,6 +90,10 @@ func (this *Context) Query(key string, defaults ...string) string {
 	return this.request.ctx.Query(key, defaults...)
 }
 
+func (this *Context) Queries() map[string]string {
+	return this.request.ctx.Queries()
+}
+
 func (this *Context) GetHeader(key string) string {
 	return this.ctx.Get(key)
 }

@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-
 func getRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
@@ -20,7 +19,7 @@ func getRaw(key string) reflect.Value {
 		//fmt.Printf("key: %s, kind %s",keyStack[i], reflect.TypeOf(value).Kind())
 
 		// 调用栈不是末尾, 并且value是可用值, 并且value是基础类型
-		if i < len(keyStack) - 1 && value.IsValid() && value.Kind() != reflect.Ptr && value.Kind() != reflect.Struct {
+		if i < len(keyStack)-1 && value.IsValid() && value.Kind() != reflect.Ptr && value.Kind() != reflect.Struct {
 			return reflect.New(value.Type())
 		} else {
 			if value.Kind() == reflect.Struct {
@@ -48,7 +47,7 @@ func getRaw(key string) reflect.Value {
 	return value
 }
 
-func parseConfig (config interface{}, configMap interface{}) {
+func parseConfig(config interface{}, configMap interface{}) {
 	configType := reflect.TypeOf(config).Elem()
 	configValue := reflect.ValueOf(config).Elem()
 	configRaw := reflect.ValueOf(configMap)
@@ -61,25 +60,22 @@ func parseConfig (config interface{}, configMap interface{}) {
 			if configValue.Field(i).Kind() == reflect.Struct {
 				if configRaw.IsValid() {
 					if configKey == ",inline" {
-						parseConfig(configValue.Field(i).Addr().Interface(),  configRaw.Interface())
+						parseConfig(configValue.Field(i).Addr().Interface(), configRaw.Interface())
 					} else {
 						if configRaw.MapIndex(reflect.ValueOf(configKey)).IsValid() {
 							parseConfig(configValue.Field(i).Addr().Interface(), configRaw.MapIndex(reflect.ValueOf(configKey)).Interface())
 						} else {
-							parseConfig(configValue.Field(i).Addr().Interface(),  nil)
+							parseConfig(configValue.Field(i).Addr().Interface(), nil)
 						}
 					}
 				} else {
-					parseConfig(configValue.Field(i).Addr().Interface(),  nil)
+					parseConfig(configValue.Field(i).Addr().Interface(), nil)
 				}
 
-
 			} else if configValue.Field(i).Kind() == reflect.Slice {
-				fmt.Println(configType.Field(i).Type)
-				fmt.Println(configRaw.Kind())
 				if configRaw.Kind() == reflect.Slice || configRaw.Kind() == reflect.Map {
 
-					for j:=0; j < configRaw.Len(); j++ {
+					for j := 0; j < configRaw.Len(); j++ {
 						// reflect.Append(configValue.Field(i), reflect.New(configType.Field(i).Type.))
 						parseConfig(configValue.Field(i).Index(j).Addr().Interface(), configRaw.Index(i))
 						// parseConfig(configValue.Field(i).Index(j).Addr().Interface(), configRaw.Index(i))
@@ -110,7 +106,7 @@ func parseConfig (config interface{}, configMap interface{}) {
 					if index != -1 {
 						envKey = elContent[1:index]
 						envDefaultValue = elContent[index+1:]
-					} else {//不存在配置值
+					} else { //不存在配置值
 						envKey = elContent[1:]
 					}
 
@@ -125,10 +121,9 @@ func parseConfig (config interface{}, configMap interface{}) {
 					}
 					if envValue != "" {
 						// configValue.Field(i).SetString(envValue)
-						v = yamlValue[0:start - 1] + envValue + yamlValue[end:len(yamlValue) - 1]
+						v = yamlValue[0:start-1] + envValue + yamlValue[end:len(yamlValue)-1]
 					}
 				}
-
 
 				class := configType.Field(i).Type.Kind()
 				switch class {

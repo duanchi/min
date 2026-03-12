@@ -6,10 +6,10 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/v2/context"
 	"github.com/duanchi/min/v2/db/xorm"
+	"github.com/duanchi/min/v2/db/xorm/names"
 	config2 "github.com/duanchi/min/v2/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"xorm.io/core"
 
 	"net/url"
 	"strings"
@@ -139,7 +139,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 		}
 
 		if prefix != "" {
-			connection.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, prefix))
+			connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
 		}
 
 		err = connection.Ping()
@@ -174,7 +174,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 		}
 
 		if prefix != "" {
-			connection.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, prefix))
+			connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
 		}
 
 		err = connection.Ping()

@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/duanchi/min/v2/util/arrays"
-	"github.com/fatih/structs"
-	"github.com/valyala/fasthttp"
 	"io"
 	"mime/multipart"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/duanchi/min/v2/util/arrays"
+	"github.com/fatih/structs"
+	"github.com/valyala/fasthttp"
 )
 
 type Request struct {
@@ -230,7 +231,7 @@ func (this *Request) Headers(headers *fasthttp.RequestHeader) *Request {
 
 func (this *Request) BearerToken(token string) *Request {
 
-	this.Header("Authorization", token)
+	this.Header("Authorization", "Bearer "+token)
 
 	return this
 }

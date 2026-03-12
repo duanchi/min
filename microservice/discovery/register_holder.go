@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -114,8 +113,6 @@ func NewRegisterHolder(applicationConfig config.Application, httpServerConfig co
 	if nil == metadata {
 		metadata = map[string]string{}
 	}
-
-	fmt.Println("metadata:", metadata)
 
 	if discoveryConfig.Client.InstanceId != "" {
 		metadata["instance-id"] = discoveryConfig.Client.InstanceId
