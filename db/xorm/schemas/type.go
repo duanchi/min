@@ -19,6 +19,7 @@ const (
 	MYSQL    DBType = "mysql"
 	MSSQL    DBType = "mssql"
 	ORACLE   DBType = "oracle"
+	INFLUXDB DBType = "influxdb"
 )
 
 // SQLType represents SQL types

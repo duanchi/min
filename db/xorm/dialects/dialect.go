@@ -208,6 +208,7 @@ func regDrvsNDialects() bool {
 		"sqlite3":  {"sqlite3", func() Driver { return &sqlite3Driver{} }, func() Dialect { return &sqlite3{} }},
 		"oci8":     {"oracle", func() Driver { return &oci8Driver{} }, func() Dialect { return &oracle{} }},
 		"godror":   {"oracle", func() Driver { return &godrorDriver{} }, func() Dialect { return &oracle{} }},
+		"influxdb": {"influxdb", func() Driver { return &influxdbDriver{} }, func() Dialect { return &influxdb{} }},
 	}
 
 	for driverName, v := range providedDrvsNDialects {

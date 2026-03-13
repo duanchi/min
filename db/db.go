@@ -107,89 +107,94 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 
 	switch dsnUrl.Scheme {
 	case "postgres":
-		password, _ := dsnUrl.User.Password()
-		dbStack := strings.Split(strings.Trim(dsnUrl.Path, "/"), "/")
-		prefix := dsnUrl.Query().Get("prefix")
-		dbname := ""
-		schema := ""
-		if len(dbStack) > 1 {
-			dbname = dbStack[0]
-			schema = dbStack[1]
-		} else {
-			dbname = dbStack[0]
+		{
+			password, _ := dsnUrl.User.Password()
+			dbStack := strings.Split(strings.Trim(dsnUrl.Path, "/"), "/")
+			prefix := dsnUrl.Query().Get("prefix")
+			dbname := ""
+			schema := ""
+			if len(dbStack) > 1 {
+				dbname = dbStack[0]
+				schema = dbStack[1]
+			} else {
+				dbname = dbStack[0]
+			}
+
+			dsn := fmt.Sprintf(
+				"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+				dsnUrl.Hostname(),
+				dsnUrl.Port(),
+				dsnUrl.User.Username(),
+				password,
+				dbname,
+				dsnUrl.Query().Get("sslmode"),
+			)
+
+			connection, err = xorm.NewEngine("postgres", dsn)
+			if err != nil {
+				panic(fmt.Sprintf("Database Init Error %s", dsn))
+			}
+
+			if schema != "" {
+				connection.SetSchema(schema)
+			}
+
+			if prefix != "" {
+				connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
+			}
+
+			err = connection.Ping()
+			if err != nil {
+				return
+			}
 		}
-
-		dsn := fmt.Sprintf(
-			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-			dsnUrl.Hostname(),
-			dsnUrl.Port(),
-			dsnUrl.User.Username(),
-			password,
-			dbname,
-			dsnUrl.Query().Get("sslmode"),
-		)
-
-		connection, err = xorm.NewEngine("postgres", dsn)
-		if err != nil {
-			panic(fmt.Sprintf("Database Init Error %s", dsn))
-		}
-
-		if schema != "" {
-			connection.SetSchema(schema)
-		}
-
-		if prefix != "" {
-			connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
-		}
-
-		err = connection.Ping()
-		if err != nil {
-			return
-		}
-
 	case "mysql":
+		{
+			host := dsnUrl.Host
+			prefix := dsnUrl.Query().Get("prefix")
+			dsnUrl.Query().Del("prefix")
+			query := dsnUrl.Query().Encode()
 
-		host := dsnUrl.Host
-		prefix := dsnUrl.Query().Get("prefix")
-		dsnUrl.Query().Del("prefix")
-		query := dsnUrl.Query().Encode()
+			if query == "" {
+				query = ""
+			} else {
+				query = "?" + query
+			}
 
-		if query == "" {
-			query = ""
-		} else {
-			query = "?" + query
+			if host[0:1] == "/" {
+				host = "unix(" + host + ")"
+			} else {
+				host = "tcp(" + host + ")"
+			}
+
+			dsn := dsnUrl.User.String() + "@" + host + dsnUrl.Path + query
+
+			connection, err = xorm.NewEngine("mysql", dsn)
+			if err != nil {
+				panic(fmt.Sprintf("Database Init Error %s", dsn))
+			}
+
+			if prefix != "" {
+				connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
+			}
+
+			err = connection.Ping()
+			if err != nil {
+				return
+			}
 		}
+	case "sqlserver", "mssql":
+		{
+			connection, err = xorm.NewEngine("sqlserver", dsnUrl.String())
 
-		if host[0:1] == "/" {
-			host = "unix(" + host + ")"
-		} else {
-			host = "tcp(" + host + ")"
+			err = connection.Ping()
+			if err != nil {
+				return
+			}
 		}
-
-		dsn := dsnUrl.User.String() + "@" + host + dsnUrl.Path + query
-
-		connection, err = xorm.NewEngine("mysql", dsn)
-		if err != nil {
-			panic(fmt.Sprintf("Database Init Error %s", dsn))
-		}
-
-		if prefix != "" {
-			connection.SetTableMapper(names.NewPrefixMapper(names.SnakeMapper{}, prefix))
-		}
-
-		err = connection.Ping()
-		if err != nil {
-			return
-		}
-
-	case "sqlserver":
-		fallthrough
-	case "mssql":
-		connection, err = xorm.NewEngine("sqlserver", dsnUrl.String())
-
-		err = connection.Ping()
-		if err != nil {
-			return
+	case "influxdb", "influx":
+		{
+			connection, err = xorm.NewEngine("influxdb", dsnUrl.String())
 		}
 		/*case "sqlite":
 		dbFile := dbConfig.Dsn[9:]
