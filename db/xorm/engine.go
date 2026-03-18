@@ -698,6 +698,13 @@ func (engine *Engine) SetExpr(column string, expression interface{}) *Session {
 	return session.SetExpr(column, expression)
 }
 
+// Database temporarily change the Get, Find, Update's table
+func (engine *Engine) Database(databaseName string) *Session {
+	session := engine.NewSession()
+	session.isAutoClose = true
+	return session.Database(databaseName)
+}
+
 // Table temporarily change the Get, Find, Update's table
 func (engine *Engine) Table(tableNameOrBean interface{}) *Session {
 	session := engine.NewSession()

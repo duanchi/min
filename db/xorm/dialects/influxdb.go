@@ -164,7 +164,7 @@ var (
 	influxQuoter = schemas.Quoter{
 		Prefix:     '\'',
 		Suffix:     '\'',
-		IsReserved: schemas.AlwaysReserve,
+		IsReserved: schemas.AlwaysNoReserve,
 	}
 )
 

@@ -526,13 +526,16 @@ func (session *Session) bytes2Value(col *schemas.Column, fieldValue *reflect.Val
 						}
 					}
 				} else {
+					fmt.Println("11111111111111111")
 					return fmt.Errorf("unsupported struct type in Scan: %s", fieldValue.Type().String())
 				}
 			}
 		default:
+			fmt.Println("22222222222222222222")
 			return fmt.Errorf("unsupported type in Scan: %s", fieldValue.Type().String())
 		}
 	default:
+		fmt.Println("33333333333333333", fieldValue.String(), col, data)
 		return fmt.Errorf("unsupported type in Scan: %s", fieldValue.Type().String())
 	}
 

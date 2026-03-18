@@ -30,6 +30,10 @@ func (session *Session) queryRows(sqlStr string, args ...interface{}) (*core.Row
 
 	session.queryPreprocess(&sqlStr, args...)
 
+	if session.statement.DatabaseName != "" {
+		sqlStr = "USE '" + session.statement.DatabaseName + "';" + sqlStr
+	}
+
 	session.lastSQL = sqlStr
 	session.lastSQLArgs = args
 	if session.showSQL {

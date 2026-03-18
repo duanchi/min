@@ -56,7 +56,9 @@ func (d InfluxDBDriver) Open(dsn string) (driver.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := newConnector(cfg)
+	c := connector{
+		cfg: cfg,
+	}
 	return c.Connect(context.Background())
 }
 
@@ -65,7 +67,9 @@ func (d InfluxDBDriver) OpenConnector(dsn string) (driver.Connector, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newConnector(cfg), nil
+	return connector{
+		cfg: cfg,
+	}, nil
 }
 
 type Client struct {

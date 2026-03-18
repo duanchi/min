@@ -208,6 +208,14 @@ func (session *Session) After(closures func(interface{})) *Session {
 	return session
 }
 
+// Database input a string for special a database to operate.
+func (session *Session) Database(databaseName string) *Session {
+	if err := session.statement.SetDatabase(databaseName); err != nil {
+		session.statement.LastError = err
+	}
+	return session
+}
+
 // Table can input a string or pointer to struct for special a table to operate.
 func (session *Session) Table(tableNameOrBean interface{}) *Session {
 	if err := session.statement.SetTable(tableNameOrBean); err != nil {

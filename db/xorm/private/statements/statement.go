@@ -49,6 +49,7 @@ type Statement struct {
 	HavingStr        string
 	SelectStr        string
 	useAllCols       bool
+	DatabaseName     string
 	AltTableName     string
 	tableName        string
 	RawSQL           string
@@ -140,6 +141,7 @@ func (statement *Statement) Reset() {
 	statement.OmitConditionMap = columnMap{}
 	statement.AltTableName = ""
 	statement.tableName = ""
+	statement.DatabaseName = ""
 	statement.idParam = nil
 	statement.RawSQL = ""
 	statement.RawParams = make([]interface{}, 0)
@@ -506,6 +508,12 @@ func (statement *Statement) Asc(colNames ...string) *Statement {
 
 func (statement *Statement) Conds() builder.Cond {
 	return statement.cond
+}
+
+// Database tempororily set database name, the parameter should be a string
+func (statement *Statement) SetDatabase(databaseName string) error {
+	statement.DatabaseName = databaseName
+	return nil
 }
 
 // Table tempororily set table name, the parameter could be a string or a pointer of struct

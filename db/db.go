@@ -2,9 +2,11 @@ package db
 
 import (
 	"fmt"
+	"runtime/debug"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/v2/context"
+	_ "github.com/duanchi/min/v2/db/influxdb"
 	"github.com/duanchi/min/v2/db/xorm"
 	"github.com/duanchi/min/v2/db/xorm/names"
 	config2 "github.com/duanchi/min/v2/types/config"
@@ -50,6 +52,7 @@ func Init() {
 }
 
 func Engine(name string) *xorm.Engine {
+	fmt.Println("connections", Connections)
 	if _, has := Connections[name]; has {
 		return Connections[name]
 	} else {
@@ -83,6 +86,8 @@ func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 	parsedDsn, _ := url.Parse(sourceConfig.Dsn)
 	Connections[name], err = connect(parsedDsn, sourceConfig)
 
+	fmt.Println("Engine", Connections)
+
 	return err
 }
 
@@ -101,6 +106,9 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 		e := recover()
 		if e != nil {
 			err = e.(error)
+			s := string(debug.Stack())
+			fmt.Printf("Database Connection Error, %s", s)
+
 		}
 		return
 	}()
@@ -192,7 +200,7 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 				return
 			}
 		}
-	case "influxdb", "influx":
+	case "influxdb3", "influx3", "influxdb", "influx":
 		{
 			connection, err = xorm.NewEngine("influxdb", dsnUrl.String())
 		}

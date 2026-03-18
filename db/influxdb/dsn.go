@@ -10,6 +10,7 @@ type Config struct {
 	Ssl      bool
 	Database string
 	Token    string
+	Version  string
 }
 
 func ParseDSN(dsn string) (*Config, error) {
@@ -24,5 +25,6 @@ func ParseDSN(dsn string) (*Config, error) {
 		Ssl:      ssl,
 		Database: strings.Trim(dsnUrl.Path, "/"),
 		Token:    dsnUrl.Query().Get("token"),
+		Version:  "v3",
 	}, nil
 }
