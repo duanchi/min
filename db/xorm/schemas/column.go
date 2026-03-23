@@ -45,6 +45,7 @@ type Column struct {
 	DisableTimeZone bool
 	TimeZone        *time.Location // column specified time zone
 	Comment         string
+	IsTag           bool
 }
 
 // NewColumn creates a new column
@@ -70,6 +71,7 @@ func NewColumn(name, fieldName string, sqlType SQLType, len1, len2 int, nullable
 		DefaultIsEmpty:  true, // default should be no default
 		EnumOptions:     make(map[string]int),
 		Comment:         "",
+		IsTag:           false,
 	}
 }
 

@@ -58,12 +58,11 @@ func (rows *influxRows) Next(dest []driver.Value) error {
 					case "time":
 						{
 							t, _ := time.Parse("2006-01-02T15:04:05.000000", o[rows.rs.columns[i].name].(string))
-							o[rows.rs.columns[i].name] = t.Local().Format("2006-01-02 15:04:05.9999999")
+							o[rows.rs.columns[i].name] = t.Local().UnixNano()
 						}
 					}
 
-					b := []byte(o[rows.rs.columns[i].name].(string))
-					dest[i] = b
+					dest[i] = o[rows.rs.columns[i].name]
 				}
 			}
 		}

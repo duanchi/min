@@ -265,6 +265,10 @@ func (session *Session) exec(sqlStr string, args ...interface{}) (sql.Result, er
 
 	session.queryPreprocess(&sqlStr, args...)
 
+	if session.statement.DatabaseName != "" {
+		sqlStr = "USE '" + session.statement.DatabaseName + "';" + sqlStr
+	}
+
 	session.lastSQL = sqlStr
 	session.lastSQLArgs = args
 

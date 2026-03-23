@@ -76,6 +76,7 @@ var (
 		"CACHE":    CacheTagHandler,
 		"NOCACHE":  NoCacheTagHandler,
 		"COMMENT":  CommentTagHandler,
+		"TAG":      TagTagHandler,
 	}
 )
 
@@ -220,6 +221,11 @@ func CommentTagHandler(ctx *Context) error {
 	if len(ctx.params) > 0 {
 		ctx.col.Comment = strings.Trim(ctx.params[0], "' ")
 	}
+	return nil
+}
+
+func TagTagHandler(ctx *Context) error {
+	ctx.col.IsTag = true
 	return nil
 }
 

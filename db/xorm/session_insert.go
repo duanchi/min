@@ -188,8 +188,10 @@ func (session *Session) innerInsertMulti(rowsSlicePtr interface{}) (int64, error
 				}
 				args = append(args, arg)
 			}
-
 			if i == 0 {
+				if col.IsTag {
+					col.Name = "TAG:" + col.Name
+				}
 				colNames = append(colNames, col.Name)
 				cols = append(cols, col)
 			}
