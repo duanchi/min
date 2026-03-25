@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/duanchi/min/v2/requests/http"
-	"github.com/duanchi/min/v2/util"
 )
 
 type session struct {
@@ -197,12 +196,12 @@ func buildLineData(table string, columns []string, beans []driver.Value, timesta
 	tagLine := []string{}
 	dataLine := []string{}
 	for i := range columns {
-		if strings.HasPrefix("TAG:", columns[i]) {
-			tagLine = append(tagLine, ","+columns[i][4:]+"="+escapeString(parseValue(beans[i]), []string{",", "=", " "}))
+		if strings.HasPrefix(columns[i], "TAG:") {
+			tagLine = append(tagLine, ","+columns[i][4:]+"="+escapeString(parseValue(beans[i], false), []string{",", "=", " "}))
 		} else if columns[i] == "time" {
 			ts = parseTimestamp(beans[i])
 		} else {
-			dataLine = append(dataLine, columns[i]+"="+parseValue(beans[i]))
+			dataLine = append(dataLine, columns[i]+"="+parseValue(beans[i], true))
 		}
 	}
 	if ts == 0 {
@@ -225,7 +224,7 @@ func parseTimestamp(timeObject any) int64 {
 	return 0
 }
 
-func structToDataLine(obj any) (line string) {
+/*func structToDataLine(obj any) (line string) {
 	var slice []string
 	k := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
@@ -252,12 +251,17 @@ func structToDataLine(obj any) (line string) {
 
 	}
 	return strings.Join(slice, ",")
-}
+}*/
 
-func parseValue(value interface{}) string {
+func parseValue(value interface{}, quote bool) string {
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
-		return "\"" + escapeString(value.(string), []string{"\\", "\""}) + "\""
+		if quote {
+			return "\"" + escapeString(value.(string), []string{"\\", "\""}) + "\""
+		}
+
+		return escapeString(value.(string), []string{"\\", "\""})
+
 	case reflect.Int:
 		return strconv.Itoa(value.(int)) + "i"
 	case reflect.Int64:

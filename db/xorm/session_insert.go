@@ -559,7 +559,9 @@ func (session *Session) genInsertColumns(bean interface{}) ([]string, []interfac
 			}
 			args = append(args, arg)
 		}
-
+		if col.IsTag {
+			col.Name = "TAG:" + col.Name
+		}
 		colNames = append(colNames, col.Name)
 	}
 	return colNames, args, nil
