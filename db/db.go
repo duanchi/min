@@ -52,7 +52,6 @@ func Init() {
 }
 
 func Engine(name string) *xorm.Engine {
-	fmt.Println("connections", Connections)
 	if _, has := Connections[name]; has {
 		return Connections[name]
 	} else {
