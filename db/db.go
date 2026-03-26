@@ -85,8 +85,6 @@ func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 	parsedDsn, _ := url.Parse(sourceConfig.Dsn)
 	Connections[name], err = connect(parsedDsn, sourceConfig)
 
-	fmt.Println("Engine", Connections)
-
 	return err
 }
 

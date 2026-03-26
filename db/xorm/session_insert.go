@@ -190,9 +190,10 @@ func (session *Session) innerInsertMulti(rowsSlicePtr interface{}) (int64, error
 			}
 			if i == 0 {
 				if col.IsTag {
-					col.Name = "TAG:" + col.Name
+					colNames = append(colNames, "TAG:"+col.Name)
+				} else {
+					colNames = append(colNames, col.Name)
 				}
-				colNames = append(colNames, col.Name)
 				cols = append(cols, col)
 			}
 			colPlaces = append(colPlaces, "?")
@@ -560,9 +561,10 @@ func (session *Session) genInsertColumns(bean interface{}) ([]string, []interfac
 			args = append(args, arg)
 		}
 		if col.IsTag {
-			col.Name = "TAG:" + col.Name
+			colNames = append(colNames, "TAG:"+col.Name)
+		} else {
+			colNames = append(colNames, col.Name)
 		}
-		colNames = append(colNames, col.Name)
 	}
 	return colNames, args, nil
 }
