@@ -1,7 +1,6 @@
 package library
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"database/sql/driver"
@@ -10,6 +9,7 @@ import (
 	"fmt"
 	"maps"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -126,6 +126,17 @@ func (mc *InfluxConn) Query(query string, args []driver.Value) (driver.Rows, err
 		}
 	}
 
+	re := regexp.MustCompile("\\?")
+	index := 0
+	l := len(args)
+	query = re.ReplaceAllStringFunc(query, func(match string) string {
+		index++
+		if index > l {
+			return match
+		}
+		return parseValue(args[index-1], "'")
+	})
+
 	response, err := sess.request.Url("/query_sql").JSON(QuerySQLRequestV3{
 		Q:      query,
 		Db:     databaseName,
@@ -135,10 +146,8 @@ func (mc *InfluxConn) Query(query string, args []driver.Value) (driver.Rows, err
 		return nil, err
 	}
 
-	scanner := bufio.NewScanner(bytes.NewReader(response.Payload))
-	for scanner.Scan() {
-		mc.result = append(mc.result, scanner.Bytes())
-	}
+	mc.result = bytes.Split(response.Payload, []byte("\n"))
+
 	mc.resultLen = int64(len(mc.result))
 	rows := new(influxRows)
 	rows.mc = mc
@@ -197,11 +206,11 @@ func buildLineData(table string, columns []string, beans []driver.Value, timesta
 	dataLine := []string{}
 	for i := range columns {
 		if strings.HasPrefix(columns[i], "TAG:") {
-			tagLine = append(tagLine, ","+columns[i][4:]+"="+escapeString(parseValue(beans[i], false), []string{",", "=", " "}))
+			tagLine = append(tagLine, ","+columns[i][4:]+"="+escapeString(parseValue(beans[i]), []string{",", "=", " "}))
 		} else if columns[i] == "time" {
 			ts = parseTimestamp(beans[i])
 		} else {
-			dataLine = append(dataLine, columns[i]+"="+parseValue(beans[i], true))
+			dataLine = append(dataLine, columns[i]+"="+parseValue(beans[i], "\""))
 		}
 	}
 	if ts == 0 {
@@ -224,40 +233,11 @@ func parseTimestamp(timeObject any) int64 {
 	return 0
 }
 
-/*func structToDataLine(obj any) (line string) {
-	var slice []string
-	k := reflect.TypeOf(obj)
-	v := reflect.ValueOf(obj)
-	switch v.Kind() {
-	case reflect.Struct:
-		{
-			for f := range k.Fields() {
-				tag := f.Tag.Get("xorm")
-				if !strings.Contains(tag, "notnull") && !v.FieldByName(f.Name).IsZero() {
-					slice = append(slice, util.ToSnake(f.Name)+"="+parseValue(v.FieldByName(f.Name).Interface()))
-				}
-			}
-		}
-	case reflect.Map:
-		{
-			for _, key := range v.MapKeys() {
-				slice = append(slice, key.String()+"="+parseValue(v.MapIndex(key).Interface()))
-			}
-		}
-	case reflect.String:
-		{
-			slice = append(slice, v.String())
-		}
-
-	}
-	return strings.Join(slice, ",")
-}*/
-
-func parseValue(value interface{}, quote bool) string {
+func parseValue(value interface{}, quote ...string) string {
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
-		if quote {
-			return "\"" + escapeString(value.(string), []string{"\\", "\""}) + "\""
+		if len(quote) > 0 {
+			return quote[0] + escapeString(value.(string), []string{"\\", "\""}) + quote[0]
 		}
 
 		return escapeString(value.(string), []string{"\\", "\""})

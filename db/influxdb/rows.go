@@ -46,7 +46,7 @@ func (rows *influxRows) Close() error {
 }
 
 func (rows *influxRows) Next(dest []driver.Value) error {
-	if rows.mc.resultLen > 0 && rows.mc.resultIndex+1 < rows.mc.resultLen {
+	if rows.mc.resultLen > 0 && rows.mc.resultIndex < rows.mc.resultLen {
 		if len(rows.rs.columns) > 0 {
 			o := map[string]driver.Value{}
 			json.Unmarshal(rows.mc.result[rows.mc.resultIndex], &o)
@@ -77,6 +77,10 @@ func (rows *influxRows) Next(dest []driver.Value) error {
 
 func (rows *influxRows) HasNextResultSet() bool {
 	if rows.mc == nil || rows.mc.resultLen == 0 || (rows.mc.resultIndex+1 >= rows.mc.resultLen) {
+		rows.mc.result = [][]byte{}
+		rows.mc.resultIndex = 0
+		rows.mc.resultLen = 0
+		rows.mc.setResult = false
 		return false
 	}
 	return true
