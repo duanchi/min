@@ -145,14 +145,18 @@ func (mc *InfluxConn) Query(query string, args []driver.Value) (driver.Rows, err
 	if err != nil {
 		return nil, err
 	}
-
-	mc.result = bytes.Split(response.Payload, []byte("\n"))
-
-	mc.resultLen = int64(len(mc.result))
+	mc.result = bytes.Split(bytes.Trim(response.Payload, "\n"), []byte("\n"))
 	rows := new(influxRows)
 	rows.mc = mc
-	rows.rs.columns, err = mc.readColumns()
+	rows.mc.resultIndex = 0
 	rows.mc.setResult = true
+
+	if len(mc.result[0]) == 0 {
+		mc.resultLen = 0
+	} else {
+		mc.resultLen = int64(len(mc.result))
+	}
+	rows.rs.columns, err = mc.readColumns()
 	return rows, nil
 }
 

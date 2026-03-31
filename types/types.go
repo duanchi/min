@@ -9,8 +9,8 @@ type Response struct {
 }
 
 type PaginationData struct {
-	Pagination Pagination  `json:"pagination"`
-	Records    interface{} `json:"records"`
+	Pagination Pagination `json:"pagination"`
+	Records    any        `json:"records"`
 }
 
 type Pagination struct {
