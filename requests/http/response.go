@@ -39,25 +39,22 @@ func (this *Response) GetHeaders() map[string]string {
 }
 
 func (this *Response) BindJSON(v interface{}) (err error) {
-	/*defer func() {
-		r := recover()
-		if r != nil {
-			err = r.(error)
-		}
-	}()*/
-	err = json.Unmarshal(this.Payload, v)
-
-	return
-}
-
-func (this *Response) MustBindJSON(v interface{}) (err error) {
 	defer func() {
 		r := recover()
 		if r != nil {
 			err = r.(error)
 		}
 	}()
+	localCopy := make([]byte, len(this.Payload))
+	copy(localCopy, this.Payload)
 	err = json.Unmarshal(this.Payload, v)
 
+	return
+}
+
+func (this *Response) MustBindJSON(v interface{}) (err error) {
+	localCopy := make([]byte, len(this.Payload))
+	copy(localCopy, this.Payload)
+	err = json.Unmarshal(this.Payload, v)
 	return
 }
