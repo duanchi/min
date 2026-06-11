@@ -2,12 +2,14 @@ package log
 
 import (
 	"context"
-	"github.com/duanchi/min/v2/types/config"
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/duanchi/min/v2/types/config"
+	"github.com/sirupsen/logrus"
 )
 
 type Logger struct {
@@ -306,7 +308,15 @@ func Init(config config.Log) {
 	outputStack := strings.Split(config.Output, "://")
 
 	switch outputStack[0] {
+	case "file":
+		file, err := os.OpenFile(outputStack[1], os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			fmt.Printf("打开日志文件失败: %v\n", err)
+		}
+		// defer file.Close() // 主函数退出时关闭
+		Log.std.Out = file
 	case "stdout":
+		fallthrough
 	default:
 		Log.std.Out = os.Stdout
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/duanchi/min/v2/types"
 )
 
-func (session *Session) ListPage(records any, sess *Session, pageAndSize ...any) (result types.PaginationData, err error) {
+func (session *Session) ListPage(records any, pageAndSize ...any) (result types.PaginationData, err error) {
 	page := 1
 	size := 20
 
@@ -32,7 +32,7 @@ func (session *Session) ListPage(records any, sess *Session, pageAndSize ...any)
 		size = 20
 	}
 
-	total, err := sess.Limit(size, (page-1)*size).FindAndCount(records)
+	total, err := session.Limit(size, (page-1)*size).FindAndCount(records)
 	if err != nil {
 		return
 	}
