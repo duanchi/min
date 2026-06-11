@@ -1,6 +1,8 @@
 package scheduled
 
 import (
+	"reflect"
+
 	"github.com/duanchi/min/v2/abstract"
 	"github.com/duanchi/min/v2/config"
 	"github.com/duanchi/min/v2/event"
@@ -8,7 +10,6 @@ import (
 	"github.com/duanchi/min/v2/log"
 	"github.com/duanchi/min/v2/types"
 	"github.com/robfig/cron/v3"
-	"reflect"
 )
 
 const (
@@ -35,33 +36,26 @@ var cronInstance *cron.Cron
 func Init() {}
 
 func RunOnStart() {
-	go func() {
-		for _, s := range Scheduled.OnStart {
-			schedule := s
-			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_START)
-		}
-	}()
+	for _, s := range Scheduled.OnStart {
+		schedule := s
+		go schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_START)
+	}
 
 	RunCron()
 }
 
 func RunOnExit() {
-	go func() {
-		for _, s := range Scheduled.OnExit {
-			schedule := s
-			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_EXIT)
-		}
-	}()
+	for _, s := range Scheduled.OnExit {
+		schedule := s
+		go schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_EXIT)
+	}
 }
 
 func RunOnInit() {
-	go func() {
-		for _, s := range Scheduled.OnInit {
-			schedule := s
-			schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_INIT)
-		}
-	}()
-
+	for _, s := range Scheduled.OnInit {
+		schedule := s
+		go schedule.Interface().(_interface.ScheduledInterface).Run(RUN_ON_INIT)
+	}
 }
 
 func RunCron() {

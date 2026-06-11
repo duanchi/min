@@ -45,7 +45,16 @@ func (this *Response) BindJSON(v interface{}) (err error) {
 			err = r.(error)
 		}
 	}()
+	localCopy := make([]byte, len(this.Payload))
+	copy(localCopy, this.Payload)
 	err = json.Unmarshal(this.Payload, v)
 
+	return
+}
+
+func (this *Response) MustBindJSON(v interface{}) (err error) {
+	localCopy := make([]byte, len(this.Payload))
+	copy(localCopy, this.Payload)
+	err = json.Unmarshal(this.Payload, v)
 	return
 }
