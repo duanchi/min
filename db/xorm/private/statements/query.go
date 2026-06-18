@@ -268,7 +268,7 @@ func (statement *Statement) GenCountSQL(beans ...interface{}) (string, []interfa
 		} else if statement.ColumnStr() != "" {
 			selectSQL = fmt.Sprintf("count(%s)", statement.ColumnStr())
 		} else {
-			selectSQL = "count(*)"
+			selectSQL = "count(1)"
 		}
 	}
 	sqlStr, condArgs, err := statement.genSelectSQL(selectSQL, false, false)

@@ -137,6 +137,13 @@ func (mc *InfluxConn) Query(query string, args []driver.Value) (driver.Rows, err
 		return parseValue(args[index-1], "'")
 	})
 
+	// 增加tz()函数调整时区
+	/*if !strings.Contains(query, "tz(") {
+		query = query + " TZ('Asia/Shanghai')"
+	}*/
+
+	// query = strings.Replace(query, "tz('Asia/Shanghai')", "count()", 1)
+
 	response, err := sess.request.Url("/query_sql").JSON(QuerySQLRequestV3{
 		Q:      query,
 		Db:     databaseName,

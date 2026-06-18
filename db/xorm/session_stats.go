@@ -21,7 +21,6 @@ func (session *Session) Count(bean ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	var total int64
 	err = session.queryRow(sqlStr, args...).Scan(&total)
 	if err == sql.ErrNoRows || err == nil {
