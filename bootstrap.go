@@ -2,6 +2,11 @@ package min
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/duanchi/min/v2/bean"
 	"github.com/duanchi/min/v2/cache"
 	"github.com/duanchi/min/v2/config"
@@ -14,10 +19,6 @@ import (
 	"github.com/duanchi/min/v2/server"
 	config2 "github.com/duanchi/min/v2/types/config"
 	"github.com/joho/godotenv"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func init() {
@@ -74,6 +75,13 @@ func Bootstrap(configuration interface{}) {
 	}
 
 	if checkConfigEnabled("HttpServer.Enabled") {
+		go func() {
+			server.Init(errs)
+			HttpServer = server.HttpServer
+		}()
+	}
+
+	if checkConfigEnabled("Grpc.Server.Enabled") {
 		go func() {
 			server.Init(errs)
 			HttpServer = server.HttpServer

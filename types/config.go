@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/duanchi/min/v2/types/config"
 	"reflect"
+
+	"github.com/duanchi/min/v2/types/config"
 )
 
 type Config struct {
@@ -11,6 +12,7 @@ type Config struct {
 	Application config.Application `yaml:"application"`
 	HttpServer  config.HttpServer  `yaml:"http-server"`
 	Rpc         config.Rpc         `yaml:"rpc"`
+	Grpc        config.Grpc        `yaml:"grpc"`
 	Feign       config.Feign       `yaml:"feign"`
 	Log         config.Log         `yaml:"log"`
 	Cache       config.Cache       `yaml:"cache"`
