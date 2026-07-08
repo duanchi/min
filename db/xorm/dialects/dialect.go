@@ -209,6 +209,7 @@ func regDrvsNDialects() bool {
 		"oci8":     {"oracle", func() Driver { return &oci8Driver{} }, func() Dialect { return &oracle{} }},
 		"godror":   {"oracle", func() Driver { return &godrorDriver{} }, func() Dialect { return &oracle{} }},
 		"influxdb": {"influxdb", func() Driver { return &influxdbDriver{} }, func() Dialect { return &influxdb{} }},
+		"taosWS":   {"taosWS", func() Driver { return &tdengineDriver{} }, func() Dialect { return &tdengine{} }},
 	}
 
 	for driverName, v := range providedDrvsNDialects {

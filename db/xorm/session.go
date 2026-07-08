@@ -909,6 +909,14 @@ func (session *Session) Context(ctx context.Context) *Session {
 	return session
 }
 
+func (session *Session) SetCtxValue(key string, value any) {
+	session.ctx = context.WithValue(session.ctx, key, value)
+}
+
+func (session *Session) GetCtxValue(key string) any {
+	return session.ctx.Value(key)
+}
+
 // PingContext test if database is ok
 func (session *Session) PingContext(ctx context.Context) error {
 	if session.isAutoClose {

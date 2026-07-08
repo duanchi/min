@@ -2,7 +2,9 @@ package db
 
 import (
 	"fmt"
+	"net/url"
 	"runtime/debug"
+	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/duanchi/min/v2/context"
@@ -12,9 +14,7 @@ import (
 	config2 "github.com/duanchi/min/v2/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-
-	"net/url"
-	"strings"
+	_ "github.com/taosdata/driver-go/v3/taosWS"
 )
 
 var Connection *xorm.Engine
@@ -200,6 +200,12 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 	case "influxdb3", "influx3", "influxdb", "influx":
 		{
 			connection, err = xorm.NewEngine("influxdb", dsnUrl.String())
+		}
+
+	case "taoWS", "tdengine":
+		{
+			dsn := dsnUrl.User.Username() + ":" + dsnUrl.User.Username() + "@ws(" + dsnUrl.Host + ":" + dsnUrl.Port() + ")/" + dsnUrl.Path + dsnUrl.RawQuery
+			connection, err = xorm.NewEngine("taows", dsn)
 		}
 		/*case "sqlite":
 		dbFile := dbConfig.Dsn[9:]

@@ -20,6 +20,7 @@ const (
 	MSSQL    DBType = "mssql"
 	ORACLE   DBType = "oracle"
 	INFLUXDB DBType = "influxdb"
+	TDENGINE DBType = "taosWS"
 )
 
 // SQLType represents SQL types
