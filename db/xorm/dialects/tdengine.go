@@ -164,7 +164,7 @@ var (
 	tdengineQuoter = schemas.Quoter{
 		Prefix:     '\'',
 		Suffix:     '\'',
-		IsReserved: schemas.AlwaysNoReserve,
+		IsReserved: schemas.AlwaysReserve,
 	}
 )
 

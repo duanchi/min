@@ -12,6 +12,7 @@ import (
 	"github.com/duanchi/min/v2/db/xorm"
 	"github.com/duanchi/min/v2/db/xorm/names"
 	config2 "github.com/duanchi/min/v2/types/config"
+	"github.com/duanchi/min/v2/util/arrays"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/taosdata/driver-go/v3/taosWS"
@@ -204,8 +205,13 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 
 	case "taoWS", "tdengine":
 		{
-			dsn := dsnUrl.User.Username() + ":" + dsnUrl.User.Username() + "@ws(" + dsnUrl.Host + ":" + dsnUrl.Port() + ")/" + dsnUrl.Path + dsnUrl.RawQuery
-			connection, err = xorm.NewEngine("taows", dsn)
+			password, _ := dsnUrl.User.Password()
+			port := "6041"
+			if _, has := arrays.Includes([]string{"80", "6041"}, dsnUrl.Port()); !has {
+				port = dsnUrl.Port()
+			}
+			dsn := dsnUrl.User.Username() + ":" + password + "@ws(" + dsnUrl.Hostname() + ":" + port + ")" + dsnUrl.Path + "?" + dsnUrl.RawQuery
+			connection, err = xorm.NewEngine("taosWS", dsn)
 		}
 		/*case "sqlite":
 		dbFile := dbConfig.Dsn[9:]

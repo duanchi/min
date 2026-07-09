@@ -68,6 +68,21 @@ func (mc *InfluxConn) Exec(query string, args []driver.Value) (driver.Result, er
 			query = queryStack[1]
 		}
 	}
+
+	sqlStack := strings.Split(query, " ")
+	sqlStackLen := len(sqlStack)
+	for i, sql := range sqlStack {
+		if strings.ToUpper(sql) == "INTO" && i < sqlStackLen-1 {
+			dbStack := strings.SplitN(sqlStack[i+1], ".", 2)
+			if len(dbStack) == 2 {
+				databaseName = dbStack[0]
+				sqlStack[i+1] = dbStack[1]
+				break
+			}
+		}
+	}
+
+	query = strings.Join(sqlStack, " ")
 	// 拆分table
 
 	if splitQuery := strings.SplitN(query, "VALUES", 2); strings.HasPrefix(query, "INSERT") && len(splitQuery) == 2 {
@@ -125,6 +140,21 @@ func (mc *InfluxConn) Query(query string, args []driver.Value) (driver.Rows, err
 			databaseName = strings.Trim(queryStack[0][3:], " '")
 		}
 	}
+
+	sqlStack := strings.Split(query, " ")
+	sqlStackLen := len(sqlStack)
+	for i, sql := range sqlStack {
+		if strings.ToUpper(sql) == "FROM" && i < sqlStackLen-1 {
+			dbStack := strings.SplitN(sqlStack[i+1], ".", 2)
+			if len(dbStack) == 2 {
+				databaseName = dbStack[0]
+				sqlStack[i+1] = dbStack[1]
+				break
+			}
+		}
+	}
+
+	query = strings.Join(sqlStack, " ")
 
 	re := regexp.MustCompile("\\?")
 	index := 0
