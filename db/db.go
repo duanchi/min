@@ -201,6 +201,9 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 	case "influxdb3", "influx3", "influxdb", "influx":
 		{
 			connection, err = xorm.NewEngine("influxdb", dsnUrl.String())
+			if err != nil {
+				return
+			}
 		}
 
 	case "taoWS", "tdengine":
@@ -212,6 +215,9 @@ func connect(dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engin
 			}
 			dsn := dsnUrl.User.Username() + ":" + password + "@ws(" + dsnUrl.Hostname() + ":" + port + ")" + dsnUrl.Path + "?" + dsnUrl.RawQuery
 			connection, err = xorm.NewEngine("taosWS", dsn)
+			if err != nil {
+				return
+			}
 		}
 		/*case "sqlite":
 		dbFile := dbConfig.Dsn[9:]
