@@ -162,8 +162,8 @@ var (
 	}
 
 	tdengineQuoter = schemas.Quoter{
-		Prefix:     '\'',
-		Suffix:     '\'',
+		Prefix:     '`',
+		Suffix:     '`',
 		IsReserved: schemas.AlwaysReserve,
 	}
 )
@@ -183,7 +183,7 @@ type tdengine struct {
 }
 
 func (db *tdengine) Init(uri *URI) error {
-	db.quoter = influxQuoter
+	db.quoter = tdengineQuoter
 	return db.Base.Init(db, uri)
 }
 
@@ -274,7 +274,7 @@ func (db *tdengine) SQLType(c *schemas.Column) string {
 }
 
 func (db *tdengine) IsReserved(name string) bool {
-	_, ok := mysqlReservedWords[strings.ToUpper(name)]
+	_, ok := tdengineReservedWords[strings.ToUpper(name)]
 	return ok
 }
 
