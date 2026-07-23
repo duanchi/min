@@ -38,11 +38,13 @@ func RestfulRouteInit(httpServer *httpserver.Httpserver) {
 			handlers = append(handlers, afterResponseMiddlewares...)
 		}
 
+		// handlers = append(handlers, func(ctx *context.Context) { ctx.Ctx(). })
+
 		if strings.Contains(resource, ":"+route.ResourceKey) {
-			httpServer.ALL(resource, handlers...)
-			if !strings.HasSuffix(resource, "/") {
+			/*if !strings.HasSuffix(resource, "/") {
 				httpServer.ALL(resource+"/", handlers...)
-			}
+			}*/
+			httpServer.ALL(resource, handlers...)
 		} else {
 			// httpServer.ALL(resource, handlers...)
 			// httpServer.ALL("/"+resource+"/", handlers...)

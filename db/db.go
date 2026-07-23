@@ -40,10 +40,10 @@ func Init() {
 				Connection = Connections[name]
 			}
 		}
-	} else {
-		parsedDsn, _ := url.Parse(context.GetApplicationContext().GetConfig("Db.Dsn").(string))
+	} else if dsn, ok := context.GetApplicationContext().GetConfig("Db.Dsn").(string); ok && dsn != "" {
+		parsedDsn, _ := url.Parse(dsn)
 		Connection, err = connect(parsedDsn, config2.DbConfig{
-			Dsn:        context.GetApplicationContext().GetConfig("Db.Dsn").(string),
+			Dsn:        dsn,
 			MigrateSQL: context.GetApplicationContext().GetConfig("Db.MigrateSQL").(string),
 		})
 		if err != nil {
