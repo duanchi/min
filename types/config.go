@@ -17,6 +17,7 @@ type Config struct {
 	Log         config.Log         `yaml:"log"`
 	Cache       config.Cache       `yaml:"cache"`
 	Scheduled   config.Scheduled   `yaml:"scheduled"`
+	Job         config.Job         `yaml:"job"`
 	Discovery   config.Discovery   `yaml:"discovery"`
 	BeanParsers interface{}        `yaml:"-"`
 	Beans       struct{}           `yaml:"-"`

@@ -9,6 +9,7 @@ require (
 	github.com/denisenkom/go-mssqldb v0.12.3
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.9.0
+	github.com/go-basic/ipv4 v1.0.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.30.1

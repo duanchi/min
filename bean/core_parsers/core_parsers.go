@@ -4,6 +4,7 @@ import (
 	"github.com/duanchi/min/v2/event"
 	"github.com/duanchi/min/v2/grpc/server"
 	_interface "github.com/duanchi/min/v2/interface"
+	"github.com/duanchi/min/v2/job"
 	"github.com/duanchi/min/v2/rpc"
 	"github.com/duanchi/min/v2/scheduled"
 	"github.com/duanchi/min/v2/server/middleware"
@@ -22,4 +23,5 @@ var CoreBeanParsers = []_interface.BeanParserInterface{
 	&rpc.RpcBeanParser{},
 	&validate.ValidatorBeanParser{},
 	&server.GrpcServerBeanParser{},
+	&job.JobBeanParser{},
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/duanchi/min/v2/context"
 	"github.com/duanchi/min/v2/db"
 	"github.com/duanchi/min/v2/event"
+	"github.com/duanchi/min/v2/job"
 	"github.com/duanchi/min/v2/log"
 	"github.com/duanchi/min/v2/microservice/discovery"
 	"github.com/duanchi/min/v2/scheduled"
@@ -92,6 +93,10 @@ func Bootstrap(configuration interface{}) {
 		scheduled.RunOnStart()
 	}
 
+	if checkConfigEnabled("Job.Enabled") {
+		job.Init()
+	}
+
 	go func() {
 		c := make(chan os.Signal, 2)
 		signal.Notify(c, syscall.SIGINT)
@@ -104,6 +109,10 @@ func Bootstrap(configuration interface{}) {
 
 	if checkConfigEnabled("Scheduled.Enabled") {
 		scheduled.RunOnExit()
+	}
+
+	if checkConfigEnabled("Job.Enabled") {
+		job.Stop()
 	}
 
 	log.Log.Error("%s", err)
