@@ -11,6 +11,10 @@ type Response struct {
 	response *fasthttp.Response
 }
 
+func (this *Response) Raw() *fasthttp.Response {
+	return this.response
+}
+
 func (this *Response) SetHeader(key string, value string) *Response {
 	this.response.Header.Set(key, value)
 	this.ctx.Set(key, value)

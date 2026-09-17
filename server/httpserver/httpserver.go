@@ -8,20 +8,56 @@ import (
 	"github.com/duanchi/min/v2/server/types"
 	"github.com/duanchi/min/v2/types/config"
 	"github.com/duanchi/min/v2/util"
+	jsonv2 "github.com/go-json-experiment/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/utils"
 )
 
 type Httpserver struct {
 	instance *fiber.App
 }
 
+// jsonEncoder/jsonDecoder 自定义 JSON 编解码器, 通过 SetJSONEncoder/SetJSONDecoder 注入,
+// 须在 min.Bootstrap 之前调用生效
+var (
+	jsonEncoder utils.JSONMarshal
+	jsonDecoder utils.JSONUnmarshal
+)
+
+// SetJSONEncoder 设置自定义 JSON 编码器(用于 Ctx.JSON 响应序列化), 须在 Bootstrap 之前调用
+func SetJSONEncoder(encoder utils.JSONMarshal) {
+	jsonEncoder = encoder
+}
+
+// SetJSONDecoder 设置自定义 JSON 解码器(用于 BodyParser 请求解析), 须在 Bootstrap 之前调用
+func SetJSONDecoder(decoder utils.JSONUnmarshal) {
+	jsonDecoder = decoder
+}
+
 func New(configuration config.ServerConfig) *Httpserver {
-	app := fiber.New(fiber.Config{
+	fiberConfig := fiber.Config{
 		BodyLimit:   util.Unit2Int(configuration.ClientMaxBodySize),
 		Concurrency: configuration.Concurrency,
-	})
+		// 替换 fiber 默认 JSON 编码器为 encoding/json/v2 实现:
+		// 启用 json tag 的 format 选项(如 json:"create_time,format:'2006-01-02 15:04:05'"),
+		// FormatNilSliceAsNull/FormatNilMapAsNull 保持与 v1 编码器的 null 输出语义一致
+		JSONEncoder: func(v interface{}) ([]byte, error) {
+			return jsonv2.Marshal(v,
+				jsonv2.ExperimentalSupportFormatTag(true),
+				// jsonv2.FormatNilSliceAsNull(true),
+				// jsonv2.FormatNilMapAsNull(true),
+			)
+		},
+	}
+	if jsonEncoder != nil {
+		fiberConfig.JSONEncoder = jsonEncoder
+	}
+	if jsonDecoder != nil {
+		fiberConfig.JSONDecoder = jsonDecoder
+	}
+	app := fiber.New(fiberConfig)
 	app.Use(logger.New(logger.Config{Format: "[${ip}]:${port} ${status} - ${method} ${path}\n"}))
 	return &Httpserver{
 		instance: app,

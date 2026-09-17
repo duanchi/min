@@ -1,6 +1,6 @@
 module github.com/duanchi/min/v2
 
-go 1.26
+go 1.27
 
 require (
 	github.com/Chronokeeper/anyxml v0.0.0-20160530174208-54457d8e98c6
@@ -10,6 +10,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-basic/ipv4 v1.0.0
+	github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.30.1
