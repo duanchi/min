@@ -18,12 +18,14 @@ require (
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/gofiber/contrib/websocket v1.3.4
 	github.com/gofiber/fiber/v2 v2.52.12
+	github.com/jinzhu/copier v0.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.12.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.4
+	github.com/spf13/cast v1.10.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/taosdata/driver-go/v3 v3.8.1
 	github.com/valyala/fasthttp v1.69.0
