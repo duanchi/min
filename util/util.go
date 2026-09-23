@@ -91,3 +91,7 @@ func GetOptionalParameter[T any](param []T) (value T, has bool) {
 	}
 	return
 }
+
+func HasRestArguments(param []any) bool {
+	return len(param) > 1
+}

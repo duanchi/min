@@ -48,7 +48,6 @@ func (session *Session) ListPage(records any, pageAndSize ...any) (result types.
 		Pages:   pages,
 		Current: page,
 	}
-
 	// records 传入的是切片指针, 解引用后存值, 保证 Records 的动态类型为实际切片类型
 	result.Records = reflect.Indirect(reflect.ValueOf(records)).Interface()
 	return

@@ -3,12 +3,13 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/duanchi/min/v2/abstract"
-	"github.com/go-redis/redis/v8"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/duanchi/min/v2/abstract"
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisCache struct {
@@ -45,6 +46,7 @@ func (this *RedisCache) Instance(dsn *url.URL) {
 }
 
 func (this *RedisCache) Get(key string) (value interface{}) {
+	fmt.Println("Redis Get", this.instance)
 	value, _ = this.instance.Get(this.Ctx(), key).Result()
 	return
 }
@@ -60,6 +62,7 @@ func (this *RedisCache) Has(key string) bool {
 }
 
 func (this *RedisCache) Set(key string, value interface{}) {
+	fmt.Println("Redis Get", this.instance)
 	this.instance.Set(this.Ctx(), key, value, 0).Result()
 }
 
